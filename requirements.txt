@@ -1,0 +1,2 @@
+# See https://github.com/readthedocs/readthedocs.org/issues/8616
+docutils<0.18
