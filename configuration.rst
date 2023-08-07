@@ -39,7 +39,14 @@ The following configuration file examplifies the configure options described abo
   <CLICON_FEATURE>clixon-restconf:allow-auth-none</CLICON_FEATURE>
   <CLICON_CONFIG_EXTEND>clixon-controller-config</CLICON_CONFIG_EXTEND>
   <CONTROLLER_ACTION_COMMAND xmlns="http://clicon.org/controller-config">
-        /usr/local/bin/clixon_server.py -F -f /usr/local/share/clixon/modules
+        /usr/local/bin/clixon_server.py -f /usr/local/etc/controller.xml -F
   </CONTROLLER_ACTION_COMMAND>
+  <CONTROLLER_PYAPI_MODULE_PATH xmlns="http://clicon.org/controller-config">
+        /usr/local/share/clixon/controller/modules/
+  </CONTROLLER_PYAPI_MODULE_PATH>
+  <CONTROLLER_PYAPI_MODULE_FILTER xmlns="http://clicon.org/controller-config"></CONTROLLER_PYAPI_MODULE_FILTER>
+  <CONTROLLER_PYAPI_PIDFILE xmlns="http://clicon.org/controller-config">
+        /tmp/clixon_server.pid
+  </CONTROLLER_PYAPI_PIDFILE>
   <CLICON_BACKEND_USER>clicon</CLICON_BACKEND_USER>
   <CLICON_SOCK_GROUP>clicon</CLICON_SOCK_GROUP>
