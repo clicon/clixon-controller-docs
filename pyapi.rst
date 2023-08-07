@@ -88,27 +88,29 @@ The Python API server has the following command line options::
 
    $ python3 clixon_server.py -h
 
-   clixon_server.py -f<module1,module2> -s<path> -d -p<pidfile>
-   -m       Location of python code for service modules
-   -f       Comma separate list of modules to exclude
-   -d       Enable verbose debug logging
-   -s       Clixon socket path
-   -p       Pidfile for Python server
-   -F       Run in foreground
-   -P       Prettyprint XML
-   -h       This!
+    clixon_server.py -f<module1,module2> -s<path> -d -p<pidfile>
+        -f       Clixon controller configuration file
+        -m       Modules path
+        -e       Comma separate list of modules to exclude
+        -d       Enable verbose debug logging
+        -s       Clixon socket path
+        -p       Pidfile for Python server
+        -F       Run in foreground
+        -P       Prettyprint XML
+        -l       <s|o> Log on (s)yslog, std(o)ut
+        -h       This!
 
 Logging and debugging
 ---------------------
 The server can be run in the foreground with debug flags::
 
-   clixon_server.py -F -d -P
+   clixon_server.py -F -d -P -f /usr/local/etc/controller.xml
 
 Startup
 -------
 Pyapi needs to know where the python code for the service model is located.
 This can be modified with the '-m' flag::
 
-  python3 ./clixon_server.py -m /usr/local/share/clixon-pyapi/
+  python3 ./clixon_server.py -f /usr/local/etc/controller.xml
 
 which makes the server run in the background with minimal logging.
