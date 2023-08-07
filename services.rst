@@ -1,6 +1,6 @@
-.. _clixon_services:
+.. _controller_services:
 .. sectnum::
-   :start: 3
+   :start: 9
    :depth: 3
 
 *******************

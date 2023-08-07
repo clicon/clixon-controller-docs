@@ -1,6 +1,6 @@
-.. _clixon_pyapi:
+.. _controller_pyapi:
 .. sectnum::
-   :start: 2
+   :start: 8
    :depth: 3
 
 **********

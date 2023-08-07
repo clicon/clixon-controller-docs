@@ -9,6 +9,12 @@ Clixon network controller is an open-source manager of network devices based on 
    :maxdepth: 2
    :caption: Table of contents
 
-   controller
+   overview
+   install
+   quickstart
+   configuration
+   cli
+   transactions
+   actions
    pyapi
    services
