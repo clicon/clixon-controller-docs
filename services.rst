@@ -114,9 +114,9 @@ Example:
 Python object tree
 ==================
 
-Manipulating the configuration three is the central part of the
-service modules. For example we might have a service which only
-purpose is to change the hostname on Juniper devices.
+Manipulating the configuration tree is the central part of the
+service modules. For example, a service could be defined with the only
+purpose to change the hostname on devices.
 
 In the Juniper CLI one would do something similar to this to configure
 the hostname::
@@ -131,9 +131,9 @@ the hostname::
   admin@junos# commit
   commit complete
 
-However, in the Clixon CLI we can model this behaviour to look like
-whatever we want using service YANG models. For example altering the
-hostname for a lot of devices could look like this::
+However, in the Clixon CLI this behaviour can be modelled 
+by using a service YANG models. For example, altering the
+hostname for a lot of devices could look as follows::
 
   test@test> configure
   test@test[/]# set services hostname test hostname foo-bar-baz
@@ -141,8 +141,6 @@ hostname for a lot of devices could look like this::
 
 Clixon itself can not modify the configuration when the commit is
 issued, but this must be implemented using a service module.
-
-Let's start with an example:
 
 .. code:: python
 
@@ -158,18 +156,16 @@ Let's start with an example:
       for device in root.devices:
 	  device.config.configuration.system.host_name
 
-
-When the service module above is executed Clixon automatically call
+When the service module above is executed Clixon automatically calls
 the setup method. The wrapper "rpc" takes care of fetching the
 configuration tree from Clixon and write the modified configuration
 back when the setup function returns.
 
-As seen above we're modifying the object root which is passed as a
-parameter to setup. root is the configuration we have in Clixon parsed
-by the Python API and converted to a tree of Python objects.
+The "root" object is modified and passed as a parameter to setup. It
+is parsed by the Python API and converted to a tree of Python objects.
 
-We can also create new configuration. Let's use the same example again
-and create a new node named test:
+One can also create new configurations. For example, the same example can be modified to
+create a new node named test:
 
 .. code:: python
 
@@ -220,7 +216,7 @@ take any XML string and convert it to a tree of Python objects:
   foo
   >>>
 
-As seen in the example above we get an object (root) back from
+As seen in the example above an object (root) is returned from
 parse_string, root is a representation of the XML string xmlstr.
 
 Something worth noting is that XML tags with '-' in them must be
@@ -278,7 +274,7 @@ that.
 Adding tags
 -----------
 
-We can now add a new tag to root and look at the generated XML using
+A new tag can now be added to root and look at the generated XML using
 the method dumps():
 
 .. code:: python
@@ -291,7 +287,7 @@ the method dumps():
 Renaming tags
 -------------
 
-If needed we can also rename a tag:
+If needed the tag can be renamed:
 
 .. code:: python
 
@@ -331,8 +327,7 @@ CDATA can be altered:
 Iterate objects
 ---------------
 
-We can also iterate over objects if we have a tag with tags below
-it. Let's start over with a new example:
+We can also iterate over objects using tags:
 
 .. code:: python
 
@@ -356,13 +351,12 @@ it. Let's start over with a new example:
   ...
   foo
 
-As seen above we have an XML string with a list of tags which we
-iterate over.
+As seen above, there is a an XML string with a list of tags that can be iterated.
 
 Adding objects
 --------------
 
-We can also add objects to the tree:
+Objects can also be added to the tree:
 
 .. code:: python
 
