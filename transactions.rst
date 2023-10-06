@@ -69,6 +69,12 @@ The clixon-controller YANG has the following structure::
      |   +--rw device-timeout         uint32
      |   +--rw device-group* [name]
      |   | +--rw name                 string
+     |   +--rw device-class* [name]
+     |   | +--rw name                 string
+     |   | +--rw description?         string
+     |   | +--rw conn-type            connection-type
+     |   | +--rw user?                string
+     |   | +--rw yang-config?         yang-config
      |   +--rw device* [name]
      |     +--rw name                 string
      |     +--rw description?         string
@@ -77,8 +83,8 @@ The clixon-controller YANG has the following structure::
      |     +--rw user?                string
      |     +--rw addr?                string
      |     +--rw yang-config?         yang-config
-     |     +--rw capabilities
-     |     | +--rw capability*        string
+     |     +--ro capabilities
+     |     | +--ro capability*        string
      |     +--ro conn-state-timestamp yang:date-and-time
      |     +--ro sync-timestamp       yang:date-and-time
      |     +--ro logmsg               string

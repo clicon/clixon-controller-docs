@@ -64,6 +64,31 @@ A user makes a local commit and thereafter explicitly connects to a locally conf
   # exit
   > connection open
 
+Device classes
+^^^^^^^^^^^^^^
+You can configure a device `class` that apply to many devices. This is useful when configuring
+many devices.
+
+Example::
+
+   device-class myclass {
+      description "Clixon example container";
+      conn-type NETCONF_SSH;
+      user admin;
+      yang-config VALIDATE;   
+   }
+   device clixon-example1 {
+      device-class myclass;
+      addr 172.17.0.3;
+      enabled true;
+   }
+   device clixon-example2 {
+      device-class myclass;
+      addr 172.17.0.4;
+      enabled true;
+   }
+  
+  
 Remote device configuration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 The remote device configuration is present under the `config` mount-point::
@@ -216,7 +241,7 @@ Device configurations can also be directly edited::
 
    cli# set devices device example1 config interfaces interface eth0 mtu 1500
        
-Show and editinf commands can be made on multiple devices at once using "glob" patterns::
+Show and editing commands can be made on multiple devices at once using "glob" patterns::
 
    cli> show config xml devices device example* config interfaces interface eth0
    example1:
