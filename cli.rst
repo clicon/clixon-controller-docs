@@ -10,7 +10,7 @@ CLI
 This section desribes the CLI commands of the Clixon controller. A simple example is used to illustrate concepts.
 
 Modes
------
+=====
 The CLI has two modes: operational and configure. The top-levels are as follows::
    
   > clixon_cli
@@ -37,7 +37,7 @@ The CLI has two modes: operational and configure. The top-levels are as follows:
 
 
 Devices
--------
+=======
 Device configuration is separated into two domains:
 
 1) Local information about how to access the device (meta-data)
@@ -46,7 +46,7 @@ Device configuration is separated into two domains:
 The user must be aware of this distinction when performing `commit` operations.
 
 Local device configuration
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+--------------------------
 The local device configuration contains information about how to access the device::
 
    device clixon-example1 {
@@ -64,33 +64,39 @@ A user makes a local commit and thereafter explicitly connects to a locally conf
   # exit
   > connection open
 
-Device classes
-^^^^^^^^^^^^^^
-You can configure a device `class` that apply to many devices. This is useful when configuring
-many devices.
+Device profile
+--------------
+You can configure a device `profile` that applies to severaldevices. This is useful when configuring
+devices of a specific vendor.
 
 Example::
 
-   device-class myclass {
+   device-profile myprofile {
       description "Clixon example container";
       conn-type NETCONF_SSH;
       user admin;
       yang-config VALIDATE;   
+      module-set {
+         module openconfig-interfaces {
+            namespace http://openconfig.net/yang/interfaces;
+         }
+      }
    }
    device clixon-example1 {
-      device-class myclass;
+      device-profile myprofile;
       addr 172.17.0.3;
       enabled true;
    }
    device clixon-example2 {
-      device-class myclass;
+      device-profile myprofile;
       addr 172.17.0.4;
       enabled true;
    }
-  
+
+In the example, the `myprofile` device-profile defines a set of common fields, including the locally loaded openconfig YANG. See Section :ref:`YANG <controller_yang>` for more information on loading device YANGs.
   
 Remote device configuration
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------------------
 The remote device configuration is present under the `config` mount-point::
 
    device clixon-example1 {
@@ -108,7 +114,7 @@ The remote device configuration is bound to device-specific YANG models download
 from the device at connection time. 
    
 Device naming
-^^^^^^^^^^^^^
+-------------
 The local device name is used for local selection::
 
    device example1
@@ -127,7 +133,7 @@ Further, device-groups can be configured and accessed as a single entity::
 In the forthcoming sections, selecting `<devices>` means any of the methods described here.
 
 Device state
-^^^^^^^^^^^^
+------------
 Examine device connection state using the show command::
 
    cli> show devices
@@ -147,7 +153,7 @@ There is also a detailed variant of the command with more information in XML::
        ...
   
 (Re)connecting
-^^^^^^^^^^^^^^
+--------------
 When adding and enabling one a new device (or several), the user needs to explicitly connect::
 
    cli> connection <devices> connect
@@ -158,9 +164,9 @@ The "connection" command can also be used to close, open or reconnect devices::
 
 
 Syncing from devices
---------------------
+====================
 pull
-^^^^
+----
 Pull fetches the configuration from remote devices and replaces any existing device config::
 
    cli> pull <devices>
@@ -169,7 +175,7 @@ The synced configuration is saved in the controller and can be used for diffs et
 
 
 pull merge
-^^^^^^^^^^
+----------
 ::
    
    cli> pull <devices> merge
@@ -178,11 +184,11 @@ This command fetches the remote device configuration and merges with the
 local device configuration. use this command with care.
 
 Services
---------
+========
 Network services are used to generate device configs.
 
 Service process 
-^^^^^^^^^^^^^^^^
+---------------
 To run services, the PyAPI service process must be enabled::
 
   cli# set services enabled true
@@ -197,7 +203,7 @@ To view or change the status of the service daemon::
     stop
   
 Example
-^^^^^^^
+-------
 An example service could be::
 
   cli> set service test 1 e* 1400
@@ -220,7 +226,7 @@ You can also trigger service scripts as follows::
   cli# services reapply
 
 Editing
--------
+=======
 Editing can be made by modifying services::
 
     cli# set services test 2 eth* 1500
@@ -236,7 +242,7 @@ Editing changes the controller candidate, changes can be viewed with::
         }
 
 Editing devices
-^^^^^^^^^^^^^^^
+---------------
 Device configurations can also be directly edited::  
 
    cli# set devices device example1 config interfaces interface eth0 mtu 1500
@@ -261,11 +267,11 @@ Modifications using set, merge and delete can also be applied on multiple device
    cli#
 
 Commits
--------
+=======
 This section describes `remote` commit, i.e., commit operations that have to do with modifying remote device configuration. See Section `devices`_ for how to make local commits for setting up device connections.
 
 commit diff
-^^^^^^^^^^^
+-----------
 Assuming a service has changed as shown in the previous secion, the
 `commit diff` command shows the result of running the service
 scripts modifying the device configs, but with no commits actually done::
@@ -301,7 +307,7 @@ scripts modifying the device configs, but with no commits actually done::
         }
 
 Commit push
-^^^^^^^^^^^
+-----------
 The changes can now be pushed and committed to the devices::
 
    cli# commit push  
@@ -334,7 +340,7 @@ One can also choose to not push the changes to the remote devices::
 This is useful for setting up device connections. If a local commit is performed for remote device config, you need to make an explicit `push` as described in Section `Explicit push`_.
 
 Limitations
-^^^^^^^^^^^
+-----------
 The following combinations result in an error when making a remote commit:
 
 1) No devices are present. However, it is allowed if no remote validate/commit is made. You may want to dryrun service python code for example even if no devices are present.
@@ -344,7 +350,7 @@ The following combinations result in an error when making a remote commit:
 Further, avoid doing BOTH local and remote edits simultaneously. The system detects local edits (according to (2) above) but if one instead  uses local commit, the remote edits need to be explicitly pushed
 
 Compare and check
------------------
+===============--
 The "show compare" command shows the difference between candidate and running, ie not committed changes.
 A variant is the following that compares with the actual remote config::
 
@@ -361,7 +367,7 @@ Out-of-sync means that a change in the remote device config has been made, such 
 You can resolve an out-of-sync state with the "pull" command.
 
 Explicit push
--------------
+=============
 There are also explicit sync commands that are implicitly made in
 `commit push`. Explicit pushes may be necessary if local commits are
 made (eg `commit local`) which needs an explicit push. Or if a new device has been off-line::

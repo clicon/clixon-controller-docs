@@ -1,20 +1,20 @@
-.. _controller_actions:
+.. _controller_serviceapi:
 .. sectnum::
-   :start: 7
+   :start: 8
    :depth: 3
    
 ***********
-Actions API
+Service API
 ***********
 
-The controller provides an `actions API` which is a YANG-defined protocol for external action handlers, including the `PyAPI`.
+The controller provides an `service API` which is a YANG-defined protocol for external action handlers, including the `PyAPI`.
 
 The backend implements a tagging mechanism to keep track of what parts
 of the configuration tree were created by which services.  In this
 way, reference counts are maintained so that objects can be removed in
 a correct way if multiple services create the same object.
 
-There are some restrictions on the current actions API:
+There are some restrictions on the current service API:
 
 1. Only a single action handler is supported, which means that a single action handler handles all services.
 2. The algorithm is not hierarchical, that is, if there is a tag on a device object, tags on children are not considered
@@ -80,7 +80,7 @@ An example service XML for `ssh-users` is::
      </ssh-users>
    </services>
 
-The actions protocol defines a service instances as::
+The service protocol defines a service instances as::
 
   <list>  |  <list>[<key>='<value>']
 

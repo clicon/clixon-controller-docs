@@ -18,7 +18,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'Clixon-controller'
-#copyright = '2021, Olof Hagsand'
+#copyright = '2023, Olof Hagsand'
 author = 'Olof Hagsand'
 
 # The suffix of source filenames.
@@ -42,8 +42,6 @@ highlight_language = 'sh'
 # ones.
 #extensions = ['sphinx_rtd_theme']
 
-#html_theme = "sphinx_rtd_theme"
-#html_theme_path = ["_themes", ]
 #extensions = ['recommonmark']
 
 # Add any paths that contain templates here, relative to this directory.

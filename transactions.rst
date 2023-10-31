@@ -1,11 +1,12 @@
 .. _controller_transactions:
 .. sectnum::
-   :start: 6
+   :start: 7
    :depth: 3
    
 ************
 Transactions
 ************
+
 A basis of controller operation is the use of transactions. Clixon itself has underlying candidate/running datastore transactions. The controller expands the transaction concept to span multiple devices.
 There are two such types of composite transactions:
 
@@ -14,7 +15,11 @@ There are two such types of composite transactions:
 
 .. image:: transaction.jpg
    :width: 100%
-           
+
+
+Device connect
+==============
+
 A `device connect` transaction starts in state `CLOSED` and if succesful stops in `OPEN`. there are multiple intermediate steps as follows (for each device):
 
 1. An SSH session is created to the IP address of the device
@@ -28,6 +33,8 @@ A `device connect` transaction starts in state `CLOSED` and if succesful stops i
 5. For each YANG schema identifier, make a `<get-schema>` RPC call (unless already retrieved).
 6. Get the full configuration of the device.
 
+Config push
+===========
 While a `device connect` operates on individual devices, the `config push` transaction operates on all devices. It starts in `OPEN` for all devices and ends in `OPEN` for all devices involved in the transaction:
 
 1. The user edits a service definition and commits
@@ -54,60 +61,3 @@ Use the show transaction command to get details about transactions::
         <timestamp>2023-03-27T18:41:59.031690Z</timestamp>
      </transaction>
 
-
-YANG
-====
-The clixon-controller YANG has the following structure::
-
-   module: clixon-controller
-     +--rw processes
-     |   +--rw services
-     |     +--rw enabled              boolean
-     +--rw services
-     |   +--rw properties
-     +--rw devices
-     |   +--rw device-timeout         uint32
-     |   +--rw device-group* [name]
-     |   | +--rw name                 string
-     |   +--rw device-class* [name]
-     |   | +--rw name                 string
-     |   | +--rw description?         string
-     |   | +--rw conn-type            connection-type
-     |   | +--rw user?                string
-     |   | +--rw yang-config?         yang-config
-     |   +--rw device* [name]
-     |     +--rw name                 string
-     |     +--rw description?         string
-     |     +--rw enabled?             boolean
-     |     +--rw conn-type            connection-type
-     |     +--rw user?                string
-     |     +--rw addr?                string
-     |     +--rw yang-config?         yang-config
-     |     +--ro capabilities
-     |     | +--ro capability*        string
-     |     +--ro conn-state-timestamp yang:date-and-time
-     |     +--ro sync-timestamp       yang:date-and-time
-     |     +--ro logmsg               string
-     |     +--rw config
-     +--ro transactions
-         +--ro transaction* [tid]
-           +--ro tid                  uint64
-     notifications:
-       +---n services-commit
-       +---n controller-transaction
-     rpcs:
-         +--config-pull
-         +--controller-commit
-         +--connection-change
-         +--get-device-config
-         +--transaction-error
-         +--transaction-actions-done
-         +--datastore-diff
-  
-The services section contains user-defined services not provided by
-the controller.  A user adds services definitions using YANG `augment`. For example::
-
-    import clixon-controller { prefix ctrl; }
-    augment "/ctrl:services" {
-        list myservice {
-            ...

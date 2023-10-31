@@ -22,6 +22,9 @@ The controller extends the clixon configuration file as follows:
 ``CLICON_SOCK_GROUP``   
    Set to user group, ususally `clicon`
 
+``CONTROLLER_YANG_SCHEMA_MOUNT_DIR``
+   Directory where device YANGs are stored locally. Both for RFC 6022 get-schema retrieval as well as local module-set YANGs.
+   
 ``CONTROLLER_PYAPI_MODULE_PATH``
    Path to Python code for PyAPI
    

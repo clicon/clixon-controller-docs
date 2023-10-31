@@ -14,7 +14,8 @@ Clixon network controller is an open-source manager of network devices based on 
    quickstart
    configuration
    cli
+   yang
    transactions
-   actions
+   serviceapi
    pyapi
    services
