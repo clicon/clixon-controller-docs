@@ -377,3 +377,72 @@ made (eg `commit local`) which needs an explicit push. Or if a new device has be
 Push the configuration to the devices, validate it and then revert::
 
      cli> push <devices> validate 
+
+Templates
+=========
+The controller has a simple template mechanism for applying configurations to several devices at once. The template mechanism uses variable substitution.
+
+A limitation is that the template itself need to be entered as XML or JSON, CLI editing is not available.
+
+.. note::
+          You need to enter the template as XML
+
+Using of a template follows the following steps:
+
+1) Add a template using the `load` command and commit it
+2) Apply the template using variable binding on a set of devices
+3) Commit the change
+
+Example
+-------
+
+The following example first configures a template with the formal parameters `$NAME` and `$TYPE`::
+  
+   > clixon_cli -f /usr/local/etc/clixon/controller.xml -m configure
+   olof@totila[/]# load merge xml
+   <config>
+      <devices xmlns="http://clicon.org/controller">
+         <template nc:operation="replace">
+            <name>interfaces</name>
+            <config>
+               <interfaces xmlns="http://openconfig.net/yang/interfaces">
+                  <interface>
+                     <name>${NAME}</name>
+                     <config>
+                        <name>${NAME}</name>
+                        <type xmlns:ianaift="urn:ietf:params:xml:ns:yang:iana-if-type">${TYPE}</type>
+                     </config>
+                  </interface>
+               </interfaces>
+            </config>
+         </template>
+      </devices>
+   </config>
+   ^D
+   olof@totila[/]# commit
+   olof@totila[/]# 
+      
+Then, the template is applied: A ǹew `z` interface is created on all openconfig devices::
+
+   olof@totila[/]# apply interfaces openconfig* variables NAME z TYPE ianaift:v35
+   olof@totila[/]# show compare 
+               openconfig-interfaces:interfaces {
+   +              interface z {
+   +                 config {
+   +                    name z;
+   +                    type ianaift:v35;
+   +                 }
+   +              }
+               }
+               openconfig-interfaces:interfaces {
+   +              interface z {
+   +                 config {
+   +                    name z;
+   +                    type ianaift:v35;
+   +                 }
+   +              }
+               }
+   olof@totila[/]# commit
+   olof@totila[/]#
+
+   
