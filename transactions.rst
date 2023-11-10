@@ -61,3 +61,67 @@ Use the show transaction command to get details about transactions::
         <timestamp>2023-03-27T18:41:59.031690Z</timestamp>
      </transaction>
 
+Out-of-sync
+-----------
+In step (5) of the push algorithm described above, the remote device is checked for
+updates.
+
+The controller employs a raw method for detecting this as follows:
+
+1. Continuosly store the most recent device config on local storage. This is the "SYNCED" configuration, typically stored at `/usr/local/var/controller`. This is either the most recent pull, or most recent push.
+2. Get the complete configuration from the device as part of the transaction. This is the `TRANSIENT` configuration.
+3. Compare the SYNCED and TRANSIENT configurations. If they differ, the device configuration has changed and the transaction is aborted.
+
+A failed comparison is an indication that the device configuration has
+changed, and that therefore the push is unsafe since it may overwrite
+configuration entered by another party, such as a manual configuration of the device.
+
+However, some devices rewrite fields automatically.  Particularly in
+the case of a `push`, some devices themselves rewrite fields. Examples
+include encrypted or generated fdata, such as certs, keys, passwords
+or other data which for some reason are transformed at the time of the
+(push) commit.
+
+Therefore, these fields cannot be used as a basis for equivalence and
+needs to be ignored in the out-of-sync comparison.
+
+As a side note, an improved method than the raw algorithm described would be preferred,
+such as the device itself computing a hash value of its existing
+configuration.
+
+
+Ignoring fields
+---------------
+The controller has a mechanism for ignoring device YANG fields by
+using a local file that augments the device YANG with an "ignore" extension.
+
+For example, assume a "passwd" field should be ignored in a device YANG. First, add or extend a local YANG file::
+
+   module myext {
+      ...
+      namespace ""urn:example:ext";
+      import device-yang {
+         prefix dy;
+      }
+      import clixon-lib {
+         prefix cl;
+      }
+      augment "/dy:configuration/dy:system/dy:passwd" {
+         cl:ignore-compare;
+      }
+
+where the clixon-lib "ignore-compare" extension augments the passwd field in the original device YANG.
+
+Then add it to a device or device-profile configuration::
+
+   device-profile my-device {
+      ...
+      module-set {
+         module myext {
+            namespace ""urn:example:ext";
+         }
+      }
+      ...
+   }
+
+When the device YANG is loaded, it will be augmented with the ignore extension, which the controller will use in its comparison algorithm.   

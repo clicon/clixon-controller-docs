@@ -396,7 +396,7 @@ Using of a template follows the following steps:
 Example
 -------
 
-The following example first configures a template with the formal parameters `$NAME` and `$TYPE`::
+The following example first configures a template with the formal parameters `$NAME` and `$TYPE` using the load command to paste the template config directly::
   
    > clixon_cli -f /usr/local/etc/clixon/controller.xml -m configure
    olof@totila[/]# load merge xml
@@ -422,7 +422,7 @@ The following example first configures a template with the formal parameters `$N
    olof@totila[/]# commit
    olof@totila[/]# 
       
-Then, the template is applied: A ǹew `z` interface is created on all openconfig devices::
+Then, the template is applied: A ǹew `z` interface is created on all `openconfig` devices::
 
    olof@totila[/]# apply interfaces openconfig* variables NAME z TYPE ianaift:v35
    olof@totila[/]# show compare 
@@ -445,4 +445,4 @@ Then, the template is applied: A ǹew `z` interface is created on all openconfig
    olof@totila[/]# commit
    olof@totila[/]#
 
-   
+
