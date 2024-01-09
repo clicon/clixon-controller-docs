@@ -233,6 +233,13 @@ Creator attributes is a way to keep track of which service instances have create
 They can also be viewed with the `show service creators` command::
   
    cli> show services creators
+   <creators xmlns="http://clicon.org/lib">
+      <creator>
+         <name>ssh-users[service-name='test1']</name>
+         <path>/devices/device[name="openconfig1"]/config/system/aaa/authentication/users/user[username="test1"]</path>
+         <path>/devices/device[name="openconfig2"]/config/system/aaa/authentication/users/user[username="test1"]</path>
+      </creator>
+   </creators>
    
 
 Editing
