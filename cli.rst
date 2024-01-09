@@ -225,6 +225,16 @@ You can also trigger service scripts as follows::
 
   cli# services reapply
 
+Creators
+--------
+
+Creator attributes is a way to keep track of which service instances have created device objects. These are set in the datastore to survive reboots.
+
+They can also be viewed with the `show service creators` command::
+  
+   cli> show services creators
+   
+
 Editing
 =======
 Editing can be made by modifying services::
