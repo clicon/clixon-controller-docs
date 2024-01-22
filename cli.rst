@@ -245,7 +245,12 @@ The list created objects can be viewed as part of the regular configuration::
          </created>
       </ssh-users>
    </services>
-   
+
+Debugging
+^^^^^^^^^
+If you enable debugging (``-D 1``), an entry is logged to the syslog each time the created objects change::
+
+    Jan 22 11:24:35 totila clixon_backend[212183]: controller_edit_config:2728: Objects created in actions-db: <services xmlns="http://clicon.org/controller" xmlns:nc="urn:ietf:params:xml:ns:netconf:base:1.0"><ssh-users xmlns="urn:example:test"><name>test1</name><created nc:operation="merge"><path>/devices/device[name="openconfig1"]/config/system/aaa/authentication/users/user[username="test1"]</path><path>/devices/device[name="openconfig2"]/config/system/aaa/authentication/users/user[username="test1"]</path></created></ssh-users></services>
 
 Editing
 =======
