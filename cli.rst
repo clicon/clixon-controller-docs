@@ -223,23 +223,28 @@ Service scripts are written in Python using the PyAPI, and are triggered by comm
 
 You can also trigger service scripts as follows::
 
-  cli# services reapply
+  cli# apply services
+  cli# apply services testA[name='foo']
+  cli# apply services testA[name='foo'] diff
 
-Creators
---------
-
-Creator attributes is a way to keep track of which service instances have created device objects. These are set in the datastore to survive reboots.
-
-They can also be viewed with the `show service creators` command::
+In the first variant, all services are applied. In the second variant, only a specific service is triggered.
   
-   cli> show services creators
-   <creators xmlns="http://clicon.org/lib">
-      <creator>
-         <name>ssh-users[service-name='test1']</name>
-         <path>/devices/device[name="openconfig1"]/config/system/aaa/authentication/users/user[username="test1"]</path>
-         <path>/devices/device[name="openconfig2"]/config/system/aaa/authentication/users/user[username="test1"]</path>
-      </creator>
-   </creators>
+Created objects
+---------------
+The system keeps track of which device objects are created, so that they can be be removed when the service is removed. A service tags device objects with a `creator attribute` which results in a set of `created` configure objects in the controller.
+
+The list created objects can be viewed as part of the regular configuration::
+  
+   cli> show configuration services ssh-users test1 created
+   <services xmlns="http://clicon.org/controller">
+      <ssh-users xmlns="urn:example:test">
+         <name>test1</name>
+         <created>
+            <path>/devices/device[name="openconfig1"]/config/system/aaa/authentication/users/user[username="test1"]</path>
+            <path>/devices/device[name="openconfig2"]/config/system/aaa/authentication/users/user[username="test1"]</path>
+         </created>
+      </ssh-users>
+   </services>
    
 
 Editing
@@ -441,7 +446,7 @@ The following example first configures a template with the formal parameters `$N
       
 Then, the template is applied: A ǹew `z` interface is created on all `openconfig` devices::
 
-   olof@totila[/]# apply interfaces openconfig* variables NAME z TYPE ianaift:v35
+   olof@totila[/]# apply template interfaces openconfig* variables NAME z TYPE ianaift:v35
    olof@totila[/]# show compare 
                openconfig-interfaces:interfaces {
    +              interface z {
