@@ -32,8 +32,11 @@ The top-level of the controller-specific YANGs is typically  `/usr/local/share/c
 This can be changed with `configure --with-yang-installdir=DIR`, see Section :ref:`Installation <controller_install>`.
 
 The controller YANG directory has two sub-directories with specific meanings:
-  - `main`. Main controller YANGs for the top-level. Note: only place YANGs here if you want them loaded to the top-level.
-  - `mounts`. YANGs retreived from devices using RFC 6022 `get-schame` are written here
+  - `main`. Main controller YANGs for the top-level. Note: only place YANGs here if you want them loaded to the top-level. Important: do not place device YANGs there, only controller YANGs.
+  - `mounts`. YANGs retreived from devices using RFC 6022 `get-schema` are written here. You can also add local cached YANGs here.
+
+.. note::
+        Do not place device YANGs in the `main` directory
 
 Device YANGs
 ------------
@@ -86,32 +89,48 @@ The clixon-controller YANG has the following structure::
      |   +--rw device-timeout         uint32
      |   +--rw device-group* [name]
      |   | +--rw name                 string
+     |   | +--rw description?         string
+     |   | +--rw device-group*        leafref
      |   +--rw device-profile* [name]
      |   | +--rw name                 string
      |   | +--rw description?         string
-     |   | +--rw conn-type            connection-type
      |   | +--rw user?                string
+     |   | +--rw conn-type            connection-type
+     |   | +--rw ssh-stricthostkey    boolean
      |   | +--rw yang-config?         yang-config
      |   +--rw device* [name]
      |     +--rw name                 string
-     |     +--rw description?         string
      |     +--rw enabled?             boolean
-     |     +--rw conn-type            connection-type
+     |     +--rw device-profile       leafref
+     |     +--rw description?         string
      |     +--rw user?                string
-     |     +--rw addr                 string
+     |     +--rw conn-type            connection-type
+     |     +--rw ssh-stricthostkey    boolean
      |     +--rw yang-config?         yang-config
+     |     +--rw device-type          string
+     |     +--rw addr                 string
+     |     +--ro conn-state           connection-state
+     |     +--ro conn-state-timestamp yang:date-and-time
      |     +--ro capabilities
      |     | +--ro capability*        string
-     |     +--ro conn-state-timestamp yang:date-and-time
      |     +--ro sync-timestamp       yang:date-and-time
      |     +--ro logmsg               string
      |     +--rw config
      +--ro transactions
          +--ro transaction* [tid]
            +--ro tid                  uint64
+           +--ro state                transaction-state
+           +--ro result               transaction-result
+           +--ro description          string
+           +--ro origin               string
+           +--ro reason               string
+           +--ro warning              string
+           +--ro timestamp            yang:date-and-time
      notifications:
        +---n services-commit
+       |   +--ro tid                  uint64
        +---n controller-transaction
+           +--ro tid                  uint64
      rpcs:
          +--config-pull
          +--controller-commit
@@ -120,6 +139,7 @@ The clixon-controller YANG has the following structure::
          +--transaction-error
          +--transaction-actions-done
          +--datastore-diff
+         +--device-template-apply
   
 Service augment
 ---------------

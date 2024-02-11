@@ -431,6 +431,14 @@ The following example first configures a template with the formal parameters `$N
       <devices xmlns="http://clicon.org/controller">
          <template nc:operation="replace">
             <name>interfaces</name>
+            <variables>
+               <variable>
+                  <name>NAME</name>
+               </variable>
+               <variable>
+                  <name>TYPE</name>
+               </variable>
+            </variables>
             <config>
                <interfaces xmlns="http://openconfig.net/yang/interfaces">
                   <interface>

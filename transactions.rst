@@ -41,12 +41,17 @@ While a `device connect` operates on individual devices, the `config push` trans
 2. The commit triggers PyAPI services code, which rewrites the device config
 3. Alternatively, the user edits the device configuration manually
 4. The updated device config is validated by the controller
-5. The remote device is checked for updates, if it is out of sync, the transaction is aborted
-6. The new config is pushed to the remote devices
-7. The new config is validated on the remote devices
-8. If validation succeeds on all remote devices, the new config is committed to all devices
-9. The new config is retreived from the device and is installed on the controller
+5. The remote device candidate datastore is locked for exclusive access
+6. The remote device is checked for updates, if it is out of sync, the transaction is aborted
+7. The new config is pushed to the remote devices
+8. The new config is validated on the remote devices
+9. If validation succeeds on all remote devices, the new config is committed to all devices
 10. If validation is not successful, or only a `push validate` was requested, the config is reverted on all remote devices.
+11. The remote device candidate datastores are unlocked
+
+After (9) above it is possible to add an extra step (compiler-option):
+
+10. The new config is retreived from the device and is installed on the controller
 
 Use the show transaction command to get details about transactions::
 
@@ -88,7 +93,6 @@ needs to be ignored in the out-of-sync comparison.
 As a side note, an improved method than the raw algorithm described would be preferred,
 such as the device itself computing a hash value of its existing
 configuration.
-
 
 Ignoring fields
 ---------------
