@@ -9,6 +9,20 @@ CLI
 
 This section desribes the CLI commands of the Clixon controller. A simple example is used to illustrate concepts.
 
+General
+=======
+
+Version
+-------
+You can show the version either with the ``-V`` command-line option or with the CLI show version command::
+
+  > clixon_cli -V
+  Clixon version: 6.6.0
+  CLIgen:         6.6.0
+  Controller:     1.0.0
+  Controller GIT: 40290c0
+  Controller bld: 2024.02.15 13:19 by clixon on paradise
+
 Modes
 =====
 The CLI has two modes: operational and configure. The top-levels are as follows::
@@ -24,9 +38,9 @@ The CLI has two modes: operational and configure. The top-levels are as follows:
     push                  Push config to one or multiple devices
     quit                  Quit
     save                  Save running configuration to XML file
-    services              Services operation
     shell                 System command
-    show                  Show a particular state of the system   
+    show                  Show a particular state of the system
+    transaction           Controller transaction 
 
   cli> configure 
   cli[/]# set ?
@@ -34,7 +48,6 @@ The CLI has two modes: operational and configure. The top-levels are as follows:
     processes             Processes configuration
     services              Placeholder for services                                                       
   cli[/]#
-
 
 Devices
 =======
@@ -224,8 +237,8 @@ Service scripts are written in Python using the PyAPI, and are triggered by comm
 You can also trigger service scripts as follows::
 
   cli# apply services
-  cli# apply services testA[name='foo']
-  cli# apply services testA[name='foo'] diff
+  cli# apply services testA foo
+  cli# apply services testA foo diff
 
 In the first variant, all services are applied. In the second variant, only a specific service is triggered.
   
@@ -248,7 +261,7 @@ The list created objects can be viewed as part of the regular configuration::
 
 Debugging
 ^^^^^^^^^
-If you enable debugging (``-D 1``), an entry is logged to the syslog each time the created objects change::
+If you enable debugging (``-D app``), an entry is logged to the syslog each time the created objects change::
 
     Jan 22 11:24:35 totila clixon_backend[212183]: controller_edit_config:2728: Objects created in actions-db: <services xmlns="http://clicon.org/controller" xmlns:nc="urn:ietf:params:xml:ns:netconf:base:1.0"><ssh-users xmlns="urn:example:test"><name>test1</name><created nc:operation="merge"><path>/devices/device[name="openconfig1"]/config/system/aaa/authentication/users/user[username="test1"]</path><path>/devices/device[name="openconfig2"]/config/system/aaa/authentication/users/user[username="test1"]</path></created></ssh-users></services>
 
@@ -420,9 +433,20 @@ Using of a template follows the following steps:
 2) Apply the template using variable binding on a set of devices
 3) Commit the change
 
+Limitations
+-----------
+
+Templates are added as raw XML. The reason is that YANG-binding is not
+known at the time of template creation. To know the YANG, the template
+needs to be bound to some specific YANG files, or specific devices.
+
+Since it is raw XML, there is no type-checking and any diffs (based on YANG) is limited.
+
+.. note::
+          Template XML is not type-checked and diffs are limited
+
 Example
 -------
-
 The following example first configures a template with the formal parameters `$NAME` and `$TYPE` using the load command to paste the template config directly::
   
    > clixon_cli -f /usr/local/etc/clixon/controller.xml -m configure
