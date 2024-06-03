@@ -46,13 +46,26 @@ Clixon
 
 Python API
 ----------
+
+Either use PIP or Debian packages.
+
+PIP:
+
 ::
 
-  # Build and install the package
   cd clixon-pyapi
   sudo -u clicon pip3 install -r requirements.txt
   sudo python3 setup.py install
-  
+
+
+Debian:
+
+::
+
+  cd clixon-pyapi
+  sudo ./requirements-apt.sh
+  sudo python3 setup.py install
+
 Controller
 ----------
 ::
