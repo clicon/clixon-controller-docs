@@ -149,7 +149,7 @@ Device state
 ------------
 Examine device connection state using the show command::
 
-   cli> show devices
+   cli> show connections
    Name                    State      Time                   Logmsg                        
    =======================================================================================
    example1                OPEN       2023-04-14T07:02:07    
@@ -157,7 +157,7 @@ Examine device connection state using the show command::
 
 There is also a detailed variant of the command with more information in XML::
 
-   olof@zoomie> show devices detail 
+   olof@zoomie> show connections detail
    <devices xmlns="http://clicon.org/controller">
      <device>
        <name>example1</name>
@@ -394,13 +394,13 @@ Compare and check
 The "show compare" command shows the difference between candidate and running, ie not committed changes.
 A variant is the following that compares with the actual remote config::
 
-   cli> show devices <devices> diff
+   cli> show connections <name> diff
 
 This is acheived by making a "transient" pull that does not replace the local device config.
 
 Further, the following command checks whether devices are is out-of-sync::
 
-   cli> show devices <devices> check
+   cli> show connections <name> check
    Failed: device example2 is out-of-sync
 
 Out-of-sync means that a change in the remote device config has been made, such as a manual edit, since the last "pull".

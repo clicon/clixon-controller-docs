@@ -15,7 +15,7 @@ Start example devices as containers::
 
 Start controller::
 
-  sudo clixon_backend -f /usr/local/etc/controller.xml
+  sudo clixon_backend -f /usr/local/etc/clixon/controller.xml
 
 Start the CLI and configure devices::
 
@@ -31,5 +31,5 @@ Start the CLI and configure devices::
 
 Thereafter explicitly connect to the devices::
 
-  clixon_cli -f /usr/local/etc/controller.xml
+  clixon_cli -f /usr/local/etc/clixon/controller.xml
   connection open
