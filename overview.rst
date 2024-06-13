@@ -7,7 +7,7 @@
 Overview
 ********
 
-Th clixon network controller is an open-source manager of network devices based on NETCONF and YANG.
+The clixon network controller is an open-source manager of network devices based on NETCONF and YANG.
 
 The controller is based on `Clixon <https://clixon-docs.readthedocs.io>`_. The controller is a Clixon application.
 

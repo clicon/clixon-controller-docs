@@ -18,8 +18,7 @@ There are some restrictions on the current service API:
 
 1. Only a single action handler is supported, which means that a single action handler handles all services.
 2. The algorithm is not hierarchical, that is, if there is a tag on a device object, tags on children are not considered
-3. No persistence: if the backend is restarted, tags are lost.
-
+3. One-to-one: One service per object, multiple services may not create the same object
 
 Service instance
 ----------------
@@ -120,7 +119,7 @@ Tags
 ----
 An action handler tags device configuration objects it creates with the name of the service instances
 using the `cl:creator` YANG extension.  This is used to track which instance created
-an object and acts as a reference count when removing objects.  An object may have several tags if it is created by more than one service instance.
+an object. Only one service per created object is supported.
 
 In the following example, three device objects are tagged with service instances in one device, as follows:
 
