@@ -33,7 +33,7 @@ The controller extends the clixon configuration file as follows:
 ``CONTROLLER_PYAPI_PIDFILE``
    
 Example
--------
+=======
 The following configuration file examplifies the configure options described above::
 
   <clixon-config xmlns="http://clicon.org/config">
@@ -65,7 +65,7 @@ Features
 --------
 Device features are not supported, you need to install them explicitly in controller.xml or in a separate config file.
 
-For example, assume a device needs YANG feature `foo` in module `mymodule` to run correctly. You then need to add the following entry in the controller config file:
+For example, assume a device needs YANG feature `foo` in module `mymodule` to run correctly. You then need to add the following entry in the controller config file::
 
    <clixon-config xmlns="http://clicon.org/config">
       ...

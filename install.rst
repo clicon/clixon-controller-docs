@@ -126,7 +126,7 @@ Devices
 The controller needs to be able to connect to devices via a NETCONF SSH sub-system.
 
 .. note::
-          Devices must be reachable from the controller via a NETCONF SSH susbsystem
+          Devices must be reachable from the controller via a NETCONF SSH subsystem
 
 Setting up he SSH subsystem is different for different device vendors.
 
