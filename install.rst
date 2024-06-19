@@ -77,7 +77,9 @@ Controller
 
 To make the controller the default clixon application::
 
-  cp /usr/local/etc/clixon/controller.xml /usr/local/etc/clixon/clixon.xml
+  (cd /usr/local/etc/clixon; ln -s /usr/local/etc/clixon/controller.xml clixon.xml)
+
+It is recommended to NOT run the controller as root.
 
 SystemD
 -------
@@ -118,3 +120,20 @@ the backend will start the Python server and drop the privileges
 to this user::
 
   sudo useradd -g clicon -m clicon
+
+Devices
+=======
+The controller needs to be able to connect to devices via a NETCONF SSH sub-system.
+
+.. note::
+          Devices must be reachable from the controller via a NETCONF SSH susbsystem
+
+Setting up he SSH subsystem is different for different device vendors.
+
+When done, you can verify reachability as follows. Example: You login and start the controller as user `ctrl`, the device user is `admin` and the IP address is `172.17.0.3`.
+
+Verify the SSH subsystem works as follows::
+
+  ctrl> ssh admin@172.17.0.3 -s netconf
+  <?xml version="1.0" encoding="UTF-8"?>
+  <hello>....</hello>]]>]]>

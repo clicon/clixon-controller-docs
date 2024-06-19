@@ -10,7 +10,7 @@ Quick start
 Docker compose
 ==============
 
-Start controller and two example openconfig devices as docker containers. It requires docker compose and you may need to be sudo::
+Start controller and two example openconfig devices as docker containers. It requires docker compose and you may need to be sudo. This is how regression tests run::
 
   $ ./start-demo-containers.sh
   $ docker exec -it demo-controller clixon_cli
@@ -23,16 +23,20 @@ Start controller and two example openconfig devices as docker containers. It req
   openconfig2             OPEN       2024-06-03T13:13:49
   nobody@0b2157135dee>
 
-Manually
-========
+CLI setup
+=========
 
+Start the controller and setup devices by editing using the CLI
+
+Controller
+----------
 Start the controller manually (or via systemd)::
 
-  sudo clixon_backend -f /usr/local/etc/clixon/controller.xml
+  clixon_backend -f /usr/local/etc/clixon/controller.xml
 
-Start devices (outside scope of manual).
+Start devices and ensure reachability via SSH netconf subsystem.
 
-Start CLI and set up devices::
+Start the CLI and set up devices::
 
   clixon_cli -f /usr/local/etc/clixon/controller.xml -l s
   cli> configure

@@ -53,3 +53,37 @@ The following configuration file examplifies the configure options described abo
   </CONTROLLER_PYAPI_PIDFILE>
   <CLICON_BACKEND_USER>clicon</CLICON_BACKEND_USER>
   <CLICON_SOCK_GROUP>clicon</CLICON_SOCK_GROUP>
+
+Adaptations
+===========
+You may need to adapt the controller configuration to devices. Known issues are:
+
+1) YANG features
+2) Autocli rules
+
+Features
+--------
+Device features are not supported, you need to install them explicitly in controller.xml or in a separate config file.
+
+For example, assume a device needs YANG feature `foo` in module `mymodule` to run correctly. You then need to add the following entry in the controller config file:
+
+   <clixon-config xmlns="http://clicon.org/config">
+      ...
+      <CLICON_FEATURE>mymodule:foo</CLICON_FEATURE>
+
+Autocli
+-------
+The autocli may need to be adapted to devices. By default the autocli
+is open for openconfig and junos, CLI for other YANGs need to be
+explicitly added by editing the file `autocli.xml`.
+
+For example, assume a device with Yangs starting with `myyang-`. Then the following rule needs to be added to `autocli.xml`::
+
+  <clixon-config xmlns="http://clicon.org/config">
+     <autocli>
+        ...
+        <rule>
+           <name>Include myyang</name>
+           <module-name>myyang-*</module-name>
+           <operation>enable</operation>
+        </rule>
