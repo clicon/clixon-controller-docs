@@ -40,12 +40,10 @@ Start the CLI and set up devices::
 
   clixon_cli -f /usr/local/etc/clixon/controller.xml -l s
   cli> configure
-  cli# edit devices device mydevice
-  cli[device=mydevice]# set addr 172.17.0.3
-  cli[device=mydevice]# set user admin
-  cli[device=mydevice]# set conn-type NETCONF-SSH
-  cli[device=mydevice]# commit local
-  cli[device=mydevice]# exit
+  cli# set devices device mydevice addr 172.17.0.3
+  cli# set devices device mydevice user conn-type NETCONF-SSH
+  cli# commit local
+  cli# exit
   cli> connection open
   cli> show connections
   Name                 State      Time                   Logmsg

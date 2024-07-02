@@ -155,16 +155,6 @@ Examine device connection state using the show command::
    example1                OPEN       2023-04-14T07:02:07    
    example2                CLOSED     2023-04-14T07:08:06    Remote socket endpoint closed
 
-There is also a detailed variant of the command with more information in XML::
-
-   olof@zoomie> show connections detail
-   <devices xmlns="http://clicon.org/controller">
-     <device>
-       <name>example1</name>
-       <description>Example container</description>
-       <enabled>true</enabled>
-       ...
-  
 (Re)connecting
 --------------
 When adding and enabling one a new device (or several), the user needs to explicitly connect::
@@ -394,13 +384,13 @@ Compare and check
 The "show compare" command shows the difference between candidate and running, ie not committed changes.
 A variant is the following that compares with the actual remote config::
 
-   cli> show connections <name> diff
+   cli> show devices <name> diff
 
 This is acheived by making a "transient" pull that does not replace the local device config.
 
 Further, the following command checks whether devices are is out-of-sync::
 
-   cli> show connections <name> check
+   cli> show devices <name> check
    Failed: device example2 is out-of-sync
 
 Out-of-sync means that a change in the remote device config has been made, such as a manual edit, since the last "pull".
