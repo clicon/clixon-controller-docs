@@ -115,7 +115,18 @@ When running the server in foreground it is possible to set
 breakpoints etc and print log messages using the log object
 which is passed as an argument to setup().
 
+It is also possible to use the Python REPL to interact with the API::
 
+  $ python3
+  >>> from clixon.clixon import Clixon
+  >>> cx = Clixon(source="running")
+  >>> root = cx.get_root()
+  >>> root.<TAB>
+
+Above we retreived the running configuration and can tab-complete the
+object tree.
+
+  
 Startup
 -------
 Pyapi needs to know where the python code for the service model is located.
