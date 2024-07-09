@@ -106,6 +106,16 @@ The server can be run in the foreground with debug flags::
 
    clixon_server.py -F -d -P -f /usr/local/etc/controller.xml
 
+Just make sure to stop the API server from controller CLI before doing
+so, we don't support two servers running in parallell::
+
+  > processes services stop
+
+When running the server in foreground it is possible to set
+breakpoints etc and print log messages using the log object
+which is passed as an argument to setup().
+
+
 Startup
 -------
 Pyapi needs to know where the python code for the service model is located.
