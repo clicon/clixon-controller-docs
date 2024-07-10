@@ -10,19 +10,21 @@ Service development
 Service modules contains the actual code and logic which is used when
 modifying the configuration three for services. 
 
-The Python server looks for modules in the directory ``/usr/local/clixcon/controller/modules`` unless anything else is defined) and when a module is launched by the Python 
-server the server call the setup method.
+The Python server looks for modules in the directory
+``/usr/local/clixcon/controller/modules`` unless anything else is
+defined) and when a module is launched by the Python server the server
+call the setup method which must be present in every service module.
+
+There must also be a variable named SERVICE which value should be the
+same as the services name.
 
 A minimal service module may look like this:
 
 .. code:: python
 
-  from clixon.clixon import rpc
-
   SERVICE = "example"
 
 
-  @rpc()
   def setup(root, log, **kwargs):
       log.info("I am a module")
 
@@ -42,6 +44,7 @@ in "/usr/local/bin". This can be used to install packages.
     -y Clixon controller YANG install path
     -r Use with care: Reset Clixon controller modules and YANG paths
     -h help
+
 
 The script copies Python code and module YANG files
 to the correct directories and take care of permissions etc.
@@ -63,11 +66,9 @@ service without revision.
 
 .. code:: python
 
-  from clixon.clixon import rpc
-
   SERVICE = "example"
 
-  @rpc()
+
   def setup(root, log, **kwargs):
       log.info("Informative log")
       log.error("Error log")
@@ -80,12 +81,9 @@ Contents of the root parameter can be written in XML format by using the dumps()
 
 .. code:: python
 
-  from clixon.clixon import rpc
-
   SERVICE = "example"
 
 
-  @rpc()
   def setup(root, log, **kwargs):
       log.debug(root.dumps())
 
@@ -101,12 +99,9 @@ Example:
 
 .. code:: python
 
-  from clixon.clixon import rpc
-
   SERVICE = "example"
 
 
-  @rpc()
   def setup(root, log, **kwargs):
       device.config.configuration.system.create("test", cdata="foo", 
       			attributes={"cl:creator": "test-service"})
@@ -144,12 +139,9 @@ issued, but this must be implemented using a service module.
 
 .. code:: python
 
-  from clixon.clixon import rpc
-
-
   SERVICE = "example"
 
-  @rpc()
+
   def setup(root, log, **kwargs):
       hostname = root.services.hostname.hostname
 
@@ -157,9 +149,7 @@ issued, but this must be implemented using a service module.
 	  device.config.configuration.system.host_name
 
 When the service module above is executed Clixon automatically calls
-the setup method. The wrapper "rpc" takes care of fetching the
-configuration tree from Clixon and write the modified configuration
-back when the setup function returns.
+the setup method.
 
 The "root" object is modified and passed as a parameter to setup. It
 is parsed by the Python API and converted to a tree of Python objects.
@@ -169,12 +159,9 @@ create a new node named test:
 
 .. code:: python
 
-  from clixon.clixon import rpc
-
-
   SERVICE = "example"
 
-  @rpc()
+
   def setup(root, log, **kwargs):
       device.config.configuration.system.create("test", cdata="foo")
 
