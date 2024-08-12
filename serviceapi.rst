@@ -133,10 +133,9 @@ In the following example, three device objects are tagged with service instances
    eric           ssh-users[group='ops']
    alice          ssh-users[group='devs']
    kim            ssh-users[group='ops'],
-                  ssh-users[group='devs']
    =============  =======================
 
-where device objects `eric` and `alice` are created by service instance `ops` (more precisely `ssh-users[group='ops']`) and `devs` respectively, and `kim` is created by both.
+where device objects `eric` and `kim` are created by service instance `ops` (more precisely `ssh-users[group='ops']`) and `alice` is created by `devs`.
 
 Suppose that service instance `ops` is deleted, then all device objects tagged with `ops` are deleted:
 
@@ -148,10 +147,7 @@ Suppose that service instance `ops` is deleted, then all device objects tagged w
    Device object  Service-instance
    =============  =======================
    alice          ssh-users[group='devs']
-   kim            ssh-users[group='devs']
    =============  =======================
-
-Note that `kim` still remains since it was created by both ops and devs.
 
 Note also that this example only considers a single device `A`. In reality there are many more devices.
 
