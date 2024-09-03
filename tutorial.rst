@@ -234,6 +234,7 @@ The Python code for this example service looks like this:
 
    from clixon.element import Element
    from clixon.parser import parse_template
+   from clixon.helpers import get_service_instance
 
    SERVICE = "ssh-users"
 
@@ -257,7 +258,8 @@ The Python code for this example service looks like this:
 	 return
 
       # Get the service instance
-      instance = get_service_instance(root, service_name,
+      instance = get_service_instance(root,
+				      service_name,
 				      instance=kwargs["instance"])
 
       # Check if the instance is the one we are looking for
