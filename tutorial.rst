@@ -30,12 +30,18 @@ devices. The controller communicates with the devices using NETCONF
 tunneled over SSH and the user interacts with the controller using
 a CLI.
 
+Controller installation
+=======================
+
 The controller is running on the host machine and the devices are
 running in Docker containers. See the :ref:`Installation
 <controller_install>` section for more information on how to set up
 the controller.
 
-Start the device:
+Docker setup
+============
+
+Start the devices:
 
 .. code-block:: bash
 
@@ -76,6 +82,9 @@ Repeat the steps for the second device and name it openconfig2.
 Now we have to working OpenConfig devices which we can connect to
 using NETCONF tunneled over SSH. The next step is to add the devices
 to the controller. This is done from the CLI:
+
+Add devices to the controller
+=============================
 
 .. code-block:: bash
 
@@ -119,6 +128,9 @@ the new YANG file.
 If you want to know more about YANG, see RFC 7950. The YANG for this
 example service looks like this:
 
+Service model
+=============
+
 .. code-block:: yang
 
    module ssh-users {
@@ -159,6 +171,9 @@ example service looks like this:
 	   }
        }
    }
+
+Service CLI commands
+====================
 
 When the YANG file is added new CLI commands are available in
 the CLI. The CLI commands are generated from the YANG file. The CLI
