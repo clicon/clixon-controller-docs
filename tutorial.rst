@@ -15,7 +15,7 @@ service using our OpenConfig demo environment. The service is built using two pa
 
 The service creates users and distributes SSH keys to the devices.
 
-Preequisites
+Prerequisites
 ------------
 
 1. Either a virtual machine or a physical machine where you have root
