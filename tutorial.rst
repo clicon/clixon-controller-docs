@@ -240,30 +240,44 @@ The Python code for this example service looks like this:
    """
  
    def setup(root, log, **kwargs):
+      # Check if the service is configured
       try:
          _ = root.services
       except Exception:
          return
 
+      # Iterate all service instances
       for instance in root.services.ssh_users:
+         # Check if the instance is the one we are looking for
          if instance.service_name != kwargs["instance"]:
             continue
-         for user in instance.username:
-            service_name = instance.service_name.cdata
-            username = user.name.cdata
-            ssh_key = user.ssh_key.cdata
-            role = user.role.cdata
 
+	 # Iterate all users in the instance
+         for user in instance.username:
+            service_name = instance.service_name.get_data()
+            username = user.name.get_data()
+            ssh_key = user.ssh_key.get_data()
+            role = user.role.get_data()
+
+	    # Create the XML for the new user
             new_user = parse_template(USER_XML, SERVICE_NAME=service_name,
                                       USERNAME=username, SSH_KEY=ssh_key, ROLE=role).user
 
+            # Add the new user to all devices
             for device in root.devices.device:
-               if device.config.system.get_elements("aaa") == []:
+               # Check if the device has the system element
+               if not device.config.system.get_elements("aaa"):
                   device.config.system.create("aaa")
-               if device.config.system.aaa.get_elements("authentication") == []:
+
+	       # Check if the device has the authentication element
+               if not device.config.system.aaa.get_elements("authentication"):
                   device.config.system.aaa.create("authentication")
-               if device.config.system.aaa.authentication.get_elements("users") == []:
+
+	       # Check if the device has the users element
+               if not device.config.system.aaa.authentication.get_elements("users"):
                   device.config.system.aaa.authentication.create("users")
+
+	       # Add the new user to the device
                device.config.system.aaa.authentication.users.add(new_user)
    
 When the Python code above is written to the file
