@@ -228,6 +228,7 @@ The Python code for this example service looks like this:
 
    SERVICE = "ssh-users"
 
+   # The XML template for the new user
    USER_XML = """
    <user cl:creator="ssh-users[service-name='{{SERVICE_NAME}}']" nc:operation="merge" xmlns:cl="http://clicon.org/lib">
       <username>{{USERNAME}}</username>
@@ -256,6 +257,8 @@ The Python code for this example service looks like this:
 
       # Iterate all users in the instance
       for user in instance.username:
+
+	 # Get the data from the user
 	 service_name = instance.service_name.get_data()
 	 username = user.name.get_data()
 	 ssh_key = user.ssh_key.get_data()
