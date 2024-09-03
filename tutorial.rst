@@ -62,7 +62,7 @@ Get the IP address of the device:
    $ docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' openconfig1
 
 The address is for example 172.17.0.2. And then log in to the device:
-   
+
 .. code-block:: bash
 
    $ sudo ssh noc@<IP address from above> -s netconf
@@ -96,7 +96,7 @@ And then connect to the devices:
    openconfig1             OPEN       2024-09-02T14:15:59
    openconfig2             OPEN       2024-09-02T14:15:59
 
-   
+
 YANG
 ----
 
@@ -117,39 +117,39 @@ The YANG for this example service looks like this:
    module ssh-users {
        namespace "http://clicon.org/ssh-users";
        prefix ssh-users;
-   
+
        import clixon-controller { prefix ctrl; }
-       
+
        revision 2023-05-22 {
-           description "Initial prototype";
+	   description "Initial prototype";
        }
-       
+
        augment "/ctrl:services" {
-           list ssh-users {
-               uses ctrl:created-by-service;
-	   
-               key instance;
-               leaf instance {
-                   type string;
-               }
-	       
-               description "SSH users service";
-	       
-               list username {
-                   key name;
-                   leaf name {
-                       type string;
-                   }
-		   
-                   leaf ssh-key {
-                       type string;
-                   }
-		   
-                   leaf role {
-                        type string;
-                   }
-               }
-           }
+	   list ssh-users {
+	       uses ctrl:created-by-service;
+
+	       key instance;
+	       leaf instance {
+		   type string;
+	       }
+
+	       description "SSH users service";
+
+	       list username {
+		   key name;
+		   leaf name {
+		       type string;
+		   }
+
+		   leaf ssh-key {
+		       type string;
+		   }
+
+		   leaf role {
+			type string;
+		   }
+	       }
+	   }
        }
    }
 
@@ -165,7 +165,7 @@ When the YANG file is added new CLI commands are available in the CLI:
      properties
      ssh-users             SSH users service
    user@test[/]# set services ssh-users ?
-     <instance>   
+     <instance>
    user@test[/]# set services ssh-users test ?
      <cr>
      created               List of created objects used by services.
@@ -175,7 +175,7 @@ To configure a new ssh-user the full sequence of CLI commands are:
 
 .. code-block:: bash
 
-   user@test[/]# set services ssh-users test 
+   user@test[/]# set services ssh-users test
    user@test[/]# set services ssh-users test username testuser ssh-key "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDQ6..."
    user@test[/]# set services ssh-users test username testuser role admin
 
@@ -184,7 +184,7 @@ executes the Python code which we will write in the next step. The
 Python code will configure the devices with the new user and when the
 output looks good the command `commit` is executed to save the
 configuration and push it to the devices.
-   
+
 Python
 ------
 
@@ -203,18 +203,18 @@ following NETCONF XML on the devices:
 
    <system xmlns="http://openconfig.net/yang/system">
       <aaa>
-         <authentication>
-            <users>
-               <user>
-                  <username>new_username</username>
-                  <config>
-                     <username>new_username</username>
-                     <ssh-key>ssh key AAAAA</ssh-key>
-                     <role>operator</role>
-                  </config>
-               </user>
-            </users>
-         </authentication>
+	 <authentication>
+	    <users>
+	       <user>
+		  <username>new_username</username>
+		  <config>
+		     <username>new_username</username>
+		     <ssh-key>ssh key AAAAA</ssh-key>
+		     <role>operator</role>
+		  </config>
+	       </user>
+	    </users>
+	 </authentication>
       </aaa>
    </system>
 
@@ -225,61 +225,66 @@ The Python code for this example service looks like this:
 
    from clixon.element import Element
    from clixon.parser import parse_template
-  
+
    SERVICE = "ssh-users"
-  
+
    USER_XML = """
    <user cl:creator="ssh-users[service-name='{{SERVICE_NAME}}']" nc:operation="merge" xmlns:cl="http://clicon.org/lib">
       <username>{{USERNAME}}</username>
-         <config>
-            <username>{{USERNAME}}</username>
-            <ssh-key>{{SSH_KEY}}</ssh-key>
-            <role>{{ROLE}}</role>
-         </config>
+	 <config>
+	    <username>{{USERNAME}}</username>
+	    <ssh-key>{{SSH_KEY}}</ssh-key>
+	    <role>{{ROLE}}</role>
+	 </config>
    </user>
    """
- 
+
    def setup(root, log, **kwargs):
       # Check if the service is configured
       try:
-         _ = root.services
+	 _ = root.services.ssh_users
       except Exception:
-         return
+	 return
 
-      # Iterate all service instances
-      for instance in root.services.ssh_users:
-         # Check if the instance is the one we are looking for
-         if instance.service_name != kwargs["instance"]:
-            continue
+      # Get the service instance
+      instance = get_service_instance(root, service_name,
+				      instance=kwargs["instance"])
 
-	 # Iterate all users in the instance
-         for user in instance.username:
-            service_name = instance.service_name.get_data()
-            username = user.name.get_data()
-            ssh_key = user.ssh_key.get_data()
-            role = user.role.get_data()
+      # Check if the instance is the one we are looking for
+      if not instance:
+	 return
 
-	    # Create the XML for the new user
-            new_user = parse_template(USER_XML, SERVICE_NAME=service_name,
-                                      USERNAME=username, SSH_KEY=ssh_key, ROLE=role).user
+      # Iterate all users in the instance
+      for user in instance.username:
+	 service_name = instance.service_name.get_data()
+	 username = user.name.get_data()
+	 ssh_key = user.ssh_key.get_data()
+	 role = user.role.get_data()
 
-            # Add the new user to all devices
-            for device in root.devices.device:
-               # Check if the device has the system element
-               if not device.config.system.get_elements("aaa"):
-                  device.config.system.create("aaa")
+	 # Create the XML for the new user
+	 new_user = parse_template(USER_XML,
+				   SERVICE_NAME=service_name,
+				   USERNAME=username,
+				   SSH_KEY=ssh_key,
+				   ROLE=role).user
 
-	       # Check if the device has the authentication element
-               if not device.config.system.aaa.get_elements("authentication"):
-                  device.config.system.aaa.create("authentication")
+	 # Add the new user to all devices
+	 for device in root.devices.device:
+	    # Check if the device has the system element
+	    if not device.config.system.get_elements("aaa"):
+	       device.config.system.create("aaa")
 
-	       # Check if the device has the users element
-               if not device.config.system.aaa.authentication.get_elements("users"):
-                  device.config.system.aaa.authentication.create("users")
+	    # Check if the device has the authentication element
+	    if not device.config.system.aaa.get_elements("authentication"):
+	       device.config.system.aaa.create("authentication")
 
-	       # Add the new user to the device
-               device.config.system.aaa.authentication.users.add(new_user)
-   
+	    # Check if the device has the users element
+	    if not device.config.system.aaa.authentication.get_elements("users"):
+	       device.config.system.aaa.authentication.create("users")
+
+	    # Add the new user to the device
+	    device.config.system.aaa.authentication.users.add(new_user)
+
 When the Python code above is written to the file
 `/usr/local/share/clixon/controller/modules/ssh_users.py` the service API server must be restarted to load the new Python file. This can be done either by restarting the controller or by restarting the service API server:
 
@@ -303,7 +308,7 @@ And then we can configure the service in the CLI and commit the configuration:
    user@test[/]# set services ssh-users test username testuser role admin
    user@test[/]# commit diff
    openconfig1:
-               <users xmlns="http://openconfig.net/yang/system">
+	       <users xmlns="http://openconfig.net/yang/system">
    +              <user>
    +                 <username>testuser</username>
    +                 <config>
@@ -312,6 +317,40 @@ And then we can configure the service in the CLI and commit the configuration:
    +                    <role>admin</role>
    +                 </config>
    +              </user>
-               </users>
+	       </users>
    OK
 
+To save the configuration and push it to the devices the command
+`commit` is executed:
+
+.. code-block:: bash
+
+   user@test[/]# commit
+   OK
+
+The user can now be removed from the devices by deleting the service
+and committing the configuration:
+
+.. code-block:: bash
+
+   user@test[/]# delete services ssh-users test
+   user@test[/]# commit diff
+   openconfig1:
+	       <users xmlns="http://openconfig.net/yang/system">
+   -              <user>
+   -                 <username>testuser</username>
+   -                 <config>
+   -                    <username>testuser</username>
+   -                    <ssh-key></ssh-key>
+   -                    <role>admin</role>
+   -                 </config>
+   -              </user>
+	       </users>
+   OK
+   user@test[/]# commit
+
+The Python code above is a simple example of how to configure a new
+user on the devices. The Python code can be extended to handle more
+complex configurations and to handle more services. The Python code
+can also be extended to handle more devices and to handle more
+configuration elements on the devices.
