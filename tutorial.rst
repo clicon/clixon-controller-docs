@@ -227,8 +227,122 @@ following NETCONF XML on the devices:
       </aaa>
    </system>
 
+Code breakdown
+==============
 
-The Python code for this example service looks like this:
+Each service has a Python file which contains the Python code for the
+service. When the code is executed the API server will start with the
+function `setup` and the arguments `root`, `log` and `**kwargs`. The
+`root` argument is the root of the configuration data tree. The `log`
+argument is a logger object which can be used to log messages. The
+`**kwargs` argument is a dictionary with additional arguments such as
+the name of the service instance.
+
+First we need to import the necessary modules:
+
+.. code-block:: python
+
+   from clixon.element import Element
+   from clixon.parser import parse_template
+   from clixon.helpers import get_service_instance
+
+The Element module is used to create new XML elements in the
+configuration data tree. The parse_template module is used to parse
+the XML template. The get_service_instance module is used to get the
+service instance.
+
+Each service module _must_ have a variable named `SERVICE` which is
+the name of the service. The name should correspond to the name of the
+YANG model associated with the service.
+
+.. code-block:: python
+
+   SERVICE = "ssh-users"
+
+The first function in the Python code is the `setup` function. The
+first thing we do in the setup function is to check whether the
+service is configured. If the service is not configured we return and
+do nothing.
+
+.. code-block:: python
+
+   def setup(root, log, **kwargs):
+      # Check if the service is configured
+      try:
+	 _ = root.services.ssh_users
+      except AttributeError:
+	 return
+
+Next step is to get the service instance. To do this we can use the
+helper function `get_service_instance` which will return an
+configuration data tree element with the service instance if it exists
+other wise it will return None.
+
+.. code-block:: python
+
+      # Get the service instance
+      service_instance = get_service_instance(root, SERVICE, **kwargs)
+
+      # Check if the instance is the one we are looking for
+      if service_instance is None:
+	 return
+
+Next step is to get the username, ssh-key and role from the service
+instance. To do this we iterate over the service instance and get the
+values.
+
+.. code-block:: python
+
+   # Get the data from the user
+   service_name = instance.service_name.get_data()
+   username = user.name.get_data()
+   ssh_key = user.ssh_key.get_data()
+   role = user.role.get_data()
+
+The next step is to create the XML template for the new user. The XML
+template is a string with placeholders for the username, ssh-key and
+role. The placeholders are replaced with the values from the service
+instance when the template is parsed.
+
+.. code-block:: python
+
+   # Create the XML for the new user
+   new_user = parse_template(USER_XML,
+			     SERVICE_NAME=service_name,
+			     USERNAME=username,
+			     SSH_KEY=ssh_key,
+			     ROLE=role).user
+
+We then check if the needed elements in the configuration data tree
+are present. If they are not present we create them.
+
+.. code-block:: python
+
+   # Add the new user to all devices
+   for device in root.devices.device:
+      # Check if the device has the system element
+      if not device.config.system.get_elements("aaa"):
+	 device.config.system.create("aaa")
+
+      # Check if the device has the authentication element
+      if not device.config.system.aaa.get_elements("authentication"):
+	 device.config.system.aaa.create("authentication")
+
+      # Check if the device has the users element
+      if not device.config.system.aaa.authentication.get_elements("users"):
+	 device.config.system.aaa.authentication.create("users")
+
+And finally we add the new user to the configuration data tree.
+
+.. code-block:: python
+
+   # Add the new user to the device
+   device.config.system.aaa.authentication.users.add_element(new_user)
+
+Full service Python code
+===================
+
+The full Python code for this example service looks like this:
 
 .. code-block:: python
 
