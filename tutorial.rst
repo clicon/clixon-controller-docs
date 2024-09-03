@@ -271,12 +271,12 @@ When the Python code above is written to the file
 
 .. code-block:: bash
 
-$ clixon_cli
-user@test> ser
-user@test> processes services restart
-<rpc-reply xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
-   <ok xmlns="http://clicon.org/lib"/>
-</rpc-reply>
+   $ clixon_cli
+   user@test> ser
+   user@test> processes services restart
+   <rpc-reply xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+      <ok xmlns="http://clicon.org/lib"/>
+   </rpc-reply>
 
 And then we can configure the service in the CLI and commit the configuration:
 
