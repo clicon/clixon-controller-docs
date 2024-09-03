@@ -18,7 +18,6 @@ The service creates users and distributes SSH keys to the devices.
 Preequisites
 ------------
 
-
 1. Either a virtual machine or a physical machine where you have root
    access.
 2. Docker installed on the machine.
@@ -41,6 +40,7 @@ Start the device:
 .. code-block:: bash
 
    $ docker run --name openconfig1 -it clixon/openconfig
+   $ docker run --name openconfig2 -it clixon/openconfig
 
 Add your local root users key to the authorized_keys file in the device:
 
@@ -52,16 +52,19 @@ Add your local root users key to the authorized_keys file in the device:
    # chown noc:noc ~/.ssh/authorized_keys
    # chmod 400 ~/.ssh/authorized_keys
 
-Then verify that you can log in to the device using your key and the
-NETCONF subsystem is running:
+Repeat the steps for the second device which is named
+openconfig2. Then verify that you can log in to the devices using your
+key and the NETCONF subsystem is running:
 
-Get the IP address of the device:
+Get the IP addresses of the devices:
 
 .. code-block:: bash
 
    $ docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' openconfig1
+   $ docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' openconfig2
 
-The address is for example 172.17.0.2. And then log in to the device:
+The addresses are for example 172.17.0.2 and 172.17.0.3, use them to
+log in to the devices:
 
 .. code-block:: bash
 
@@ -70,7 +73,9 @@ The address is for example 172.17.0.2. And then log in to the device:
 
 Repeat the steps for the second device and name it openconfig2.
 
-Add the devices to the controller:
+Now we have to working OpenConfig devices which we can connect to
+using NETCONF tunneled over SSH. The next step is to add the devices
+to the controller. This is done from the CLI:
 
 .. code-block:: bash
 
@@ -85,7 +90,8 @@ Add the devices to the controller:
    user@test[/]# commit local
    user@test[/]# exit
 
-And then connect to the devices:
+And then connect to the devices, we expect the connection state to be
+OPEN for both devices and no log messages:
 
 .. code-block:: bash
 
@@ -96,6 +102,8 @@ And then connect to the devices:
    openconfig1             OPEN       2024-09-02T14:15:59
    openconfig2             OPEN       2024-09-02T14:15:59
 
+Both devices are now connected to the controller and we can add the
+service.
 
 YANG
 ----
@@ -108,9 +116,8 @@ is named with the service name. In this example the service is named
 the YANG file is modified, the controller must be restarted to load
 the new YANG file.
 
-If you want to know more about YANG, see the RFC 7950.
-
-The YANG for this example service looks like this:
+If you want to know more about YANG, see RFC 7950. The YANG for this
+example service looks like this:
 
 .. code-block:: yang
 
@@ -153,7 +160,9 @@ The YANG for this example service looks like this:
        }
    }
 
-When the YANG file is added new CLI commands are available in the CLI:
+When the YANG file is added new CLI commands are available in
+the CLI. The CLI commands are generated from the YANG file. The CLI
+commands are used to configure the service. The CLI commands are:
 
 .. code-block:: bash
 
@@ -289,7 +298,10 @@ The Python code for this example service looks like this:
 	    device.config.system.aaa.authentication.users.add(new_user)
 
 When the Python code above is written to the file
-`/usr/local/share/clixon/controller/modules/ssh_users.py` the service API server must be restarted to load the new Python file. This can be done either by restarting the controller or by restarting the service API server:
+`/usr/local/share/clixon/controller/modules/ssh_users.py` the service
+API server must be restarted to load the new Python file. This can be
+done either by restarting the controller or by restarting the service
+API server:
 
 .. code-block:: bash
 
@@ -300,7 +312,9 @@ When the Python code above is written to the file
       <ok xmlns="http://clicon.org/lib"/>
    </rpc-reply>
 
-And then we can configure the service in the CLI and commit the configuration:
+And then we can configure the service in the CLI and commit the
+configuration. When the configuration is committed the Python code is
+executed and the new user is added to the devices:
 
 .. code-block:: bash
 
@@ -324,15 +338,16 @@ And then we can configure the service in the CLI and commit the configuration:
    OK
 
 To save the configuration and push it to the devices the command
-`commit` is executed:
+`commit` is executed. Then the Python code is executed again and the
+new user is pushed to the devices:
 
 .. code-block:: bash
 
    user@test[/]# commit
    OK
 
-The user can now be removed from the devices by deleting the service
-and committing the configuration:
+The user can also be removed from the devices by deleting the service
+and committing the configuration.
 
 .. code-block:: bash
 
