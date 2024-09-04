@@ -18,6 +18,8 @@ The service creates users and distributes SSH keys to the devices.
 Prerequisites
 =============
 
+Before you start, you need to have the following:
+
 1. Either a virtual machine or a physical machine where you have root
    access.
 2. Docker installed on the machine.
@@ -30,25 +32,46 @@ devices. The controller communicates with the devices using NETCONF
 tunneled over SSH and the user interacts with the controller using
 a CLI.
 
+The controller is running on the host machine and the devices are
+running in Docker containers. The devices are a dockerized installation of
+Clixon with the OpenConfig models.
+
 Controller installation
 -----------------------
 
-The controller is running on the host machine and the devices are
-running in Docker containers. See the :ref:`Installation
-<controller_install>` section for more information on how to set up
-the controller.
+See the :ref:`Installation <controller_install>` section for more
+information on how to set up the controller.
 
 Docker setup
 ------------
 
-Start the devices:
+The devices are running in Docker containers. The Docker image is a
+pre-built image with the OpenConfig models. The image is available on
+Docker Hub and can be pulled using the following command:
+
+.. code-block:: bash
+
+   $ docker pull clixon/openconfig
+
+To start the devices, run the following commands:
 
 .. code-block:: bash
 
    $ docker run --name openconfig1 -it clixon/openconfig
    $ docker run --name openconfig2 -it clixon/openconfig
 
-Add your local root users key to the authorized_keys file in the device:
+The devices should then be visible in the list of running containers:
+
+.. code-block:: bash
+
+   $ docker ps
+   CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS                      NAMES
+   1b3b3b3b3b3b        clixon/openconfig    "/bin/sh"           2 minutes ago       Up 2 minutes       22/tcp, 80/tcp, 830/tcp    openconfig1
+   2a2a2a2a2a2a        clixon/openconfig    "/bin/sh"           2 minutes ago       Up 2 minutes       22/tcp, 80/tcp, 830/tcp    openconfig2
+
+The devices are now running and we can connect to them using SSH. In
+order to do that, we need to add our public key to the devices. Add
+your local root users key to the authorized_keys file in the device:
 
 .. code-block:: bash
 
@@ -60,9 +83,8 @@ Add your local root users key to the authorized_keys file in the device:
 
 Repeat the steps for the second device which is named
 openconfig2. Then verify that you can log in to the devices using your
-key and the NETCONF subsystem is running:
-
-Get the IP addresses of the devices:
+key and the NETCONF subsystem is running. To log in using SSH we
+should first find the IP addresses of the devices:
 
 .. code-block:: bash
 
@@ -70,7 +92,7 @@ Get the IP addresses of the devices:
    $ docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' openconfig2
 
 The addresses are for example 172.17.0.2 and 172.17.0.3, use them to
-log in to the devices:
+log in to the devices with the user noc and the NETCONF subsystem:
 
 .. code-block:: bash
 
@@ -85,6 +107,9 @@ to the controller. This is done from the CLI:
 
 Add devices to the controller
 =============================
+
+To add the devices to the controller, start the CLI and configure both
+of the devices added in the previous step:
 
 .. code-block:: bash
 
@@ -111,8 +136,8 @@ OPEN for both devices and no log messages:
    openconfig1             OPEN       2024-09-02T14:15:59
    openconfig2             OPEN       2024-09-02T14:15:59
 
-Both devices are now connected to the controller and we can add the
-service.
+Both devices are now connected to the controller and we can start
+working with the service.
 
 YANG
 ----
