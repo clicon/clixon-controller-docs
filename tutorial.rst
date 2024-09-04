@@ -183,6 +183,10 @@ example service looks like this:
 Service model
 =============
 
+The YANG model we will use for this example is a simple model that
+allows us to configure SSH users on the devices. The model is defined
+in the file `ssh-users.yang`:
+
 .. code-block:: yang
 
    module ssh-users {
@@ -223,6 +227,10 @@ Service model
 	   }
        }
    }
+
+The YANG model above describes a service that can be used to configure
+SSH users on the devices. The service is named `ssh-users` and has a
+list of users. Each user has a name, an SSH key and a role.
 
 Service CLI commands
 ====================
