@@ -42,6 +42,33 @@ Controller installation
 See the :ref:`Installation <controller_install>` section for more
 information on how to set up the controller.
 
+SSH key generation
+------------------
+
+To be able to log in to the devices, we need to generate an SSH key
+pair if you don't already have one. The public key will be added to
+the devices. To see if you have an SSH key pair, check the contents of
+the .ssh directory in your root directory:
+
+.. code-block:: bash
+
+   $ sudo ls /root/.ssh
+   authorized_keys  id_rsa  id_rsa.pub  known_hosts
+
+If you don't have an SSH key pair, generate one using the following
+command:
+
+.. code-block:: bash
+
+   $ sudo ssh-keygen -C "controller key" -t rsa -b 4096 -f /root/.ssh/id_rsa -N ""
+
+To get your public key which we will use later, run the following
+command:
+
+.. code-block:: bash
+
+   $ sudo cat /root/.ssh/id_rsa.pub
+
 Docker setup
 ------------
 
