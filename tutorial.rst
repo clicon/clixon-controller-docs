@@ -16,14 +16,14 @@ service using our OpenConfig demo environment. The service is built using two pa
 The service creates users and distributes SSH keys to the devices.
 
 Prerequisites
-------------
+=============
 
 1. Either a virtual machine or a physical machine where you have root
    access.
 2. Docker installed on the machine.
 
 Environment
-----------
+-----------
 
 The environment used consists of one controller and two OpenConfig
 devices. The controller communicates with the devices using NETCONF
@@ -31,7 +31,7 @@ tunneled over SSH and the user interacts with the controller using
 a CLI.
 
 Controller installation
-=======================
+-----------------------
 
 The controller is running on the host machine and the devices are
 running in Docker containers. See the :ref:`Installation
@@ -39,7 +39,7 @@ running in Docker containers. See the :ref:`Installation
 the controller.
 
 Docker setup
-============
+------------
 
 Start the devices:
 
