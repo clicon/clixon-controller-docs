@@ -57,8 +57,8 @@ To start the devices, run the following commands:
 
 .. code-block:: bash
 
-   $ docker run --name openconfig1 -it clixon/openconfig
-   $ docker run --name openconfig2 -it clixon/openconfig
+   $ docker run -d --name openconfig1 -it clixon/openconfig
+   $ docker run -d --name openconfig2 -it clixon/openconfig
 
 The devices should then be visible in the list of running containers:
 
