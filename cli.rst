@@ -3,11 +3,19 @@
    :start: 5
    :depth: 3
 
-***
-CLI
-***
+************
+CLI tutorial
+************
 
 This section desribes the CLI commands of the Clixon controller. A simple example is used to illustrate concepts.
+
+Prerequisites
+=============
+
+You need a running controller and some devices. Either:
+
+1. The docker as described in Section :ref:`Quickstart <controller_quickstart>`.
+2. A host and openconfig installation as described in the :ref:`setup tutorial <setup_tutorial>`.
 
 General
 =======

@@ -1,6 +1,6 @@
 .. _controller_configuration:
 .. sectnum::
-   :start: 4
+   :start: 7
    :depth: 3
 
 *************
