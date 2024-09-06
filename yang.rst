@@ -39,13 +39,14 @@ This includes all standard YANGs, clixon YANGs and controller YANGs.
 
 Controller YANGs
 ^^^^^^^^^^^^^^^^
-The top-level of the controller-specific YANGs is typically  `/usr/local/share/clixon/controller`.
+The root directory of the controller-specific YANGs is typically  `/usr/local/share/controller` (`$DATADIR/controller`)
 
-This can be changed with `configure --with-yang-installdir=DIR`, see Section :ref:`Installation <controller_install>`.
-
-The controller YANG directory has two sub-directories with specific meanings:
-  - `main`. Main controller YANGs for the top-level. Note: only place YANGs here if you want them loaded to the top-level. Important: do not place device YANGs there, only controller YANGs.
-  - `mounts`. YANGs retreived from devices using RFC 6022 `get-schema` are written here. You can also add local cached YANGs here.
+The controller YANG directory has the following sub-directory structure:
+- `common`.  Includes common lib YANGs. For example, the controller configuration YANG. YANGs placed here are accessible if referenced.
+- `main`. Main controller YANGs for the top-level. Note: only place YANGs here if you want them loaded to the top-level. Important: do not place device YANGs there, only controller YANGs.
+- `modules`. YANG modules for pyapi
+- `mounts/default`. YANGs dynamically retreived from devices using RFC 6022 `get-schema` are placed here. You can also add local cached YANGs here.
+- `mounts/<iname>`. Extra isolated device domains are placed here. Add with `device-domain <iname>`
 
 .. note::
         Do not place device YANGs in the `main` directory

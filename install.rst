@@ -104,7 +104,6 @@ These include (standard options are omitted)
   --enable-debug              Build with debug symbols, default: no
   --with-cligen=dir           Use CLIGEN here
   --with-clixon=dir           Use Clixon here
-  --with-yang-installdir=DIR  Install Yang files here (default: ${prefix}/share/clixon/controller)
   --with-clicon-user=user     Run as this user in example and test
   --with-clicon-group=group   Run as this group in example and test
 
