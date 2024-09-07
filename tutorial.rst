@@ -17,16 +17,23 @@ The service creates users and distributes SSH keys to the devices.
 
 Prerequisites
 =============
+Before you start, you need to have setup as described in the :
 
-Before you start, you need to have setup a host and two virtual devices as described in the :ref:`setup tutorial <setup_tutorial>`.
+1. A `host` where the controller runs
+2. Two `devices` accessible by NETCONF over SSH.
 
+How to setup this environment is described in :ref:`setup tutorial <setup_tutorial>`.
 
 Service model
 =============
 
-YANG
-----
-Each service is described using a YANG model. The YANG model for the
+Each service is described using a `YANG` model. YANG is a data modeling
+language used to model configuration data, state data, remote
+procedure calls and notifications for network management protocols. If
+you want to know more about YANG, a detailed description is `RFC 7950
+<https://www.rfc-editor.org/rfc/rfc7950.html>`_.
+
+The YANG model for the
 service is in directory `/usr/local/share/clixon/controller/main/` and
 is named with the service name. In this example the service is named
 `ssh-users` and the YANG model is in
@@ -34,7 +41,7 @@ is named with the service name. In this example the service is named
 the YANG file is modified, the controller must be restarted to load
 the new YANG file.
 
-If you want to know more about YANG, a detailed description is `RFC 7950 <https://www.rfc-editor.org/rfc/rfc7950.html>`_. 
+
 
 The YANG model used for this example is a simple model that allows the
 tconfiguration of SSH users on the devices. The model is defined in the
