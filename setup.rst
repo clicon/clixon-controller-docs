@@ -124,14 +124,27 @@ You can now log in to the devices the addresses and your key using the NETCONF S
 
 .. code-block:: bash
 
-   $ sudo ssh noc@<IP address from above> -s netconf
+   $ sudo ssh noc@<IP address from above> -o StrictHostKeyChecking=no -s netconf
    <hello xmlns="urn:ietf:params:xml:ns:netconf:base:1.0"><capabilities><capability>urn:ietf:params:netconf:base:1.1</capability><capability>urn:ietf:params:netconf:base:1.0</capability><capability>urn:ietf:params:netconf:capability:yang-library:1.0?revision=2019-01-04&amp;module-set-id=0</capability><capability>urn:ietf:params:netconf:capability:candidate:1.0</capability><capability>urn:ietf:params:netconf:capability:validate:1.1</capability><capability>urn:ietf:params:netconf:capability:startup:1.0</capability><capability>urn:ietf:params:netconf:capability:xpath:1.0</capability><capability>urn:ietf:params:netconf:capability:with-defaults:1.0?basic-mode=explicit&amp;also-supported=report-all,trim,report-all-tagged</capability><capability>urn:ietf:params:netconf:capability:notification:1.0</capability><capability>urn:ietf:params:xml:ns:yang:ietf-netconf-monitoring</capability></capabilities><session-id>2</session-id></hello>]]>]]>
 
 Repeat the steps for the openconfig2 device.
 
-.. note::
-   Connect to the device and answer yes on hostkey checking so that you can use strict hostkey checking later
+Known hosts
+-----------
+The treason for this initial login is to setup "known hosts" of the controller. The controller refuses to open a connection to a device if the key to the device is not known.
 
+However, you can solve the known hosts issue in several ways, including:
+
+1. Remove the ``-o StrictHostKeyChecking=no`` and instead answer ``yes`` to the interactive prompt to add key to known hosts.
+2. Edit the known-hosts file directly.
+3. You can remove the requirement altoghether by configuring as follows::
+
+    cli# set devices device openconfig1 ssh-strictkey false
+    cli# commit
+
+It is not recommended to remove the requirement, but may be necessary
+in some circumstances, such as the existence of jump hosts.
+  
 Connect to devices
 ==================
 To connect to the devices frm the controller, start the controller CLI and configure both devices added in previously:

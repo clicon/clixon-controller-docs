@@ -7,6 +7,18 @@
 YANG
 ****
 
+The controller is based on YANG. YANG is a data modeling language used
+to model configuration data, state data, remote procedure calls and
+notifications for network management protocols.  A more
+detailed description is found in `RFC 7950 <https://www.rfc-editor.org/rfc/rfc7950.html>`_.
+
+The controller relys on the following YANG specifications:
+
+* Standard YANGs as , including ietf-inet-types.yang and many others.
+* Clixon YANGs, defining the underlying clixon system, this includes basic configuration, RPCs, etc
+* Controller: clixon-controller.yang, containing basic service and device YANGs, transactions, processes, and definitions of controller RPCs.
+* Controller config: clixon-controller-config.yang, including specialization of clixon config, such as Pyapi settings.
+
 Searching
 =========
 

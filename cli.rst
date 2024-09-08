@@ -196,7 +196,7 @@ local device configuration. use this command with care.
 
 Services
 ========
-Network services are used to generate device configs.
+Network services are used to generate device configs.  Services are covered in more detail in the :ref:`Services tutorial <tutorial>`.
 
 Service process 
 ---------------

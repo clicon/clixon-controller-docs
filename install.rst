@@ -84,7 +84,7 @@ It is recommended to NOT run the controller as root.
 SystemD
 -------
 
-In the clixon-constroller source folder there is a file named clixon_controller.service which can be used to run the Controller backend using SystemD.
+In the clixon-controller source folder there is a file named clixon_controller.service which can be used to run the Controller backend using SystemD.
 
 To install the SystemD service:
 
