@@ -314,19 +314,25 @@ Then, the top-level device configuration is created, if it is not already presen
 
 .. code-block:: python
 
-   # Add the new user to all devices
-   for device in root.devices.device:
-      # Check if the device has the system element
-      if not device.config.system.get_elements("aaa"):
-	 device.config.system.create("aaa")
+	  # Add the new user to all devices
+	  for device in root.devices.device:
+	     # Check if the device has the system element
+	     if not device.config.get_elements("system"):
+		device.config.create("system",
+				     attributes={"xmlns": "http://openconfig.net/yang/system"})
 
-      # Check if the device has the authentication element
-      if not device.config.system.aaa.get_elements("authentication"):
-	 device.config.system.aaa.create("authentication")
+	     # Check if the device has the aaa element
+	     if not device.config.system.get_elements("aaa"):
+		device.config.system.create("aaa")
 
-      # Check if the device has the users element
-      if not device.config.system.aaa.authentication.get_elements("users"):
-	 device.config.system.aaa.authentication.create("users")
+	     # Check if the device has the authentication element
+	     if not device.config.system.aaa.get_elements("authentication"):
+		device.config.system.aaa.create("authentication")
+
+	     # Check if the device has the users element
+	     if not device.config.system.aaa.authentication.get_elements("users"):
+		device.config.system.aaa.authentication.create("users")
+
 
 This is to ensure that the basic openconfig user configuration is in place on all devices.
 
@@ -354,12 +360,12 @@ The full Python code for this example service is as follows:
    # The XML template for the new user
    USER_XML = """
    <user cl:creator="ssh-users[instance='{{INSTANCE_NAME}}']" nc:operation="merge" xmlns:cl="http://clicon.org/lib">
-      <username>{{USERNAME}}</username>
-	 <config>
-	    <username>{{USERNAME}}</username>
-	    <ssh-key>{{SSH_KEY}}</ssh-key>
-	    <role>{{ROLE}}</role>
-	 </config>
+       <username>{{USERNAME}}</username>
+       <config>
+           <username>{{USERNAME}}</username>
+	   <ssh-key>{{SSH_KEY}}</ssh-key>
+	   <role>{{ROLE}}</role>
+       </config>
    </user>
    """
 
@@ -372,7 +378,7 @@ The full Python code for this example service is as follows:
 
       # Get the service instance
       instance = get_service_instance(root,
-				      instance_name,
+				      SERVICE,
 				      instance=kwargs["instance"])
 
       # Check if the instance is the one we are looking for
@@ -383,7 +389,7 @@ The full Python code for this example service is as follows:
       for user in instance.username:
 
 	 # Get the data from the user
-	 instance_name = instance.instance_name.get_data()
+	 instance_name = instance.instance.get_data()
 	 username = user.name.get_data()
 	 ssh_key = user.ssh_key.get_data()
 	 role = user.role.get_data()
@@ -398,8 +404,13 @@ The full Python code for this example service is as follows:
 	 # Add the new user to all devices
 	 for device in root.devices.device:
 	    # Check if the device has the system element
-	    if not device.config.system.get_elements("aaa"):
-	       device.config.system.create("aaa")
+	    if not device.config.get_elements("system"):
+	        device.config.create("system",
+				     attributes={"xmlns": "http://openconfig.net/yang/system"})
+
+	     # Check if the device has the aaa element
+	     if not device.config.system.get_elements("aaa"):
+		device.config.system.create("aaa")
 
 	    # Check if the device has the authentication element
 	    if not device.config.system.aaa.get_elements("authentication"):
