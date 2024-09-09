@@ -22,13 +22,6 @@ The service API provides a mechanism to control devices by generating device con
 3. Edits the device configuration based on service code and possibly other info (``edit-config``)
 4. Informs the controller when done (``transactions-actions-done``).
 
-Restrictions
-------------
-The restrictions on the current service API are as follows:
-
-1. Only a single service code handler is supported, which means that a single process handles all services.
-2. One-to-one: One service per object, multiple services may not create the same object
-
 Service model
 =============
 A service extends the controller YANG as described in the `YANG section <https://clixon-docs.readthedocs.io/en/latest/yang.html>`_ section. For example, a service `ssh-users` may add a new service as follows:
@@ -103,10 +96,6 @@ An example service encoded as XML for ``ssh-users`` is shown in the following ex
         <instance>devs</instance>
         <username>
            <name>kim</name>
-           <ssh-key>ssh-rsa AAA...</ssh-key>
-        </username>
-        <username>
-           <name>alice</name>
            <ssh-key>ssh-rsa AAA...</ssh-key>
         </username>
      </ssh-users>
@@ -197,35 +186,35 @@ It works in the following way:
 
 Example
 -------
-In the following example using the XML in Section `XML configuration`_, three device objects (usernames eric, alice and kim) are tagged with service instances in one device ``A``, as follows:
+In the following example using the XML in Section `XML configuration`_, three device objects (usernames eric, alice and kim) are tagged with service instances in one device ``devA``, as follows:
 
-.. table:: `Device A with service-instance tags`
+.. table:: `Device devA with service-instance tags`
    :widths: auto
    :align: left
 
-   =============  =======================
+   =============  =========================
    Device object  Service-instance
-   =============  =======================
+   =============  =========================
    eric           ssh-users[instance='ops']
    alice          ssh-users[instance='devs']
    kim            ssh-users[instance='ops'],
-   =============  =======================
+   =============  =========================
 
 where device objects `eric` and `kim` are created by service instance `ops` (more precisely `ssh-users[instance='ops']`) and `alice` is created by `devs`.
 
 Suppose that service instance `ops` is deleted, then all device objects tagged with `ops` are deleted:
 
-.. table:: `Device A after removal of ops`
+.. table:: `Device devA after removal of ops`
    :widths: auto
    :align: left
             
-   =============  =======================
+   =============  =========================
    Device object  Service-instance
-   =============  =======================
+   =============  =========================
    alice          ssh-users[instance='devs']
-   =============  =======================
+   =============  =========================
 
-Note also that this example only considers a single device `A`. In reality there are many more devices.
+Note also that this example only considers a single device ``devA``. In reality there are many more devices.
 
 Algorithm
 =========
@@ -374,3 +363,11 @@ In this case, the backend terminates the transaction and signals an error to the
     
 Another source of error is if the backend does not receive a `done`
 message. In this case it will eventually timeout and also signal an error.
+
+Restrictions
+============
+The restrictions on the current service API are as follows:
+
+1. Only a single service code handler is supported, which means that a single process handles all services.
+2. One-to-one: One service per object, multiple services (instances) may not create the same object
+
