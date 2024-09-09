@@ -328,7 +328,7 @@ Using the data in the example, this would given the following XML configuration:
 
 .. code-block:: xml
 
-   <user cl:creator="ssh-users[service-name='ssh-users']" nc:operation="merge" xmlns:cl="http://clicon.org/lib">
+   <user cl:creator="ssh-users[service-name='test']" nc:operation="merge" xmlns:cl="http://clicon.org/lib">
       <username>testuser</username>
 	 <config>
 	    <username>testuser</username>
