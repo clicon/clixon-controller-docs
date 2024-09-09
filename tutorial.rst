@@ -265,7 +265,7 @@ After that, the username, ssh-key and role from the service instance are retriev
 .. code-block:: python
 
    # Get the data from the user
-   service_name = instance.service_name.get_data()
+   instance_name = instance.instance.get_data()
    username = user.name.get_data()
    ssh_key = user.ssh_key.get_data()
    role = user.role.get_data()
@@ -280,7 +280,7 @@ The XML template for the new user is created next. The template is a string with
 .. code-block:: python
 
    USER_XML = """
-   <user cl:creator="ssh-users[service-name='{{SERVICE_NAME}}']" nc:operation="merge" xmlns:cl="http://clicon.org/lib">
+   <user cl:creator="ssh-users[instance='{{INSTANCE_NAME}}']" nc:operation="merge" xmlns:cl="http://clicon.org/lib">
       <username>{{USERNAME}}</username>
 	 <config>
 	    <username>{{USERNAME}}</username>
@@ -298,7 +298,7 @@ Attributes
 The user configuration is tagged with two attributes:
 
 * ``nc:operation="merge"`` : the NETCONF edit operation
-* ``cl:creator="ssh-users[service-name='{{SERVICE_NAME}}']"``
+* ``cl:creator="ssh-users[instance='{{INSTANCE_NAME}}']"``
 
 `Merge` is the default NETCONF operation. Other NETCONF operations are described here: `RFC 6241 <https://www.rfc-editor.org/rfc/rfc6241.html#section-7.2>`_, most of which are not applicable.
 
@@ -319,7 +319,7 @@ The template is then instantiated with the values given in the service configura
 
    # Create the XML for the new user
    new_user = parse_template(USER_XML,
-			     SERVICE_NAME=service_name,
+			     INSTANCE_NAME=instance_name,
 			     USERNAME=username,
 			     SSH_KEY=ssh_key,
 			     ROLE=role).user
@@ -328,7 +328,7 @@ Using the data in the example, this would given the following XML configuration:
 
 .. code-block:: xml
 
-   <user cl:creator="ssh-users[service-name='test']" nc:operation="merge" xmlns:cl="http://clicon.org/lib">
+   <user cl:creator="ssh-users[instance='test']" nc:operation="merge" xmlns:cl="http://clicon.org/lib">
       <username>testuser</username>
 	 <config>
 	    <username>testuser</username>
@@ -384,7 +384,7 @@ The full Python code for this example service is as follows:
 
    # The XML template for the new user
    USER_XML = """
-   <user cl:creator="ssh-users[service-name='{{SERVICE_NAME}}']" nc:operation="merge" xmlns:cl="http://clicon.org/lib">
+   <user cl:creator="ssh-users[instance='{{INSTANCE_NAME}}']" nc:operation="merge" xmlns:cl="http://clicon.org/lib">
       <username>{{USERNAME}}</username>
 	 <config>
 	    <username>{{USERNAME}}</username>
@@ -403,7 +403,7 @@ The full Python code for this example service is as follows:
 
       # Get the service instance
       instance = get_service_instance(root,
-				      service_name,
+				      instance_name,
 				      instance=kwargs["instance"])
 
       # Check if the instance is the one we are looking for
@@ -414,14 +414,14 @@ The full Python code for this example service is as follows:
       for user in instance.username:
 
 	 # Get the data from the user
-	 service_name = instance.service_name.get_data()
+	 instance_name = instance.instance_name.get_data()
 	 username = user.name.get_data()
 	 ssh_key = user.ssh_key.get_data()
 	 role = user.role.get_data()
 
 	 # Create the XML for the new user
 	 new_user = parse_template(USER_XML,
-				   SERVICE_NAME=service_name,
+				   INSTANCE_NAME=instance_name,
 				   USERNAME=username,
 				   SSH_KEY=ssh_key,
 				   ROLE=role).user
