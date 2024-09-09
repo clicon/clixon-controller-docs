@@ -76,7 +76,7 @@ you define other service models.
 A service consists of a list o service instance, each consisting of a
 list of users, which in turn has a name, an SSH key and a role.
 
-The YANG specification is as follows:
+The YANG service model is as follows:
 
 .. code-block:: yang
 
@@ -117,30 +117,10 @@ The `ssh-users` module is read by the controller at startup. Place the module in
 
 All YANGs in the ``main`` directory are loaded at startup.
 
+See the :ref:`Service API <controller_serviceapi>` section for more details on the service YANG.
+
 .. note::
   If you create new service models or modify existing models, you need to restart the ocntroller.
-
-Model details
--------------
-Some notes on the `ssh-users` service model, in order:
-
-* A unique service name, ``ssh-users`` which is reflected in the file name and service code.
-* A uniqe namespace: ``"http://clicon.org/ssh-users``
-* Import the clixon-controller YANG to use constructs as prefixed by ``ctrl:``
-* The revision matching the date in the filename.
-* The service `augments` the top-level service container in the clixon-controller YANG, ie extends it.
-* The `list ss-users` with key `instance` defines services instances. The following are two service instances, A and B, as encoded in XML::
-
-    <ssh-users>
-      <instance>A</instance>
-      ...
-    </ssh-users>
-    <ssh-users>
-      <instance>B</instance>
-      ...
-    </ssh-users>
-
-* The instance list must use ``created-by-service`` to keep track of created instances. This is especially important when removing config.
 
 Running the service model
 =========================
@@ -293,23 +273,12 @@ The XML template for the new user is created next. The template is a string with
 The placeholders are replaced with the values from the service
 instance when the template is parsed.
 
-Attributes
-^^^^^^^^^^
-The user configuration is tagged with two attributes:
+Note that the user configuration is tagged with two attributes:
 
 * ``nc:operation="merge"`` : the NETCONF edit operation
 * ``cl:creator="ssh-users[instance='{{INSTANCE_NAME}}']"``
 
-`Merge` is the default NETCONF operation. Other NETCONF operations are described here: `RFC 6241 <https://www.rfc-editor.org/rfc/rfc6241.html#section-7.2>`_, most of which are not applicable.
-
-The ``creator`` tag is used is to keep track of which service instance
-have created which configuration object. This is related to the
-state-less operation of the service code in the following way:
-
-* The user edits some service instances (add/edit/remove)
-* All configuration objects tagged by the services instances are removed
-* The service code is triggered and (re)generates all device configuration of the service instances
-* The controller computes the differnece of the generated config with the xisting device config.
+See the :ref:`Service API <controller_serviceapi>` section for more information on the setting of the attributes.
 
 Applying the template
 ^^^^^^^^^^^^^^^^^^^^^

@@ -131,7 +131,7 @@ Repeat the steps for the openconfig2 device.
 
 Known hosts
 -----------
-The treason for this initial login is to setup "known hosts" of the controller. The controller refuses to open a connection to a device if the key to the device is not known.
+The reason for this initial login is to setup "known hosts" of the controller. The controller refuses to open a connection to a device if the key to the device is not known.
 
 However, you can solve the known hosts issue in several ways, including:
 

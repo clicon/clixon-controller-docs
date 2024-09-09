@@ -12,7 +12,7 @@ to model configuration data, state data, remote procedure calls and
 notifications for network management protocols.  A more
 detailed description is found in `RFC 7950 <https://www.rfc-editor.org/rfc/rfc7950.html>`_.
 
-The controller relys on the following YANG specifications:
+The controller relies on the following YANG specifications:
 
 * Standard YANGs as , including ietf-inet-types.yang and many others.
 * Clixon YANGs, defining the underlying clixon system, this includes basic configuration, RPCs, etc

@@ -40,15 +40,16 @@ The CLI has two modes: operational and configure. The top-levels are as follows:
     configure             Change to configure mode
     connection            Change connection state of one or several devices
     debug                 Debugging parts of the system
+    default               Set CLI default values
     exit                  Quit
     processes             Process maintenance 
     pull                  Pull config from one or multiple devices
     push                  Push config to one or multiple devices
     quit                  Quit
     save                  Save running configuration to XML file
+    session               Client sessions
     shell                 System command
     show                  Show a particular state of the system
-    transaction           Controller transaction 
 
   cli> configure 
   cli[/]# set ?
@@ -174,6 +175,33 @@ The "connection" command can also be used to close, open or reconnect devices::
    cli> connection <devices> reconnect
 
 
+Device YANG
+-----------
+You can list which YANGs the device has using the ``show devices yang`` command::
+
+  olof@alarik> show devices example1 yang 
+  example1:
+  clixon-lib@2023-11-01
+  clixon-restconf@2022-08-01
+  ...
+
+These YANGs are mounted specifically for this device.
+
+Capability
+----------
+Use the ``show devices capability`` command to show which capabilities the device announces::
+
+  olof@alarik> show devices example1 capability
+  example1:
+  <capabilities>
+    <capability>urn:ietf:params:netconf:base:1.0</capability>
+    <capability>urn:ietf:params:netconf:base:1.1</capability>
+    <capability>urn:ietf:params:netconf:capability:candidate:1.0</capability>
+    <capability>urn:ietf:params:netconf:capability:notification:1.0</capability>
+    ...
+
+The capabilities are announced as part of the initial NETCONF handshake, see `RFC 6241 <https://www.rfc-editor.org/rfc/rfc6241.html#section-8>`_ for base NETCONF capabilities.
+
 Syncing from devices
 ====================
 pull
@@ -183,7 +211,6 @@ Pull fetches the configuration from remote devices and replaces any existing dev
    cli> pull <devices>
 
 The synced configuration is saved in the controller and can be used for diffs etc.
-
 
 pull merge
 ----------
@@ -419,6 +446,8 @@ Push the configuration to the devices, validate it and then revert::
 Templates
 =========
 The controller has a simple template mechanism for applying configurations to several devices at once. The template mechanism uses variable substitution.
+
+Note there may also be templates in the Python API, these are more primitive.
 
 A limitation is that the template itself need to be entered as XML or JSON, CLI editing is not available.
 
