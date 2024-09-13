@@ -45,7 +45,7 @@ The following configuration file examplifies the configure options described abo
         /usr/local/bin/clixon_server.py -f /usr/local/etc/controller.xml -F
   </CONTROLLER_ACTION_COMMAND>
   <CONTROLLER_PYAPI_MODULE_PATH xmlns="http://clicon.org/controller-config">
-        /usr/local/share/clixon/controller/modules/
+        /usr/local/share/controller/modules/
   </CONTROLLER_PYAPI_MODULE_PATH>
   <CONTROLLER_PYAPI_MODULE_FILTER xmlns="http://clicon.org/controller-config"></CONTROLLER_PYAPI_MODULE_FILTER>
   <CONTROLLER_PYAPI_PIDFILE xmlns="http://clicon.org/controller-config">

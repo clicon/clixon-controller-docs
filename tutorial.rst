@@ -113,7 +113,7 @@ The YANG service model is as follows:
 
 The `ssh-users` module is read by the controller at startup. Place the module in the following file::
 
-  /usr/local/share/clixon/controller/main/ssh-users@2023-05-22.yang
+  /usr/local/share/controller/main/ssh-users@2023-05-22.yang
 
 All YANGs in the ``main`` directory are loaded at startup.
 
@@ -436,7 +436,7 @@ Restart the PyAPI
 -----------------
 The python code for the tutorial service is placed in::
 
-   /usr/local/share/clixon/controller/modules/ssh_users.py
+   /usr/local/share/controller/modules/ssh_users.py
 
 When the Python file is modified, the API server is restarted using the command::
 
