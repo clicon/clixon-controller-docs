@@ -19,52 +19,58 @@ The controller relies on the following YANG specifications:
 * Controller: clixon-controller.yang, containing basic service and device YANGs, transactions, processes, and definitions of controller RPCs.
 * Controller config: clixon-controller-config.yang, including specialization of clixon config, such as Pyapi settings.
 
-Searching
-=========
+Directory structure
+===================
+The YANG directory structure for the controller is as follows::
 
-Uniqueness
-----------
-The controller YANGs rely on uniqueness of revisions. This means that
-even with schema mounts, all YANGs are part of the same search domain
-wrt revisions. That is, you may not have two different YANGs haveing
-the same revision.
+   ${DATADIR}/controller
+   ├── common
+   │   ├── control
+   │   │   └── clixon-controller-config.yang
+   │   └── extensions
+   ├── main
+   │   ├── clixon-controller.yang
+   │   └── ssh-users.yang
+   ├── modules
+   │   ├── __pycache__
+   │   └── ssh_users.py
+   └── mounts
+       ├── default
+       └── openconfig
 
-Search path
------------
-Because of the uniqueness criterium, the controller uses the same search path for all YANGs. Typically the top-level search path is::
+where:
 
-    <CLICON_YANG_DIR>/usr/local/share/clixon</CLICON_YANG_DIR>
+- ``$DATADIR`` is typically ``use/local/share``.
+- ``common``.  Includes common YANGs for all domains.
+- ``common/control``: For the controller domain, includes controller extensions to the clixon configuration file.
+- ``common/extensions``: Local extension YANGs can be placed here, see `local extensions`_
+- ``main``. Main controller YANGs for the top-level. These YANGs are loaded to the top-level data domain at start. Service YANGs are also placed here (``ss-users.yang``)
+- ``modules``. Python modules for pyapi
+- ``mounts``. YANGs dynamically retreived from devices using RFC 6022 ``get-schema`` are placed in subdirs defining isolated domains
+- ``mounts/default``. Default YANG domain
+- ``mounts/openconfig``. Example extra isolated device domain
 
-This includes all standard YANGs, clixon YANGs and controller YANGs.
-
-Controller YANGs
-^^^^^^^^^^^^^^^^
-The root directory of the controller-specific YANGs is typically  `/usr/local/share/controller` (`$DATADIR/controller`)
-
-The controller YANG directory has the following sub-directory structure:
-- `common`.  Includes common lib YANGs. For example, the controller configuration YANG. YANGs placed here are accessible if referenced.
-- `main`. Main controller YANGs for the top-level. Note: only place YANGs here if you want them loaded to the top-level. Important: do not place device YANGs there, only controller YANGs.
-- `modules`. YANG modules for pyapi
-- `mounts/default`. YANGs dynamically retreived from devices using RFC 6022 `get-schema` are placed here. You can also add local cached YANGs here.
-- `mounts/<iname>`. Extra isolated device domains are placed here. Add with `device-domain <iname>`
-
-.. note::
-        Do not place device YANGs in the `main` directory
+New device domains are added using the CLI with ``device-domain <name>``
 
 Device YANGs
-------------
+============
 There are two mechanisms to get YANGs from devices:
+
   1. Dynamic RFC6022 get-schema
-  2. Locally defined
+  2. Locally defined extensions
 
-Dynamic
-^^^^^^^
-RFC6022 YANG Module for NETCONF Monitoring defines a protocol for retrieving YANG schemas. Clixon implements this as a main mechanism.
+Get-schema
+----------
+The YANG Module for NETCONF Monitoring (`RFC 6022 <https://www.rfc-editor.org/rfc/rfc6022.html>`_) defines a protocol for retrieving YANG schemas. Clixon implements this as a main mechanism.
 
-This is automatically invoked if the device advertises "urn:ietf:params:xml:ns:yang:ietf-netconf-monitoring" in the hello protocol. The state-machine mechanism for this is described in Section :ref:`transactions <controller_transactions>`.
+This is automatically invoked if the device the following capability in the hello protocol::
 
-Local
-^^^^^
+   <capability>urn:ietf:params:xml:ns:yang:ietf-netconf-monitoring</capability>
+
+The state-machine mechanism for this is described in Section :ref:`transactions <controller_transactions>`.
+
+Local extensions
+----------------
 You can also declare a module-set which is loaded unconditionally in a device, or device-profile. In the following example, openconfig is declared as locally loaded::
 
    <devices xmlns="http://clicon.org/controller">
@@ -80,13 +86,15 @@ You can also declare a module-set which is loaded unconditionally in a device, o
    </devices>
 
 Note the following:
-  1. The locally defined openconfig YANG will searched for using the regular YANG search mechanism (using `CLICON_YANG_DIR`).
-  2. If the local YANG is not found, the (connect) transaction will fail.
+  1. The locally defined openconfig YANG will searched for using the regular YANG search mechanism (using `CLICON_YANG_DIR`). Typically in ``/usr/local/share/controller/main/extensions``
+  2. If the local YANG is not found, the (connect) transaction fails.
   3. Any imports declared in a locally defined YANG will also be loaded locally recursively
   4. If the device also supports RFC 6022 get-schema, any further YANGs will be loaded from the device.
-  
-Structure
-=========
+
+This means that local extensions are useful for augmenting device yangs as loaded by get-schema, but can also be used for devices lacking the ``get-schema`` capability.
+
+Module structure
+================
 
 Clixon-controller
 -----------------
@@ -111,6 +119,9 @@ The clixon-controller YANG has the following structure::
      |   | +--rw conn-type            connection-type
      |   | +--rw ssh-stricthostkey    boolean
      |   | +--rw yang-config?         yang-config
+     |   | +--rw device-domain?       string
+     |   | +--rw module-set* [name]
+     |   |   +--rw namespace          inet:uri
      |   +--rw device* [name]
      |     +--rw name                 string
      |     +--rw enabled?             boolean
@@ -174,4 +185,3 @@ The clixon-controller-config YANG extends the basic clixon-config with several f
        +--rw CONTROLLER_PYAPI_MODULE_PATH
        +--rw CONTROLLER_PYAPI_MODULE_FILTER
        +--rw CONTROLLER_PYAPI_PIDFILE
-       +--rw CONTROLLER_YANG_SCHEMA_MOUNT_DIR
