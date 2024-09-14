@@ -40,7 +40,7 @@ The YANG directory structure for the controller is as follows::
 
 where:
 
-- ``$DATADIR`` is typically ``use/local/share``.
+- ``$DATADIR`` is typically ``/usr/local/share``.
 - ``common``.  Includes common YANGs for all domains.
 - ``common/control``: For the controller domain, includes controller extensions to the clixon configuration file.
 - ``common/extensions``: Local extension YANGs can be placed here, see `local extensions`_
