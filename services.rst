@@ -87,6 +87,43 @@ Contents of the root parameter can be written in XML format by using the dumps()
   def setup(root, log, **kwargs):
       log.debug(root.dumps())
 
+
+Commit hooks
+============
+
+It is possible add "commit hooks" to a service module. A commit hook
+is a method that is called when a commit is issued. There are three
+types of commit hooks:
+
+* setup_pre_commit, called before the commit is issued.
+* setup_post_commit, called after the commit is issued.
+* setup_post_commit_failed, called if the commit fails.
+
+The commit hooks are optional and can be used to perform actions
+before or after a commit. The commit hooks are defined in the service
+module and must be named as described above.
+
+The commit hooks take the same parameters as the setup method,
+example:
+
+.. code:: python
+
+  SERVICE = "example"
+
+
+  def setup(root, log, **kwargs):
+      log.info("I am a module")
+
+  def setup_pre_commit(root, log, **kwargs):
+      log.info("I am a pre commit hook")
+
+  def setup_post_commit(root, log, **kwargs):
+      log.info("I am a post commit hook")
+
+  def setup_post_commit_failed(root, log, **kwargs):
+      log.info("I am a post commit failed hook")
+
+
 Service attributes
 ==================
 
