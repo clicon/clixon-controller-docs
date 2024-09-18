@@ -127,7 +127,7 @@ Running the service model
 When the service model is added (or edited), restart the
 controller. Restart the controller using systemd::
 
-    $ sudo systemctl restart clixon_controller.service
+    $ sudo systemctl restart clixon-controller.service
 
 Start the CLI::
 

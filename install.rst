@@ -84,17 +84,17 @@ It is recommended to NOT run the controller as root.
 SystemD
 -------
 
-In the clixon-controller source folder there is a file named clixon_controller.service which can be used to run the Controller backend using SystemD.
+In the clixon-controller source folder there is a file named clixon-controller.service which can be used to run the Controller backend using SystemD.
 
 To install the SystemD service:
 
 ::
 
-   cp clixon_controller.service /etc/systemd/system/
+   cp clixon-controller.service /etc/systemd/system/
    sudo systemctl daemon-reload
-   sudo systemctl enable clixon_controller.service
-   sudo systemctl start clixon_controller.service
-   sudo systemctl status clixon_controller.service
+   sudo systemctl enable clixon-controller.service
+   sudo systemctl start clixon-controller.service
+   sudo systemctl status clixon-controller.service
 
 Configure options
 =================
