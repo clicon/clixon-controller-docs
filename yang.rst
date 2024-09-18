@@ -44,7 +44,7 @@ where:
 - ``common``.  Includes common YANGs for all domains.
 - ``common/control``: For the controller domain, includes controller extensions to the clixon configuration file.
 - ``common/extensions``: Local extension YANGs can be placed here, see `local extensions`_
-- ``main``. Main controller YANGs for the top-level. These YANGs are loaded to the top-level data domain at start. Service YANGs are also placed here (``ss-users.yang``)
+- ``main``. Main controller YANGs for the top-level. These YANGs are loaded to the top-level data domain at start. Service YANGs are also placed here (``ssh-users.yang``)
 - ``modules``. Python modules for pyapi
 - ``mounts``. YANGs dynamically retreived from devices using RFC 6022 ``get-schema`` are placed in subdirs defining isolated domains
 - ``mounts/default``. Default YANG domain

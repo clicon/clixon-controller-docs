@@ -69,7 +69,7 @@ Some notes on the `ssh-users` service model, in order:
 * Import the clixon-controller YANG to use constructs as prefixed by ``ctrl:``
 * A revision matching the date in the filename.
 * The service `augments` the top-level service container in the clixon-controller YANG, i.e., extends it.
-* The `list ss-users` with key `instance` defines services instances. A service instance must be declared as a YANG `list` with a single key.
+* The `list ssh-users` with key `instance` defines services instances. A service instance must be declared as a YANG `list` with a single key.
 * The instance list must use ``created-by-service`` to keep track of created instances. This is especially important when removing config.
 
 XML configuration
