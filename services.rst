@@ -92,8 +92,8 @@ Commit hooks
 ============
 
 It is possible add "commit hooks" to a service module. A commit hook
-is a method that is called when a commit is issued. There are three
-types of commit hooks:
+is a method that is called when a "commit" or a "commit diff" is
+issued. There are three types of commit hooks:
 
 * setup_pre_commit, called before the commit is issued.
 * setup_post_commit, called after the commit is issued.
@@ -123,6 +123,12 @@ example:
   def setup_post_commit_failed(root, log, **kwargs):
       log.info("I am a post commit failed hook")
 
+
+ The attribute kwargs will contain the argument "instance" which is
+ the name of the current service instance that is being changed by the
+ user and can also contain the argument "diff" which is a boolean
+ value that is True if the commit is a "commit diff" and False if it
+ is a "commit".
 
 Service attributes
 ==================
