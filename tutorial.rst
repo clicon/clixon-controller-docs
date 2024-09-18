@@ -57,7 +57,7 @@ In this tutorial, the end result is SSH user configuration in an openconfig devi
       </aaa>
    </system>
 
-That is, a user ``new_username`` has a key and an ``operator`` role.
+That is, a user ``new_username`` has a key and an ``admin`` role.
 
 Note that the device configuration depends on the device YANG. A
 non-openconfig vendor device would have a different user configuration
@@ -73,7 +73,7 @@ The service model for this tutorial is called `ssh-users` and is used
 to configure SSH users on devices. You should follow this layout if
 you define other service models.
 
-A service consists of a list o service instance, each consisting of a
+A service consists of a list of service instances, each consisting of a
 list of users, which in turn has a name, an SSH key and a role.
 
 The YANG service model is as follows:
