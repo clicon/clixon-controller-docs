@@ -73,7 +73,7 @@ Local YANGs
 -----------
 You can also declare a module-set which is loaded unconditionally in a device, or device-profile. In the following example, openconfig is declared as locally loaded::
 
-  cli# set devices device-profile myprofile module-set module openconfig-interfaces namespace http://openconfig.net/yang/interfaces</namespace>
+  cli# set devices device-profile myprofile module-set module openconfig-interfaces namespace http://openconfig.net/yang/interfaces
   cli# set devices device-profile myprofile module-set module openconfig-interfaces revision "2024-04-04"
   cli# commit local
 
