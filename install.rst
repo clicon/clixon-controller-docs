@@ -175,3 +175,7 @@ Install script
 
   # Build and install clixon-controller
   (cd clixon-controller && ./configure && make && sudo make install; ldconfig)
+
+  # Build and install clixon-pyapi
+  (cd clixon-pyapi && ./requirements-apt.sh; ./install.sh)
+
