@@ -26,6 +26,15 @@ Building
 ========
 The source is built as follows.
 
+Add the clicon user and group
+-----------------------------
+
+::
+
+  sudo useradd clicon -N
+  sudo groupadd clicon
+  sudo usermod -a -G clicon `whoami`
+
 Cligen
 ------
 ::
@@ -135,3 +144,34 @@ Verify the SSH subsystem works as follows::
   ctrl> ssh admin@172.17.0.3 -s netconf
   <?xml version="1.0" encoding="UTF-8"?>
   <hello>....</hello>]]>]]>
+
+Install script
+==============
+
+::
+
+  # Do a fresh installation of Clixon controller on a Debian based system.
+
+  # Install the required packages
+  sudo apt update
+  sudo apt install -y flex bison git make gcc libnghttp2-dev libssl-dev
+
+  # Clone the repositories
+  git clone https://github.com/clicon/cligen.git
+  git clone https://github.com/clicon/clixon.git
+  git clone https://github.com/clicon/clixon-controller.git
+  git clone https://github.com/clicon/clixon-pyapi.git
+
+  # Add the clicon user
+  sudo useradd clicon -N
+  sudo groupadd clicon
+  sudo usermod -a -G clicon `whoami`
+
+  # Build and install cligen
+  (cd cligen && ./configure && make && sudo make install; ldconfig)
+
+  # Build and install clixon
+  (cd clixon && ./configure && make && sudo make install; ldconfig)
+
+  # Build and install clixon-controller
+  (cd clixon-controller && ./configure && make && sudo make install; ldconfig)
