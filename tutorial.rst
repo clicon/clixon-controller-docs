@@ -32,6 +32,16 @@ Before you start, you need to setup an environment:
 
 The setup of the environment is described in :ref:`setup tutorial <setup_tutorial>`.
 
+Note especially that the host should be installed with the following:
+
+* CLIgen
+* Clixon
+* Python API
+* Clixon controller
+
+.. note::
+   The controller host must be properly setup before starting the tutorial
+
 Device config
 =============
 In any service design, the end result needs to be clearly identified.

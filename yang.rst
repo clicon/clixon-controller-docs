@@ -2,7 +2,7 @@
 .. sectnum::
    :start: 9
    :depth: 3
-   
+
 ****
 YANG
 ****
@@ -43,7 +43,7 @@ where:
 - ``$DATADIR`` is typically ``/usr/local/share``.
 - ``common``.  Includes common YANGs for all domains.
 - ``common/control``: For the controller domain, includes controller extensions to the clixon configuration file.
-- ``common/extensions``: Local extension YANGs can be placed here, see `local extensions`_
+- ``common/extensions``: Local extension YANGs can be placed here, see `local YANGs`_
 - ``main``. Main controller YANGs for the top-level. These YANGs are loaded to the top-level data domain at start. Service YANGs are also placed here (``ssh-users.yang``)
 - ``modules``. Python modules for pyapi
 - ``mounts``. YANGs dynamically retreived from devices using RFC 6022 ``get-schema`` are placed in subdirs defining isolated domains
@@ -57,33 +57,25 @@ Device YANGs
 There are two mechanisms to get YANGs from devices:
 
   1. Dynamic RFC6022 get-schema
-  2. Locally defined extensions
+  2. Locally defined YANGs
 
 Get-schema
 ----------
 The YANG Module for NETCONF Monitoring (`RFC 6022 <https://www.rfc-editor.org/rfc/rfc6022.html>`_) defines a protocol for retrieving YANG schemas. Clixon implements this as a main mechanism.
 
-This is automatically invoked if the device the following capability in the hello protocol::
+This is automatically invoked if the device announces the following capability in the hello protocol::
 
    <capability>urn:ietf:params:xml:ns:yang:ietf-netconf-monitoring</capability>
 
 The state-machine mechanism for this is described in Section :ref:`transactions <controller_transactions>`.
 
-Local extensions
-----------------
+Local YANGs
+-----------
 You can also declare a module-set which is loaded unconditionally in a device, or device-profile. In the following example, openconfig is declared as locally loaded::
 
-   <devices xmlns="http://clicon.org/controller">
-      <device-profile>
-         <name>myprofile</name>
-         <module-set>
-            <module>
-               <name>openconfig-interfaces</name>
-               <namespace>http://openconfig.net/yang/interfaces</namespace>
-            </module>
-         </module-set>
-      </device-profile>
-   </devices>
+  cli# set devices device-profile myprofile module-set module openconfig-interfaces namespace http://openconfig.net/yang/interfaces</namespace>
+  cli# set devices device-profile myprofile module-set module openconfig-interfaces revision "2024-04-04"
+  cli# commit local
 
 Note the following:
   1. The locally defined openconfig YANG will searched for using the regular YANG search mechanism (using `CLICON_YANG_DIR`). Typically in ``/usr/local/share/controller/main/extensions``
@@ -164,7 +156,7 @@ The clixon-controller YANG has the following structure::
          +--transaction-actions-done
          +--datastore-diff
          +--device-template-apply
-  
+
 Service augment
 ---------------
 The services section contains user-defined services not provided by

@@ -24,10 +24,9 @@ Before you start, you need to have the following:
 1. Either a virtual machine or a physical machine where you have root
    access (the host). Typically a Linux OS.
 2. Docker installed on the machine.
+3. Setup the host using the instructions in the :ref:`Installation <controller_install>` section.
 
-Controller installation
-=======================
-Setup the host using the instructions in the :ref:`Installation <controller_install>` section. The following should be installed:
+The following should be installed on the host:
 
 * CLIgen
 * Clixon
