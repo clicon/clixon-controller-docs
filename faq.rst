@@ -121,7 +121,14 @@ If a device does not support this mechanism, the following error appears::
 
 If the device does not announce its models in this way, you can declare a local `module-set` which is loaded instead::
 
-  set devices device test modu
+  cli# set devices device-profile myprofile module-set module mymodule namespace ...
+
+A related error is that the device announex models but have an unrecognized `location`, which clixon does not support. The error message is::
+
+  Module: mymodule: Unsupported location:http://...
+
+The workaround for this is to download the yang models out-of-band and
+store them somewhere accessible by that domain.
 
 See the user-guide for details: https://clixon-controller-docs.readthedocs.io/en/latest/yang.html
 

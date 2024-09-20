@@ -191,9 +191,6 @@ Install script
   # Build and install clixon-controller
   (cd clixon-controller && ./configure && make && sudo make install; ldconfig)
 
-  # Build and install clixon-pyapi
-  (cd clixon-pyapi && ./requirements-apt.sh; ./install.sh)
-
 Building Debian packages
 ========================
 
@@ -214,3 +211,65 @@ should be invoked from the source directory:
 
 The package can be installed with `dpkg -i <package>` and removed with
 `dpkg -r <package>`.
+
+Directory structure
+===================
+In a typical installation, the main configuration file is in ``$SYSCONFIG/clixon/controller.xml`` (typically: ``usr/local/share/clixon/controller.xml``). All other directories are declared in this configure file.
+
+Extra config files loaded after the main in alphabetical order are placed in the ``$SYSCONFIG/clixon/controller/`` directory. This is useful for adding and overriding the default config.
+
+The directory structure is as follows::
+
+   ${SYSCONFIG} (/usr/local/etc)
+   └── clixon
+       ├── controller.xml
+       └── clixon
+
+   ${DATADIR}  (/usr/local/share)
+   ├── clixon
+   └── controller
+       ├── common
+       │   ├── control
+       │   │   └── clixon-controller-config.yang
+       │   └── extensions
+       ├── main
+       │   ├── clixon-controller.yang
+       │   └── ssh-users.yang
+       ├── modules
+       │   ├── __pycache__
+       │   └── ssh_users.py
+       └── mounts
+           ├── default 
+           └── openconfig
+
+   ${BINDIR} (/usr/local/bin)
+   ├── clixon_cli
+   ├── clixon_netconf
+   └── clixon_server.py
+
+   ${SBINDIR} (/usr/local/sbin)
+   ├── clixon_backend
+   └── clixon_restconf
+
+   ${LIBDIR} (/usr/local/lib)
+   └── controller
+       ├── backend
+       │   └── controller_backend.so
+       ├── cli
+       │   └── controller_cli.so
+       └── clispec
+           ├── controller_configure.cli
+           ├── controller_operation.cli
+           └── controller_pipe.cli
+
+   ${LOCALSTATEDIR} (/usr/local/var)
+   └── controller
+       ├── candidate.d
+       ├── running.d
+       └── startup.dp
+
+   ${RUNSTATEDIR} (/usr/local/var/run)
+   └── controller
+       ├── controller.pid
+       └── controller.sock
+
