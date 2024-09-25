@@ -177,3 +177,46 @@ The clixon-controller-config YANG extends the basic clixon-config with several f
        +--rw CONTROLLER_PYAPI_MODULE_PATH
        +--rw CONTROLLER_PYAPI_MODULE_FILTER
        +--rw CONTROLLER_PYAPI_PIDFILE
+
+Isolate YANG models
+===================
+
+In some cases it is useful to isolate YANG models to a specific device
+or a group of devices. This is done by creating a device domain or
+adding a device-domain to a single device.
+
+This might be need in the case where two devices have YANG models with
+the same name and revision, but different content.
+
+There are two ways of using device-domains:
+
+  1. By adding a device-domain to a single device.
+  2. By creating a device-profile and adding a device-domain to the profile.
+
+Device domain on a single device
+--------------------------------
+
+This is done by adding a device-domain to a single device. This is done
+by setting the device-domain leaf in the device configuration. For
+example::
+
+  user@example> configure
+  user@example# set devices device mydevice device-domain mydomain
+
+Then restart the Clixon controller backend.
+
+Device domain in a device-profile
+---------------------------------
+
+This is done by creating a device-profile and adding a device-domain to
+the profile. This is done by setting the device-domain leaf in the
+device-profile configuration. For example::
+
+  user@example> configure
+  user@example# set devices device-profile myprofile device-domain mydomain
+
+Then add the device-profile to the device configuration. For example::
+
+  user@example# set devices device mydevice device-profile myprofile
+
+Then restart the Clixon controller backend.
