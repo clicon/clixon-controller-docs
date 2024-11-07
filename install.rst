@@ -194,3 +194,23 @@ Install script
   # Build and install clixon-pyapi
   (cd clixon-pyapi && ./requirements-apt.sh; ./install.sh)
 
+Building Debian packages
+========================
+
+For each of the components (Cligen, Clixon, Clixon-controller and
+Clixon-pyapi) you can build Debian packages with the script
+`build_deb.sh` in the scripts/ directory.
+
+The script will create a Debian package in the source directory and
+should be invoked from the source directory:
+
+::
+
+  $ cd clixon-controller
+  $ ./scripts/build_deb.sh
+  ...
+  $ ls *.deb
+  clixon-controller_1.2.0-1_amd64.deb
+
+The package can be installed with `dpkg -i <package>` and removed with
+`dpkg -r <package>`.
