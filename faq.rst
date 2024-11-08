@@ -11,7 +11,10 @@ Clixon Controller FAQ
 ======================
 
   * `What is the Clixon controller?`_
-  * `How does it differ from Clixon?`_
+  * `Why should I use a network controller?`_
+  * `What is NETCONF/YANG?`_
+  * `What about other methods, such as SNMP or Ansible?`_
+  * `How does the controller differ from Clixon?`_
   * `What about other protocols?`_
   * `My devices are CLOSED`_
   * `How to configure JunOS and the Clixon controller?`_
@@ -24,15 +27,30 @@ Clixon Controller FAQ
 
 What is the Clixon controller?
 ------------------------------
+The Clixon controller is an open-source controller for network devices with a NETCONF/YANG API.
 
-The Clixon controller is a network device controller for multiple
-NETCONF devices.  Its aim is to provide a simple configuration manager
-with a python API and specialized CLI for multiple devices with
-different YANG schemas from different providers.
+Its aim is to provide centralized automation of device operation using an interactive CLI and a Python engine over a network.
 
-How does it differ from Clixon?
--------------------------------
+The controller sets up connections to devices, and controls them by monitoring their status and automate their configuration.
 
+It supports multiple devices with different YANG models from different vendors.
+
+Why should I use a network controller?
+--------------------------------------
+A network controller provides automation and a more abstract way of configuring a set of devices, in comparison with manual maintainence.
+
+What is NETCONF/YANG?
+---------------------
+NETCONF is a network management protocol providing a transactional semantics (commit/rollback).
+YANG is a data modeling language for the definition of data sent over (for example) NETCONF.
+NETCONF and YANG are IETF standards and a growing number of devices provide APIs.
+
+What about other methods, such as SNMP or Ansible?
+--------------------------------------------------
+There are many ways to manage devices. You choose.
+
+How does the controller differ from Clixon?
+-------------------------------------------
 Clixon itself is mainly used for end-systems, mostly network devices
 (such as firewalls, routers, switches), in some "embedded" form.
 However, Clixon can also be used as a platform for applications where
@@ -43,8 +61,7 @@ with remote devices and CLI plugins for the specialized CLI interface.
 
 What about other protocols?
 ---------------------------
-
-The clixon controller only intefaces with devices using NETCONF, not
+The clixon controller only interfaces with devices using NETCONF, not
 other protocols are supported (or CLI).  The controller itself
 supports NETCONF, RESTCONF and CLI.
 

@@ -7,14 +7,20 @@
 Overview
 ********
 
-The clixon network controller is an open-source manager of network devices based on NETCONF and YANG.
+The Clixon controller is an open-source controller for network devices with a NETCONF/YANG API.
 
-The controller is based on `Clixon <https://clixon-docs.readthedocs.io>`_. The controller is a Clixon application.
+Its aim is to provide centralized automation of device operation using an interactive CLI and a Python engine over a network.
+
+The controller sets up connections to devices, and controls them by monitoring their status and automate their configuration.
+
+It supports multiple devices with different YANG models.
+
+The controller is based on `Clixon <https://clixon-docs.readthedocs.io>`_.
 
 Goals
 -----
 The Clixon network controller aims at providing a simple
-network controller for NETCONF devices of different vendors, not only Clixon.
+network controller for NETCONF devices of different vendors.
 
 Further goals are:
 
@@ -22,6 +28,12 @@ Further goals are:
 - Multiple devices, with different YANG schemas using `RFC 8528: YANG Schema Mount <http://www.rfc-editor.org/rfc/rfc8528.txt>`_ .
 - Transactions with validate/commit/revert across groups of devices
 - Scaling up to 100 devices.
+
+What is NETCONF/YANG?
+---------------------
+NETCONF is a network management protocol providing a transactional semantics (commit/rollback).
+YANG is a data modeling language for the definition of data sent over (for example) NETCONF.
+NETCONF and YANG are IETF standards and a growing number of devices provide APIs.
 
 Architecture
 ------------
