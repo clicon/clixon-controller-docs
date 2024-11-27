@@ -445,24 +445,23 @@ Push the configuration to the devices, validate it and then revert::
 
 Templates
 =========
-The controller has a simple template mechanism for applying configurations to several devices at once. The template mechanism uses variable substitution.
+The controller has a simple configuration template mechanism for applying configurations to several devices at once. The template mechanism uses variable substitution.
 
 Note there may also be templates in the Python API, these are more primitive.
 
-A limitation is that the template itself need to be entered as XML or JSON, CLI editing is not available.
+A limitation is that the template itself need to be entered as XML.
 
 .. note::
           You need to enter the template as XML
 
 Using of a template follows the following steps:
 
-1) Add a template using the `load` command and commit it
+1) Add a template using the ``load`` command and commit it
 2) Apply the template using variable binding on a set of devices
 3) Commit the change
 
 Limitations
 -----------
-
 Templates are added as raw XML. The reason is that YANG-binding is not
 known at the time of template creation. To know the YANG, the template
 needs to be bound to some specific YANG files, or specific devices.
@@ -474,7 +473,7 @@ Since it is raw XML, there is no type-checking and any diffs (based on YANG) is 
 
 Example
 -------
-The following example first configures a template with the formal parameters `$NAME` and `$TYPE` using the load command to paste the template config directly::
+The following example first configures a template with the formal parameters ``$NAME`` and ``$TYPE`` using the load command to paste the template config directly::
   
    > clixon_cli -f /usr/local/etc/clixon/controller.xml -m configure
    olof@totila[/]# load merge xml
@@ -508,7 +507,7 @@ The following example first configures a template with the formal parameters `$N
    olof@totila[/]# commit
    olof@totila[/]# 
       
-Then, the template is applied: A ǹew `z` interface is created on all `openconfig` devices::
+The next step is to apply the configuration template: A New ``z`` interface is created on all ``openconfig`` devices::
 
    olof@totila[/]# apply template interfaces openconfig* variables NAME z TYPE ianaift:v35
    olof@totila[/]# show compare 
@@ -531,4 +530,89 @@ Then, the template is applied: A ǹew `z` interface is created on all `openconfi
    olof@totila[/]# commit
    olof@totila[/]#
 
+RPC templates
+-------------
+A variant of templates ise used to construct and send RPC:s to devices.
 
+RPC templates are similar to configuration templates in the following way:
+
+1) Template are defined using the ``load`` command using XML and is committed
+2) The template is applied using variable binding on a set of devices
+
+RPC templates are different from configuration templates in the following way:
+
+1) The XML format defines an RPC with input parameters instead of configuration
+2) An RPC template is applied from the operational CLI mode and no commit is made after apply
+
+List RPCs
+^^^^^^^^^
+You can list which RPC:s a device or a set of devices have::
+
+   olof@alarik> show devices openconfig* rpc clixon*
+   clixon-lib:debug
+   clixon-lib:ping
+   clixon-lib:stats
+   clixon-lib:restart-plugin
+   clixon-lib:process-control
+
+You can even see which YANG definition it has, which can be convenient when
+writing rpc templates::
+
+   olof@alarik> show devices openconfig1 rpc cli*debug yang
+   rpc debug {
+      description "Set debug flags of backend.
+                   Note only numerical values";
+      input {
+         leaf level {
+            type uint32;
+         }
+      }
+   }
+
+Example
+^^^^^^^
+Define a ``clixon-lib stats`` RPC template with a single ``MODULES`` variable::
+
+   > clixon_cli -f /usr/local/etc/clixon/controller.xml -m configure
+   olof@totila[/]# load merge xml
+   <config>
+      <devices xmlns="http://clicon.org/controller">
+         <rpc-template nc:operation="replace">
+            <name>stats</name>
+            <variables>
+               <variable>
+                  <name>MODULES</name>
+               </variable>
+            </variables>
+            <devname>openconfig1</devname>
+            <input>
+               <stats xmlns="http://clicon.org/lib">
+                  <modules>${MODULES}</modules>
+               </stats>
+            </input>
+         </rpc-template>
+      </devices>
+   </config>
+   ^D
+   olof@totila[/]# commit
+   olof@totila[/]#
+
+After the RPC template is defined, it can be applied to a set of devices::
+
+   olof@totila> apply rpc-template stats openconfig* variables MODULES true
+   <devdata>
+      <name>openconfig1</name>
+      <data>
+         <global xmlns="http://clicon.org/lib">
+            <xmlnr>1288</xmlnr>
+            <yangnr>166303</yangnr>
+         </global>
+         <datastores xmlns="http://clicon.org/lib">
+            <datastore>
+               <name>running</name>
+               <nr>113</nr>
+               <size>15592</size>
+            </datastore>
+            ....
+      <name>openconfig2</name>
+      ...

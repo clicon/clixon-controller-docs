@@ -24,6 +24,7 @@ Clixon Controller FAQ
   * `What about YANG features?`_
   * `What about the directory structure?`_
   * `Candidate is locked`_
+  * `Can Openconfig and IETF YANG co-exist?`_
 
 What is the Clixon controller?
 ------------------------------
@@ -227,3 +228,25 @@ It should not happen, but if it does, you can unlock candidate with the CLI comm
   cli> transaction unlock
 
 
+Can Openconfig and IETF YANG co-exist?
+--------------------------------------
+Yes, but there are some minor notes for the auto-CLI.
+
+YANG openconfig-interfaces and ietf-interfaces have the same top-level `interfaces` symbol but with different
+namespaces.
+
+The generated clixon-cli is not fully namespace compliant so one may need to filter the ietf-interfaces if running openconfig.
+
+Filtering the ietf-interfaces is done in the autocli.xml configuratin file as follows::
+
+  <clixon-config xmlns="http://clicon.org/config">
+     <autocli>
+        <module-default>true</module-default>
+        ...
+        <rule>
+           <name>exclude ietf interfaces</name>
+           <module-name>ietf-interfaces</module-name>
+           <operation>disable</operation>
+        </rule>
+     </autocli>
+  </clixon-config>
