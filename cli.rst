@@ -531,21 +531,23 @@ The next step is to apply the configuration template: A New ``z`` interface is c
    olof@totila[/]#
 
 RPC templates
--------------
-A variant of templates ise used to construct and send RPC:s to devices.
+=============
+RPC templates are used to construct and send RPC:s to devices.
 
 RPC templates are similar to configuration templates in the following way:
 
-1) Template are defined using the ``load`` command using XML and is committed
+1) Template are defined using the ``load`` command, and then ``commit``
 2) The template is applied using variable binding on a set of devices
 
-RPC templates are different from configuration templates in the following way:
+RPC templates are `different` from configuration templates in the following way:
 
-1) The XML format defines an RPC with input parameters instead of configuration
+1) The XML format defines an RPC with input parameters instead of a configuration
 2) An RPC template is applied from the operational CLI mode and no commit is made after apply
 
-List RPCs
-^^^^^^^^^
+List RPC and YANG
+-----------------
+Before writing an RPC one can use two utility commands to list which RPC:s are defined and then study their input YANG.
+
 You can list which RPC:s a device or a set of devices have::
 
    olof@alarik> show devices openconfig* rpc clixon*
@@ -555,23 +557,41 @@ You can list which RPC:s a device or a set of devices have::
    clixon-lib:restart-plugin
    clixon-lib:process-control
 
-You can even see which YANG definition it has, which can be convenient when
-writing rpc templates::
+In the above list, all RPC:s beginning with `clixon` are listed from `openconfig` devices.
 
-   olof@alarik> show devices openconfig1 rpc cli*debug yang
-   rpc debug {
-      description "Set debug flags of backend.
-                   Note only numerical values";
+YANG input
+----------
+You can also see which YANG definition it has, which can be convenient when
+writing templates. The following shows the YANG definition of the `stats` RPC::
+
+   olof@alarik> show devices openconfig1 rpc clixon-lib:stats yang
+   rpc stats {
       input {
-         leaf level {
-            type uint32;
+         leaf modules {
+             type boolean;
+             mandatory false;
+         }
+      }
+      output {
+         container global{
+              ...
+         }
+         container datastores{
+               ...
+         }
+         container module-sets{
+               ...
          }
       }
    }
 
-Example
-^^^^^^^
-Define a ``clixon-lib stats`` RPC template with a single ``MODULES`` variable::
+where `input` is the model of the input parameters of the RPC and are modelled by the rpc-template, and `output` is the model of the data returned from the devices.
+
+In the `stats` RPC, the input parameters is a single `modules` boolean leaf, while the output consists of three containers: `global`, `datastores`, and `modules-sets`.
+
+Template definition
+-------------------
+For example, define a ``clixon-lib stats`` RPC template::
 
    > clixon_cli -f /usr/local/etc/clixon/controller.xml -m configure
    olof@totila[/]# load merge xml
@@ -584,7 +604,10 @@ Define a ``clixon-lib stats`` RPC template with a single ``MODULES`` variable::
                   <name>MODULES</name>
                </variable>
             </variables>
-            <devname>openconfig1</devname>
+            <rpc>
+               <module>clixon-lib</module>
+               <name>stats</name>
+            </rpc>
             <input>
                <stats xmlns="http://clicon.org/lib">
                   <modules>${MODULES}</modules>
@@ -597,7 +620,16 @@ Define a ``clixon-lib stats`` RPC template with a single ``MODULES`` variable::
    olof@totila[/]# commit
    olof@totila[/]#
 
-After the RPC template is defined, it can be applied to a set of devices::
+The template above contains the following components:
+
+* A name (``stats``)
+* A set of formal parameters. The example contains a single ``MODULES`` parameter.
+* An RPC definition with its module and name: ``clixon-lib`` and ``stats``.
+* Input parameters: ``stats`` as defined by the YANG above
+
+Apply the template
+------------------
+After the RPC template is defined, it can be applied to a set of devices. In this case the template is applied on all ``openconfig`` devices and the replies are returned from ``openconfig1`` and ``openconfigs``::
 
    olof@totila> apply rpc-template stats openconfig* variables MODULES true
    <devdata>
