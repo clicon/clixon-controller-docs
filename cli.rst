@@ -550,14 +550,14 @@ Before writing an RPC one can use two utility commands to list which RPC:s are d
 
 You can list which RPC:s a device or a set of devices have::
 
-   olof@alarik> show devices openconfig* rpc clixon*
-   clixon-lib:debug
-   clixon-lib:ping
-   clixon-lib:stats
-   clixon-lib:restart-plugin
-   clixon-lib:process-control
+   olof@alarik> show devices openconfig* rpc clixon* list
+   clixon-lib:debug                 http://clicon.org/lib
+   clixon-lib:ping                  http://clicon.org/lib
+   clixon-lib:stats                 http://clicon.org/lib
+   clixon-lib:restart-plugin        http://clicon.org/lib
+   clixon-lib:process-control       http://clicon.org/lib
 
-In the above list, all RPC:s beginning with `clixon` are listed from `openconfig` devices.
+In the above list, all RPC:s beginning with `clixon` are listed from `openconfig` devices with their namespace.
 
 YANG input
 ----------
@@ -604,15 +604,11 @@ For example, define a ``clixon-lib stats`` RPC template::
                   <name>MODULES</name>
                </variable>
             </variables>
-            <rpc>
-               <module>clixon-lib</module>
-               <name>stats</name>
-            </rpc>
-            <input>
+            <config>
                <stats xmlns="http://clicon.org/lib">
                   <modules>${MODULES}</modules>
                </stats>
-            </input>
+            </config>
          </rpc-template>
       </devices>
    </config>
@@ -622,16 +618,15 @@ For example, define a ``clixon-lib stats`` RPC template::
 
 The template above contains the following components:
 
-* A name (``stats``)
+* A name (``stats``). This does not have to be the same as the RPC name.
 * A set of formal parameters. The example contains a single ``MODULES`` parameter.
-* An RPC definition with its module and name: ``clixon-lib`` and ``stats``.
-* Input parameters: ``stats`` as defined by the YANG above
+* The RPC config, must start with the RPC name '`stats`` and its namespace ``http://clicon.org/lib`` as defined by the YANG above, followed by any input variables ``<modules>${MODULES}</modules>``
 
 Apply the template
 ------------------
 After the RPC template is defined, it can be applied to a set of devices. In this case the template is applied on all ``openconfig`` devices and the replies are returned from ``openconfig1`` and ``openconfigs``::
 
-   olof@totila> apply rpc-template stats openconfig* variables MODULES true
+   olof@totila> rpc stats openconfig* variables MODULES true
    <devdata>
       <name>openconfig1</name>
       <data>
