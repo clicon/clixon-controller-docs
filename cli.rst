@@ -643,3 +643,16 @@ After the RPC template is defined, it can be applied to a set of devices. In thi
             ....
       <name>openconfig2</name>
       ...
+
+RPC templates can also be used from the Python API. The following
+Python code snippet shows how to use the ``device_rpc`` method to send
+an RPC to a device::
+
+   from clixon.clixon import Clixon
+   cx = Clixon()
+
+   # Send the RPC to all devices, arguments are the device name (wildcard),
+   # the RPC name, and a dictionary with the input parameters
+   res = cx.device_rpc("*", "stats", {"MODULES": "true"})
+
+   print(res.dumps())
