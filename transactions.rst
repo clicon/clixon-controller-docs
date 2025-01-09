@@ -2,7 +2,7 @@
 .. sectnum::
    :start: 8
    :depth: 3
-   
+
 ************
 Transactions
 ************
@@ -12,6 +12,7 @@ There are two such types of composite transactions:
 
 1. `Device connect`: where devices are connected via NETCONF over ssh, key exchange, YANG retrieval and config pull
 2. `Config push`: where a service is (optionally) edited, changed device config is pushed to remote devices via NETCONF.
+3. `RPC`: where a generic RPC request is sent to devices and wait for replies
 
 .. image:: transaction.jpg
    :width: 100%
@@ -128,4 +129,35 @@ Then add it to a device or device-profile configuration::
       ...
    }
 
-When the device YANG is loaded, it will be augmented with the ignore extension, which the controller will use in its comparison algorithm.   
+When the device YANG is loaded, it will be augmented with the ignore extension, which the controller will use in its comparison algorithm.
+
+Generic RPC
+===========
+A `generic RPC` transaction starts in state `OPEN`, sends an RPC to each device in the transaction set, waits for replies in state `RPC_GENERIC` and returns the replies to a client and goes back to `OPEN`.
+
+The transaction is initiated by the `device-template-apply` rpc of type `RPC`.
+
+Example
+-------
+Generic RPC uses the `template` concept
+
+Device state
+------------
+
+The following NETCONF message shows an example of sending the `'stats`` RPC to all openconfig devices::
+
+   <rpc xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" message-id="42">
+      <device-template-apply xmlns="http://clicon.org/controller">
+         <type>RPC</type>
+         <devname>openconfig*</devname>
+         <template>stats</template>
+         <variables>
+            <variable>
+               <name>MODULES</name>
+               <value>true</value>
+            </variable>
+         </variables>
+      </device-template-apply>
+   </rpc>]]>]]>
+
+The code above assumes that an RPC template called ``stats`` has been configured, see the :ref:`CLI section <controller_cli>`. As an alternative a template could be inlined.

@@ -34,7 +34,7 @@ You can show the version either with the ``-V`` command-line option or with the 
 Modes
 =====
 The CLI has two modes: operational and configure. The top-levels are as follows::
-   
+
   > clixon_cli
   cli> ?
     configure             Change to configure mode
@@ -42,7 +42,7 @@ The CLI has two modes: operational and configure. The top-levels are as follows:
     debug                 Debugging parts of the system
     default               Set CLI default values
     exit                  Quit
-    processes             Process maintenance 
+    processes             Process maintenance
     pull                  Pull config from one or multiple devices
     push                  Push config to one or multiple devices
     quit                  Quit
@@ -51,11 +51,11 @@ The CLI has two modes: operational and configure. The top-levels are as follows:
     shell                 System command
     show                  Show a particular state of the system
 
-  cli> configure 
+  cli> configure
   cli[/]# set ?
     devices               Device configuration
     processes             Processes configuration
-    services              Placeholder for services                                                       
+    services              Placeholder for services
   cli[/]#
 
 Devices
@@ -63,7 +63,7 @@ Devices
 Device configuration is separated into two domains:
 
 1) Local information about how to access the device (meta-data)
-2) Remote device configuration pulled from the device. 
+2) Remote device configuration pulled from the device.
 
 The user must be aware of this distinction when performing `commit` operations.
 
@@ -97,7 +97,7 @@ Example::
       description "Clixon example container";
       conn-type NETCONF_SSH;
       user admin;
-      yang-config VALIDATE;   
+      yang-config VALIDATE;
       module-set {
          module openconfig-interfaces {
             namespace http://openconfig.net/yang/interfaces;
@@ -116,13 +116,13 @@ Example::
    }
 
 In the example, the `myprofile` device-profile defines a set of common fields, including the locally loaded openconfig YANG. See Section :ref:`YANG <controller_yang>` for more information on loading device YANGs.
-  
+
 Remote device configuration
 ---------------------------
 The remote device configuration is present under the `config` mount-point::
 
    device clixon-example1 {
-      ... 
+      ...
       config {
          interfaces {
             interface eth0 {
@@ -133,8 +133,8 @@ The remote device configuration is present under the `config` mount-point::
    }
 
 The remote device configuration is bound to device-specific YANG models downloaded
-from the device at connection time. 
-   
+from the device at connection time.
+
 Device naming
 -------------
 The local device name is used for local selection::
@@ -145,41 +145,76 @@ Wild-cards (globbing) can be used to select multiple devices::
 
    device example*
 
-Further, device-groups can be configured and accessed as a single entity::
+Device groups
+-------------
+Device-groups can be configured and accessed as a single entity.
+First, configure, a device group::
+
+  cli# set devices mygroup example1
+  cli# set devices mygroup example2
+  cli# commit local
+
+Then, use the device-group in operations::
+
+  cli> connection open group mygroup
   
-   device-group all-examples
+In the example above, both device example1 and example2 will be opened.
 
-.. note::
-          Device groups can be statically configured but not used in most operations
-   
-In the forthcoming sections, selecting `<devices>` means any of the methods described here.
+Note that a device-group can be:
+* Hierarchical: A group may contain other groups
+* Duplicates: If a device occurs twice, only one will apply
+* Pattern matching: Wild-cards can be used when applying
 
-Device state
-------------
+Example::
+  device-group myg*
+
+In most commands in the following sections, device groups can be used instead of devices. In those commands, you add the keyword `group` to the command. Example::
+
+    cli> connection open example1      # device
+    cli> connection open group mygroup # device group
+
+Connection state
+----------------
 Examine device connection state using the show command::
 
    cli> show connections
-   Name                    State      Time                   Logmsg                        
+   Name                    State      Time                   Logmsg
    =======================================================================================
-   example1                OPEN       2023-04-14T07:02:07    
+   example1                OPEN       2023-04-14T07:02:07
    example2                CLOSED     2023-04-14T07:08:06    Remote socket endpoint closed
+
+Device state
+------------
+Device state, that is what is referred to as non-config data by YANG, is shown using::
+
+   cli> show devices example* state
+   <devdata xmlns="http://clicon.org/controller">
+      <name>openconfig1</name>
+      <data>
+         <data xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+            <system xmlns="http://openconfig.net/yang/system">
+               <config>
+                  <hostname>openconfig1</hostname>
+               </config>
+               <ssh-server>
+               ...
 
 (Re)connecting
 --------------
 When adding and enabling one a new device (or several), the user needs to explicitly connect::
 
-   cli> connection <devices> connect
-   
-The "connection" command can also be used to close, open or reconnect devices::
+   cli> connection open <devices>
+   cli> connection open group <device-group>
 
-   cli> connection <devices> reconnect
+The "connection" command can also be used to close or reconnect devices::
 
+   cli> connection reconnect <devices>
 
 Device YANG
 -----------
 You can list which YANGs the device has using the ``show devices yang`` command::
 
-  olof@alarik> show devices example1 yang 
+  olof@alarik> show devices example1 yang
   example1:
   clixon-lib@2023-11-01
   clixon-restconf@2022-08-01
@@ -209,15 +244,16 @@ pull
 Pull fetches the configuration from remote devices and replaces any existing device config::
 
    cli> pull <devices>
+   cli> pull group <device-groups>
 
 The synced configuration is saved in the controller and can be used for diffs etc.
 
 pull merge
 ----------
 ::
-   
+
    cli> pull <devices> merge
-   
+
 This command fetches the remote device configuration and merges with the
 local device configuration. use this command with care.
 
@@ -225,7 +261,7 @@ Services
 ========
 Network services are used to generate device configs.  Services are covered in more detail in the :ref:`Services tutorial <tutorial>`.
 
-Service process 
+Service process
 ---------------
 To run services, the PyAPI service process must be enabled::
 
@@ -239,7 +275,7 @@ To view or change the status of the service daemon::
     start
     status
     stop
-  
+
 Example
 -------
 An example service could be::
@@ -266,13 +302,13 @@ You can also trigger service scripts as follows::
   cli# apply services testA foo diff
 
 In the first variant, all services are applied. In the second variant, only a specific service is triggered.
-  
+
 Created objects
 ---------------
 The system keeps track of which device objects are created, so that they can be be removed when the service is removed. A service tags device objects with a `creator attribute` which results in a set of `created` configure objects in the controller.
 
 The list created objects can be viewed as part of the regular configuration::
-  
+
    cli> show configuration services ssh-users test1 created
    <services xmlns="http://clicon.org/controller">
       <ssh-users xmlns="urn:example:test">
@@ -298,7 +334,7 @@ Editing can be made by modifying services::
 
 Editing changes the controller candidate, changes can be viewed with::
 
-   cli# show compare 
+   cli# show compare
         services {
    +       test 2 {
    +          name eth*;
@@ -308,10 +344,10 @@ Editing changes the controller candidate, changes can be viewed with::
 
 Editing devices
 ---------------
-Device configurations can also be directly edited::  
+Device configurations can also be directly edited::
 
    cli# set devices device example1 config interfaces interface eth0 mtu 1500
-       
+
 Show and editing commands can be made on multiple devices at once using "glob" patterns::
 
    cli> show config xml devices device example* config interfaces interface eth0
@@ -375,12 +411,12 @@ Commit push
 -----------
 The changes can now be pushed and committed to the devices::
 
-   cli# commit push  
+   cli# commit push
 
 If there are no services, changes will be pushed and committed without invoking any service handlers.
 
 If the commit fails for any reason, the error is printed and the changes remain as prior to the commit call::
-   
+
    cli# commit push
    Failed: device example1 validation failed
    Failed: device example2 out-of-sync
@@ -389,7 +425,7 @@ A non-recoverable error that requires manual intervention is shown as::
 
    cli# commit push
    Non-recoverable error: device example2: remote peer disconnected
-   
+
 To validate the configuration on the remote devices, use the following command::
 
    cli# validate push
@@ -441,7 +477,7 @@ made (eg `commit local`) which needs an explicit push. Or if a new device has be
 
 Push the configuration to the devices, validate it and then revert::
 
-     cli> push <devices> validate 
+     cli> push <devices> validate
 
 Templates
 =========
@@ -474,7 +510,7 @@ Since it is raw XML, there is no type-checking and any diffs (based on YANG) is 
 Example
 -------
 The following example first configures a template with the formal parameters ``$NAME`` and ``$TYPE`` using the load command to paste the template config directly::
-  
+
    > clixon_cli -f /usr/local/etc/clixon/controller.xml -m configure
    olof@totila[/]# load merge xml
    <config>
@@ -505,12 +541,12 @@ The following example first configures a template with the formal parameters ``$
    </config>
    ^D
    olof@totila[/]# commit
-   olof@totila[/]# 
-      
+   olof@totila[/]#
+
 The next step is to apply the configuration template: A New ``z`` interface is created on all ``openconfig`` devices::
 
    olof@totila[/]# apply template interfaces openconfig* variables NAME z TYPE ianaift:v35
-   olof@totila[/]# show compare 
+   olof@totila[/]# show compare
                openconfig-interfaces:interfaces {
    +              interface z {
    +                 config {
@@ -557,12 +593,11 @@ You can list which RPC:s a device or a set of devices have::
    clixon-lib:restart-plugin        http://clicon.org/lib
    clixon-lib:process-control       http://clicon.org/lib
 
-In the above list, all RPC:s beginning with `clixon` are listed from `openconfig` devices with their namespace.
+In the above list, all RPC:s beginning with ``clixon`` are listed from ``openconfig`` devices with their namespace.
 
 YANG input
 ----------
-You can also see which YANG definition it has, which can be convenient when
-writing templates. The following shows the YANG definition of the `stats` RPC::
+You can also see which YANG definition an RPC has, which is convenient when writing templates. The following shows the YANG definition of the ``stats`` RPC::
 
    olof@alarik> show devices openconfig1 rpc clixon-lib:stats yang
    rpc stats {
@@ -585,16 +620,17 @@ writing templates. The following shows the YANG definition of the `stats` RPC::
       }
    }
 
-where `input` is the model of the input parameters of the RPC and are modelled by the rpc-template, and `output` is the model of the data returned from the devices.
+where ``input`` is the model of the input parameters of the RPC and are modelled by the rpc-template, and `output` is the model of the data returned from the devices.
 
-In the `stats` RPC, the input parameters is a single `modules` boolean leaf, while the output consists of three containers: `global`, `datastores`, and `modules-sets`.
+In the ``stats`` RPC, the input parameters is a single ``modules`` boolean leaf, while the output consists of three containers: ``global``, ``datastores``, and ``modules-sets``.
 
-Template definition
--------------------
-For example, define a ``clixon-lib stats`` RPC template::
+Load a template
+---------------
+To define a new RPC template it may be easiest to load the XML directly.
+For example, define a ``clixon-lib stats`` RPC template as follows::
 
    > clixon_cli -f /usr/local/etc/clixon/controller.xml -m configure
-   olof@totila[/]# load merge xml
+   olof@totila[/]## load merge xml
    <config>
       <devices xmlns="http://clicon.org/controller">
          <rpc-template nc:operation="replace">
@@ -622,8 +658,8 @@ The template above contains the following components:
 * A set of formal parameters. The example contains a single ``MODULES`` parameter.
 * The RPC config, must start with the RPC name '`stats`` and its namespace ``http://clicon.org/lib`` as defined by the YANG above, followed by any input variables ``<modules>${MODULES}</modules>``
 
-Apply the template
-------------------
+Send the RPC
+------------
 After the RPC template is defined, it can be applied to a set of devices. In this case the template is applied on all ``openconfig`` devices and the replies are returned from ``openconfig1`` and ``openconfigs``::
 
    olof@totila> rpc stats openconfig* variables MODULES true
