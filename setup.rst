@@ -192,8 +192,17 @@ The controller may be unable to login to the device for one of the following rea
    * The device has no NETCONF SSH subsystem enabled
    * The controllers public SSH key is not installed on the device
    * The device host key is not installed in the controllers `known_hosts`
+   * ssh: connect to host <ip> port 830: Connection refused
+     
+The controller requires its public key to be installed on the devices and performs strict checking of host keys to avoid man-in-the-middle attacks. You need to ensure that the public key the controller uses is installed on the devices, and that the known_hosts file of the controller contains entries for the devices. To disable strict host key checking use `set devices device <device name> ssh-stricthostkey false`. For connection refused error ensure that the subsystem is exposed via port 830. The controller uses the default Netconf port (830) to connect to devices. If the subsystem on the device is exposed on a different port, update the port in the controller for that device using the following commands in clixon_cli:
 
-The controller requires its public key to be installed on the devices and performs strict checking of host keys to avoid man-in-the-middle attacks. You need to ensure that the public key the controller uses is installed on the devices, and that the known_hosts file of the controller contains entries for the devices.
+.. code-block:: bash
+
+        $ clixon_cli
+        user@test> configure
+        user@test[/]# set devices device <device name> port <port number>
+        user@test[/]# commit local
+        user@test[/]# exit        
 
 Next step
 =========
