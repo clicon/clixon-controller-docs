@@ -10,17 +10,21 @@ Extensions
 Introduction
 ============
 
-Extensions are a way to alter YANG models provided by device or
-controller. They can be used to add new features to the models or to
-modify the existing ones. Extensions are stored under
-``/usr/local/share/controller/common/extensions/`` and defined in the
-controller configuration and are applied to the models when the
-controller starts.
+Extensions are a way to alter existing YANG models or extend the controller's (binary) callbacks.
 
-Creating an YANG extension
-=====================
+There are two kinds of extensions:
+- YANG extensions: to add or modify device YANG
+- Plugin extensions: to add device-specific code
 
-To create an extension, you need to create a new file under
+YANG extensions are useful if the YANG provided by a device needs to
+add new features to a model or to modify existing models.
+
+YANG extensions
+===============
+
+Creating a YANG extension
+-------------------------
+To create an extension, you need to create a new file under (for example)
 ``/usr/local/share/controller/common/extensions/``. The file name
 should contain a YANG revision and end with ``.yang``. As an example,
 let's create an extension that limits the length of the ``hostname``
@@ -112,8 +116,7 @@ configuration can also be applied to device-profiles if you want to
 apply the extension to all devices that use the device-profile.
 
 Ignoring configuration
-======================
-
+----------------------
 In some cases, you might want to ignore the configuration of a
 leaf. For example if the device adds configuration or hashes
 configuration. To ignore the configuration of a leaf you can use the
@@ -147,5 +150,28 @@ JunOS when a new user is created::
   	cl:ignore-compare;
       }
   }
+
+Plugin extensions
+=================
+A plugin extension builds a dynamic loadable module (``.so``) which adds plugin code to the controller. This is an advanced feature.
+
+Adding a new plugin is done by adding .c code under the ``plugins/`` dir and then doing::
+
+  > cd plugin
+  > make
+  > sudo make install
+
+You may need to edit the Makefile.
   
+For example, if you add the plugin: ``myplugin.be.c``, a ``myplugin.be.so`` will be installed in the libdir along with ``controller.so``.
+
+The new ``myplugin.be.so`` plugin will then be loaded alongside the controller plugin. Note that loading is made alphabeticaly, in case you want to insert your plugin before or after the main plugin.
+
+Adding a plugin can be useful if you need to add code to handle some device-specific behaviour, such as::
+
+  - Adding an extra validation or commit action
+  - Intercept RPC:s with wrap code
+  - Translate XML
+
+The plugins follow the regular Clixon plugins. The controller itself is a plugin, and adding an extension plugin is similar to modifying the controller code. However, it adds code in a modular fashion which is easier to maintain than changing the source code.
 
