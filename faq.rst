@@ -1,6 +1,6 @@
 .. _controller_install:
 .. sectnum::
-   :start: 13
+   :start: 14
    :depth: 3
 
 ********************************
@@ -68,7 +68,6 @@ supports NETCONF, RESTCONF and CLI.
 
 My devices are CLOSED
 ---------------------
-
 If a device does not come up and shows something like::
   
   cli>show device
@@ -87,7 +86,6 @@ The controller requires its public key to be installed on the devices and perfor
 
 How to configure JunOS and the Clixon controller?
 -------------------------------------------------
-
 JunOS must be configured with SSH-keys and a few other settings before being used with Clixon. The SSH-key belongs to the user which clixon_backend run as. The rfc-compliant option for the netconf server must also be set::
 
   root@junos> show configuration
@@ -115,7 +113,6 @@ JunOS must be configured with SSH-keys and a few other settings before being use
 
 How do I add a device in Clixon?
 --------------------------------
-
 The device should be configured to use the same user as in the configuration above, using the CLI::
 
   set devices device test enabled true
@@ -130,7 +127,6 @@ Thereafter the device must be explicitly connected::
 
 My device does not announce models?
 -----------------------------------
-
 The main mechanism in the controller to get YANGs from devices is the RFC6022 `get-schema` mechanism.
 
 If a device does not support this mechanism, the following error appears::
@@ -152,7 +148,6 @@ See the user-guide for details: https://clixon-controller-docs.readthedocs.io/en
 
 My device symbols do not appear in the CLI?
 -------------------------------------------
-
 Connections are open but when you try to edit the device config, there are no symbols::
   
    controller[/]# set devices device mydev config ?
@@ -182,7 +177,6 @@ It may be that your `autocli.xml` file needs editing. Suppose your YANG files st
 
 What about YANG features?
 -------------------------
-
 If you use YANG features that are required to be enabled for your YANG
 to function properly, then you need to explicitly enable them in the
 configuration file.
@@ -217,7 +211,6 @@ with specific meanings:
 
 Candidate is locked
 -------------------
-
 You may encounter an error when doing commit or connect something like::
 
   Candidate db is locked by 1677721

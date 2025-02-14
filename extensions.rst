@@ -1,6 +1,6 @@
 .. _controller_extensions:
 .. sectnum::
-   :start: 14
+   :start: 13
    :depth: 3
 
 **********
@@ -187,6 +187,3 @@ To create a new plugin, you create a new directory under ``plugins/``, edit a Ma
 For example, if you add the plugin: ``myplugin.be.c``, a ``myplugin.be.so`` will be installed in the libdir along with ``controller.so``.
 
 The new ``myplugin.be.so`` plugin is loaded alongside the controller plugin. Note that loading is made alphabeticaly, in case you want to insert your plugin before or after the main plugin.
-
-
-
