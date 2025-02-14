@@ -155,23 +155,38 @@ Plugin extensions
 =================
 A plugin extension builds a dynamic loadable module (``.so``) which adds plugin code to the controller. This is an advanced feature.
 
-Adding a new plugin is done by adding .c code under the ``plugins/`` dir and then doing::
-
-  > cd plugin
-  > make
-  > sudo make install
-
-You may need to edit the Makefile.
-  
-For example, if you add the plugin: ``myplugin.be.c``, a ``myplugin.be.so`` will be installed in the libdir along with ``controller.so``.
-
-The new ``myplugin.be.so`` plugin will then be loaded alongside the controller plugin. Note that loading is made alphabeticaly, in case you want to insert your plugin before or after the main plugin.
-
-Adding a plugin can be useful if you need to add code to handle some device-specific behaviour, such as::
+A plugin can be useful if you need to add code to handle some device-specific behaviour, such as:
 
   - Adding an extra validation or commit action
   - Intercept RPC:s with wrap code
   - Translate XML
 
-The plugins follow the regular Clixon plugins. The controller itself is a plugin, and adding an extension plugin is similar to modifying the controller code. However, it adds code in a modular fashion which is easier to maintain than changing the source code.
+To install an existing plugin, enter its dir under ``plugins``, build and install::
+
+  > cd plugin/junos_native
+  > make
+  > sudo make install
+
+The plugins are installed under ``$libdir``, alongside the regular controller plugins. For example, the backend plugins::
+
+  sh# ls -1 /usr/lib/controller/backend
+  controller_backend.so            # Regular controller backend
+  controller_junos_native.be.so    # Extension plugin
+
+The extension plugin is just a regular clixon plugin.
+
+Adding an extension plugin is similar to modifying the controller
+code. However, the plugin structure adds code in a modular fashion
+which is easier to maintain than changing the source code. For
+example, it is easy to add or remove the plugin binary independently of modifying and recompiling the controller source code.
+
+Create a plugin
+---------------
+To create a new plugin, you create a new directory under ``plugins/``, edit a Makefile and write clixon plugin C code.
+  
+For example, if you add the plugin: ``myplugin.be.c``, a ``myplugin.be.so`` will be installed in the libdir along with ``controller.so``.
+
+The new ``myplugin.be.so`` plugin is loaded alongside the controller plugin. Note that loading is made alphabeticaly, in case you want to insert your plugin before or after the main plugin.
+
+
 
