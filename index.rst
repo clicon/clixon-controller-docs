@@ -15,6 +15,7 @@ Clixon network controller is an open-source manager of network devices based on 
    setup
    cli
    tutorial
+   restconf
    configuration
    transactions
    yang
