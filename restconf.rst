@@ -7,31 +7,27 @@
 RESTCONF
 ********
 
-This section desribes how to use RESTCONF with the Clixon controller.
+This section describes how to use RESTCONF with the Clixon controller.
 
+Please also consult the RESTCONF section in the `Clixon user manual <https://clixon-docs.readthedocs.io>`_.
 
 Configuration
 =============
 
-Clixon provides many different configurations for RESTCONF. The controller only supports one, as follows:
+Clixon provides many different configurations for RESTCONF. The controller only supports the following:
 
-1. Native mode, that is, TLS and http is native in the RESTCONF daemon. No reverse proxy is needed.
-2. HTTP/1.1 and HTTP/2 is supported
-3. Only basic and SSL client cert authentication is supported
-4. The RESTCONF configuration is part of the `datastore`. That is, not in the configuration file
-
-Please also consult the RESTCONF section in the `Clixon user manual <https://clixon-docs.readthedocs.io>`_.
+1. Native TLS and http in the RESTCONF daemon. No reverse proxy is needed.
+2. HTTP/1.1 and HTTP/2
+3. Basic and TLS/SSL client cert authentication
+4. Datastore configuration, not in configuration file
 
 Example config
 --------------
-A typical configuration using client certs looks something like this::
+A typical RESTCONF configuration may look as follows, where a TLS on port 443 on 192.168.32.1 is configured using client-certs placed in the ``etc/pki/tls`` directory::
 
    <restconf xmlns="http://clicon.org/restconf">
       <enable>true</enable>
-      <debug>0</debug>
-      <timeout>0</timeout>
       <auth-type>client-certificate</auth-type>
-      <pretty>false</pretty>
       <server-cert-path>/etc/pki/tls/certs/clixon-server-crt.pem</server-cert-path>
       <server-key-path>/etc/pki/tls/private/clixon-server-key.pem</server-key-path>
       <server-ca-cert-path>/etc/pki/tls/CA/clixon-ca-crt.pem</server-ca-cert-path>
@@ -43,17 +39,19 @@ A typical configuration using client certs looks something like this::
       </socket>
    </restconf>
 
-The config above listen to TLS on port 443 on 192.168.32.1 using client-certs.
+Alternatively, you may use `basic auth`
 
-Modify the configuration above to suit you needs, place it in the datastore using one of the methods described in the next section.
+You should modify the configuration above to suit you needs,
+thereafter install it in the Clixon datastore using one of the methods
+described in the next section.
 
-Starting
-========
-You start the RESTCONF daemon by adding the configuration to the datastore in one of the following methods.
+Install configuration
+=====================
+You install the RESTCONF configuration by adding it to the datastore in one of the following methods.
 
-CLI
----
-Enter the CLI and edit the restconf configuration and commit it::
+Install using CLI
+-----------------
+Enter the CLI and edit the RESTCONF configuration and commit it::
 
    # clixon_cli
    cli> configure
@@ -62,13 +60,14 @@ Enter the CLI and edit the restconf configuration and commit it::
    cli# set restconf server-key-path /var/tmp/./test-restconf.sh/certs/clixon-server-key.pem
    cli# set restconf server-ca-cert-path /var/tmp/./test-restconf.sh/certs/clixon-ca-crt.pem
    cli# set restconf socket default 0.0.0.0 443
-   cli# set restconf timeout 10
    cli# set restconf socket default 0.0.0.0 443 ssl true
    cli# commit local
    cli#
 
-Datastore
----------
+The commit command should (re)start the RESTCONF daemon with the new configuration. To verify that the RESTCONF is running, see Section `Verify the configuration`_.
+   
+Install in datastore
+--------------------
 If you use a `startup-db` or `running-db` you can directly edit the datastore by adding the restconf config and restart the ``clixon_backend``.
 
 Add the restconf config to the datastore, such as ``/usr/local/var/controller/startup.d/0.xml`` as follows::
@@ -81,12 +80,14 @@ Add the restconf config to the datastore, such as ``/usr/local/var/controller/st
       </restconf>
    </config>
 
-Then restart ``clixon_backend``
+Then restart ``clixon_backend``, typically using systemd::
 
-NETCONF
--------
+   sudo systemctl restart clixon-controller.service
 
-Send a NETCONF message to the controller, something like::
+Install using NETCONF
+---------------------
+
+Send a NETCONF edit-config message to modify the restconf configuration, and then commit it::
 
    <?xml version="1.0" encoding="UTF-8"?>
    <hello xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
@@ -109,31 +110,66 @@ Send a NETCONF message to the controller, something like::
       <commit/>
    </rpc>]]>]]>
 
-
-Operation
-=========
-
-Verify
-------
-Verify that the daemon is running in the CLI::
+The RESTCONF daemon should be restarted with the new configuration.
+   
+Verify the configuration
+------------------------
+Verify that the daemon is running using the CLI::
 
    cli> processes restconf status
    <rpc-reply xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
       <active xmlns="http://clicon.org/lib">true</active>
-      <description xmlns="http://clicon.org/lib">Clixon RESTCONF process</description>
-      <command xmlns="http://clicon.org/lib">/usr/local/sbin/clixon_restconf -f /usr/local/etc/clixon/controller.xml -E /var/tmp/./test-restconf.sh/confdir -D 0 -l s</command>
-      <status xmlns="http://clicon.org/lib">running</status>
-      <starttime xmlns="http://clicon.org/lib">2025-03-03T16:01:53.464749Z</starttime>
-      <pid xmlns="http://clicon.org/lib">29238</pid>
+      <status xmlns="http://clicon.org/lib">running</status>  <---
    </rpc-reply>
 
-Note the status: running field.
+You can also verify it via RESTCONF (using curl as a tool)::
+  
+   curl -X POST -H "Content-Type: application/yang-data+json"
+        https://localhost/restconf/operations/clixon-lib:process-control
+        -d '{"clixon-lib:input":{"name":"restconf","operation":"status"}}'
+   HTTP/1.1 200
+   {
+      "clixon-lib:output": {
+         "active": true,
+         "description": "Clixon RESTCONF process",
+         "status": "running",  <---
+      }
+   }
+
+Setup
+=====
+You setup the connection to one or several devices by editing the device connection data
+
+For example, using curl, setup a device with IP address ``172.17.0.3`` and user ``admin`` via SSH::
+
+   curl -X POST -H "Content-Type: application/yang-data+json"
+     https://localhost/restconf/data/clixon-controller:devices
+     -d '{"clixon-controller:device":
+            {"name":"test",
+             "enabled":"true",
+             "conn-type":"NETCONF_SSH",
+             "user":"admin",
+             "addr":"172.17.0.3"
+            }
+         }'
+   HTTP/1.1 201
 
 Connect
 =======
-You can connect to devices using curl (or other similar tool) to invoke the `connection-change` operationas. For example::
 
-   curl -X POST -H "Content-Type: application/yang-data+json" https://localhost/restconf/operations/clixon-controller:connection-change -d '{"clixon-controller:input":{"device":"*","operation":"OPEN"}}'
+If you have setup the configuration to your devices and installed the
+SSH keys, you can establish connections to devices. For this, you need to invoke
+the `connection-change` RPC.
+
+.. note::
+          You need to install SSH keys before connection establishment
+          
+Example::
+
+   curl -X POST -H "Content-Type: application/yang-data+json"
+       https://localhost/restconf/operations/clixon-controller:connection-change
+       -d '{"clixon-controller:input":{"device":"\*","operation":"OPEN"}}'
+   HTTP/1.1 200
    {
       "clixon-controller:output":{
          "tid":"4"
@@ -142,11 +178,20 @@ You can connect to devices using curl (or other similar tool) to invoke the `con
 
 In the example, all devices are selected, and the operation is `OPEN`. You can also close, or reconnect.
 
+To instead make a "glob" pattern matching a set of device-groups::
+
+   curl -X POST -H "Content-Type: application/yang-data+json"
+        https://localhost/restconf/operations/clixon-controller:connection-change
+        -d '{"clixon-controller:input":{"device-group":"openconfig*","operation":"OPEN"}}'
+   HTTP/1.1 200
+
 The return value of the connect operation is a `transaction-id`. Connection establishment is asynchronous and can be monitored by a notification, which is further described in Section `notifications`_.
 
 Another alternative is to wait and check the status of the connection using GET, as follows::
 
-   curl -X GET -H "Accept: application/yang-data+json" https://localhost/restconf/data/clixon-controller:devices/device=openconfig1/conn-state
+   curl -X GET -H "Accept: application/yang-data+json"
+        https://localhost/restconf/data/clixon-controller:devices/device=openconfig1/conn-state
+   HTTP/1.1 200
    {"clixon-controller:conn-state":"OPEN"}
 
 Accessing device config
@@ -158,7 +203,9 @@ GET
 ---
 You can GET configuration from a single device as follows::
 
-   curl -H "Accept: application/yang-data+xml" -X GET https://localhost/restconf/data/clixon-controller:devices/device=openconfig1/config
+   curl -H "Accept: application/yang-data+xml" -X GET
+        https://localhost/restconf/data/clixon-controller:devices/device=openconfig1/config
+   HTTP/1.1 200
    {
     "clixon-controller:config": {
       "openconfig-interfaces:interfaces": {
@@ -169,7 +216,9 @@ You can GET configuration from a single device as follows::
 
 You can also get more specific config::
 
-   curl -H "Accept: application/yang-data+xml" -X GET https://localhost/restconf/data/clixon-controller:devices/device=openconfig1/config//openconfig-interfaces:interfaces/interface=x/config/type
+   curl -H "Accept: application/yang-data+xml" -X GET
+        https://localhost/restconf/data/clixon-controller:devices/device=openconfig1/config//openconfig-interfaces:interfaces/interface=x/config/type
+   HTTP/1.1 200
    {
       "openconfig-interfaces:type": "iana-if-type:ethernetCsmacd"
    }
@@ -188,13 +237,14 @@ For example, change the description of an interface using PUT::
              "description": "My description"
              }
           }'
-
-RPCs
-====
-
+   HTTP/1.1 204
 
 Notifications
 =============
+
+
+Device RPCs
+===========
 
 Services
 ========
