@@ -69,12 +69,11 @@ supports NETCONF, RESTCONF and CLI.
 My devices are CLOSED
 ---------------------
 If a device does not come up and shows something like::
-  
+
   cli>show device
   Name                    State      Time                   Logmsg
   =======================================================================================
   clixon-example1         CLOSED     2023-05-25T11:12:29    Closed by device
-
 
 The controller may be unable to login to the device for one of the following reasons:
 
@@ -130,7 +129,7 @@ My device does not announce models?
 The main mechanism in the controller to get YANGs from devices is the RFC6022 `get-schema` mechanism.
 
 If a device does not support this mechanism, the following error appears::
-   
+
   Netconf monitoring capability not announced in hello protocol and no local models found
 
 If the device does not announce its models in this way, you can declare a local `module-set` which is loaded instead::
@@ -149,7 +148,7 @@ See the user-guide for details: https://clixon-controller-docs.readthedocs.io/en
 My device symbols do not appear in the CLI?
 -------------------------------------------
 Connections are open but when you try to edit the device config, there are no symbols::
-  
+
    controller[/]# set devices device mydev config ?
    controller[/]#
 
@@ -206,7 +205,7 @@ search path if placed here. Howevere there are three sub-directories
 with specific meanings:
 
   - `main`. Main controller YANGs for the top-level. Note: only place YANGs here if you want them loaded to the top-level.
-  - `mounts`. YANGs retreived from devices are written here
+  - `mounts`. YANGs retrieved from devices are written here
   - `modules`. YANGs for the pyapi
 
 Candidate is locked
@@ -219,7 +218,6 @@ This happens if a commit/connect transaction terminates without releasing the ca
 It should not happen, but if it does, you can unlock candidate with the CLI command::
 
   cli> transaction unlock
-
 
 Can Openconfig and IETF YANG co-exist?
 --------------------------------------

@@ -64,25 +64,21 @@ The full configuration of the device can be seen with the following command::
   </devices>
 
 
-To create a new YANG extension we first have to create a new file in the 
+To create a new YANG extension we first have to create a new file in the
 ``common/`` directory, like this: ``/usr/local/share/controller/common/extensions/test@2025-02-30.yang`` and add the following content::
 
   module test {
       namespace "http://clicon.org/controller/extensions/test";
       prefix test;
-  
       import openconfig-system {
           prefix sys;
       }
-  
       import openconfig-system {
           prefix oc-sys;
       }
-  
       revision 2025-02-28 {
           description "Limit the length of the hostname to 10 characters";
       }
-  
       deviation "/oc-sys:system/oc-sys:config/oc-sys:hostname" {
           deviate replace {
               type uint32 {
@@ -127,25 +123,19 @@ JunOS when a new user is created::
 
   module controller-extensions-uid {
       namespace "http://clicon.org/ext/uid";
-  
       prefix cl-ext;
-  
       import clixon-lib {
           prefix cl;
       }
-  
       import junos-conf-root {
   	prefix jc;
       }
-  
       import junos-conf-system {
   	prefix jcs;
       }
-  
       revision 2024-01-01 {
   	description "Initial prototype";
       }
-  
       augment "/jc:configuration/jcs:system/jcs:login/jcs:user/jcs:uid" {
   	cl:ignore-compare;
       }
@@ -183,7 +173,7 @@ example, it is easy to add or remove the plugin binary independently of modifyin
 Create a plugin
 ---------------
 To create a new plugin, you create a new directory under ``plugins/``, edit a Makefile and write clixon plugin C code.
-  
+
 For example, if you add the plugin: ``myplugin.be.c``, a ``myplugin.be.so`` will be installed in the libdir along with ``controller.so``.
 
 The new ``myplugin.be.so`` plugin is loaded alongside the controller plugin. Note that loading is made alphabeticaly, in case you want to insert your plugin before or after the main plugin.

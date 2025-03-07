@@ -2,7 +2,7 @@
 .. sectnum::
    :start: 11
    :depth: 3
-   
+
 ***********
 Service API
 ***********
@@ -207,7 +207,7 @@ Suppose that service instance `ops` is deleted, then all device objects tagged w
 .. table:: `Device devA after removal of ops`
    :widths: auto
    :align: left
-            
+
    =============  =========================
    Device object  Service-instance
    =============  =========================
@@ -222,7 +222,7 @@ The algorithm for managing device objects using creator tags is as follows. Cons
 
   1. The controller makes a diff of the candidate and running datastore and identifies all changed services-instances
   2. For all changed service-instances S:
-    
+
     - For all device nodes D tagged with that service-instance tag:
 
       - If S is the only tag, delete D
@@ -237,7 +237,7 @@ objects of the modified service-instances. If a device object is not
 created, it is considered as deleted by the controller. Keeping track
 of deleted or changed service-instances is done only by the
 controller.
-     
+
 Protocol
 ========
 The following diagram shows an overview of the service API protocol::
@@ -257,9 +257,9 @@ The following diagram shows an overview of the service API protocol::
         |          (wait)                      |
         +  --- <services-commit> --->          +
         |            ...                       |
-           
+
 where each message is described by the following text.
-        
+
 Registration
 ------------
 The service code registers subscriptions of service commits by using RFC 5277
@@ -350,7 +350,7 @@ the diff, or validates, depending on the original request parameters.
 Error
 -----
 The service code can also issue an error to abort the transaction. For example:
-  
+
 .. code-block:: xml
 
    <transaction-error>
@@ -360,7 +360,7 @@ The service code can also issue an error to abort the transaction. For example:
    </transaction-error>
 
 In this case, the backend terminates the transaction and signals an error to the originator, such as a CLI user.
-    
+
 Another source of error is if the backend does not receive a `done`
 message. In this case it will eventually timeout and also signal an error.
 

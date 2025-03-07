@@ -143,7 +143,7 @@ However, you can solve the known hosts issue in several ways, including:
 
 It is not recommended to remove the requirement, but may be necessary
 in some circumstances, such as the existence of jump hosts.
-  
+
 Connect to devices
 ==================
 To connect to the devices frm the controller, start the controller CLI and configure both devices added in previously:
@@ -181,7 +181,7 @@ If a device fails when connecting, then a log error is displayed:
 .. code-block:: bash
 
    cli>show connections
-   Name                    State      Time                   Logmsg                        
+   Name                    State      Time                   Logmsg
    =======================================================================================
    openconfig1             CLOSED     2024-09-02T11:12:29    Closed by device
    openconfig2             OPEN       2024-09-02T14:15:59
@@ -193,7 +193,7 @@ The controller may be unable to login to the device for one of the following rea
    * The controllers public SSH key is not installed on the device
    * The device host key is not installed in the controllers `known_hosts`
    * ssh: connect to host <ip> port 830: Connection refused
-     
+
 The controller requires its public key to be installed on the devices and performs strict checking of host keys to avoid man-in-the-middle attacks. You need to ensure that the public key the controller uses is installed on the devices, and that the known_hosts file of the controller contains entries for the devices. To disable strict host key checking use `set devices device <device name> ssh-stricthostkey false`. For connection refused error ensure that the subsystem is exposed via port 830. The controller uses the default Netconf port (830) to connect to devices. If the subsystem on the device is exposed on a different port, update the port in the controller for that device using the following commands in clixon_cli:
 
 .. code-block:: bash
@@ -202,7 +202,7 @@ The controller requires its public key to be installed on the devices and perfor
         user@test> configure
         user@test[/]# set devices device <device name> port <port number>
         user@test[/]# commit local
-        user@test[/]# exit        
+        user@test[/]# exit
 
 Next step
 =========

@@ -10,7 +10,7 @@ Configuration
 The controller extends the clixon configuration file as follows:
 
 ``CLICON_CONFIG_EXTEND``
-   The value should be `clixon-controller-config` making the controller-specific 
+   The value should be `clixon-controller-config` making the controller-specific
 
 ``CONTROLLER_ACTION_COMMAND``
    Should be set to the PyAPI binary with correct arguments
@@ -19,19 +19,19 @@ The controller extends the clixon configuration file as follows:
 ``CLICON_BACKEND_USER``
    Set to the user which the action binary (above) is used. Normally `clicon`
 
-``CLICON_SOCK_GROUP``   
+``CLICON_SOCK_GROUP``
    Set to user group, ususally `clicon`
 
 ``CLICON_YANG_DOMAIN_DIR``
    Virtual directory where mounted device YANGs are stored locally. Both for RFC 6022 get-schema retrieval as well as local module-set YANGs. Typically ``/usr/local/shared/controller/mounts``
-   
+
 ``CONTROLLER_PYAPI_MODULE_PATH``
    Path to Python code for PyAPI
-   
+
 ``CONTROLLER_PYAPI_MODULE_FILTER``
 
 ``CONTROLLER_PYAPI_PIDFILE``
-   
+
 Example
 =======
 The following configuration file examplifies the configure options described above::

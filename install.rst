@@ -10,9 +10,9 @@ Installation
 Packages
 ========
 Some packages are required. The following are example of debian-based packages::
-  
-  sudo apt install flex bison git make gcc libnghttp2-dev libssl-dev
-  
+
+   sudo apt install flex bison git make gcc libnghttp2-dev libssl-dev
+
 Source
 ======
 Check out the following GIT repos:
@@ -47,7 +47,7 @@ Cligen
 Clixon
 ------
 ::
-   
+
   cd clixon
   ./configure
   make
@@ -78,7 +78,7 @@ Debian:
 Controller
 ----------
 ::
-   
+
   cd clixon-controller
   ./configure
   make
@@ -239,7 +239,7 @@ The directory structure is as follows::
        │   ├── __pycache__
        │   └── ssh_users.py
        └── mounts
-           ├── default 
+           ├── default
            └── openconfig
 
    ${BINDIR} (/usr/local/bin)

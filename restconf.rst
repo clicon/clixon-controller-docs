@@ -1,4 +1,4 @@
-.. _controller_cli:
+.. _controller_restconf:
 .. sectnum::
    :start: 7
    :depth: 3
@@ -13,7 +13,6 @@ Please also consult the RESTCONF section in the `Clixon user manual <https://cli
 
 Configuration
 =============
-
 Clixon provides many different configurations for RESTCONF. The controller only supports the following:
 
 1. Native TLS and http in the RESTCONF daemon. No reverse proxy is needed.
@@ -65,7 +64,7 @@ Enter the CLI and edit the RESTCONF configuration and commit it::
    cli#
 
 The commit command should (re)start the RESTCONF daemon with the new configuration. To verify that the RESTCONF is running, see Section `Verify the configuration`_.
-   
+
 Install in datastore
 --------------------
 If you use a `startup-db` or `running-db` you can directly edit the datastore by adding the restconf config and restart the ``clixon_backend``.
@@ -111,7 +110,7 @@ Send a NETCONF edit-config message to modify the restconf configuration, and the
    </rpc>]]>]]>
 
 The RESTCONF daemon should be restarted with the new configuration.
-   
+
 Verify the configuration
 ------------------------
 Verify that the daemon is running using the CLI::
@@ -123,7 +122,7 @@ Verify that the daemon is running using the CLI::
    </rpc-reply>
 
 You can also verify it via RESTCONF (using curl as a tool)::
-  
+
    curl -X POST -H "Content-Type: application/yang-data+json"
         https://localhost/restconf/operations/clixon-lib:process-control
         -d '{"clixon-lib:input":{"name":"restconf","operation":"status"}}'
@@ -154,17 +153,51 @@ For example, using curl, setup a device with IP address ``172.17.0.3`` and user 
          }'
    HTTP/1.1 201
 
+You can also configure device-groups and device-profiles as described in :ref:`the CLI tutotial <controller_cli>`, for example.
+
+Transactions
+============
+Many of the controller's RPCs return a `transaction-id` that indicates that the result of
+the RPC is not immediately available. Instead, it indicates that a new
+transaction has been created.
+
+.. note::
+          RPCs returning a transaction-id are asynchronous
+
+Transactions can be monitored in one of the following ways:
+
+- Register and wait for a notification, as described in Section `notifications`_.
+- Sleep/Poll and read the status of the resulting action, such as the connection status, see Section `verify connection`_.
+- Sleep/Poll and read the status of the transaction using GET.
+
+To get the status of transaction "6" using GET::
+
+   curl -H "Accept: application/yang-data+json" -X GET
+        https://localhost/restconf/data/clixon-controller:transactions/transaction=5
+   HTTP/1.1 200
+   {
+     "clixon-controller:transaction": [
+       {
+         "tid": "6",
+         "result": "SUCCESS", <---
+         ...
+       }
+     ]
+   }
+   HTTP/1.1 200
+
+Transactions are described in more detail in the :ref:`Transaction section<controller_transactions>`.
+          
 Connect
 =======
-
-If you have setup the configuration to your devices and installed the
-SSH keys, you can establish connections to devices. For this, you need to invoke
-the `connection-change` RPC.
+If you have setup the configuration for your devices and installed the
+SSH keys, you can start connecting to them. For this, you need to invoke
+the ``connection-change`` RPC which starts a `device connect` transaction.
 
 .. note::
           You need to install SSH keys before connection establishment
-          
-Example::
+
+The connection-change RPC takes a device or device-group as input and an operation. Example::
 
    curl -X POST -H "Content-Type: application/yang-data+json"
        https://localhost/restconf/operations/clixon-controller:connection-change
@@ -176,28 +209,50 @@ Example::
       }
    }
 
-In the example, all devices are selected, and the operation is `OPEN`. You can also close, or reconnect.
+Note that the reply contains a `transaction-id`.
 
-To instead make a "glob" pattern matching a set of device-groups::
-
-   curl -X POST -H "Content-Type: application/yang-data+json"
-        https://localhost/restconf/operations/clixon-controller:connection-change
-        -d '{"clixon-controller:input":{"device-group":"openconfig*","operation":"OPEN"}}'
-   HTTP/1.1 200
-
-The return value of the connect operation is a `transaction-id`. Connection establishment is asynchronous and can be monitored by a notification, which is further described in Section `notifications`_.
-
-Another alternative is to wait and check the status of the connection using GET, as follows::
+Verify connection
+-----------------
+One way to verify a connection (apart from monitoring the transaction itself) is to wait and check the status of the connection using GET, as follows::
 
    curl -X GET -H "Accept: application/yang-data+json"
         https://localhost/restconf/data/clixon-controller:devices/device=openconfig1/conn-state
    HTTP/1.1 200
    {"clixon-controller:conn-state":"OPEN"}
 
+Select devices
+--------------
+You can select devices in the connect RPCs as follows:
+
+- All devices: ``device: *``
+- Individual device: ``device: openconfig1``
+- Device pattern: ``device: openconfig*``
+- Device-groups: ``device-group: mygroup``
+- Device-group pattern: ``device-group: my*``
+
+Connect operations
+------------------
+The operation in the initial example is `OPEN`. The operations are:
+
+- Establish connections to a set of devices: ``OPEN``
+- Close connections: ``CLOSE``
+- Close and the re-open connections: ``RECONNECT``
+
+Example, reconnect to all devices in device-groups starting with "my*"::
+
+   curl -X POST -H "Content-Type: application/yang-data+json"
+        https://localhost/restconf/operations/clixon-controller:connection-change
+        -d '{
+              "clixon-controller:input": {
+                "device-group": "my*",
+                "operation": "RECONNECT"
+              }
+            }'
+   HTTP/1.1 200
+
 Accessing device config
 =======================
-
-When devices are open, you can retreive and edit device configuration.
+When devices are open, you can get, put and push device configuration.
 
 GET
 ---
@@ -223,9 +278,12 @@ You can also get more specific config::
       "openconfig-interfaces:type": "iana-if-type:ethernetCsmacd"
    }
 
-Edit
-----
-To edit device configuration, use PUT, POST or PATCH.
+PUT
+---
+To edit device configuration, use PUT, POST or PATCH and then `push` the changes to devices.
+
+With RESTCONF, modifications are written to the running datastore in the controller (local commit). Thereafter, the changes are pushed to the devices using the ``controller-commit`` RPC.
+
 For example, change the description of an interface using PUT::
 
    curl -X PUT -H "Content-Type: application/yang-data+json"
@@ -239,13 +297,162 @@ For example, change the description of an interface using PUT::
           }'
    HTTP/1.1 204
 
+PUSH
+----
+Thereafter, push the changes to a device using the ``controller-commit`` RPC::
+
+   curl -X POST -H "Content-Type: application/yang-data+json"
+        https://localhost/restconf/operations/clixon-controller:controller-commit
+        -d '{
+              "clixon-controller:input": {
+                "device": "openconfig1",
+                "push": "COMMIT",
+              }
+            }'
+   HTTP/1.1 200
+   {
+     "clixon-controller:output":{
+       "tid":"3"
+     }
+   }
+
+Again, this starts an asynchronous transaction which can be monitored with methods described in Section `transactions`_.
+
 Notifications
 =============
+The controller uses notifications to get asynchronous notifications and event streams.
 
+For example, connection establishment as described in Section
+`connect`_ and commit described in Section `push`_ create
+transactions. If you want to wait for such a transaction to complete,
+you can register for that event stream as follows::
 
-Device RPCs
-===========
+   curl -X GET -H "Accept: text/event-stream" -H "Cache-Control: no-cache" -H "Connection: keep-alive"
+        https://localhost/streams/controller-transaction
+   HTTP/2 201
+   content-type: text/event-stream
+
+   data: <notification xmlns="urn:ietf:params:xml:ns:netconf:notification:1.0">
+            <eventTime>2025-03-06T15:30:16.710209Z</eventTime>
+            <controller-transaction xmlns="http://clicon.org/controller">
+               <tid>4</tid>
+               <username>clicon</username>
+               <result>SUCCESS</result>
+            </controller-transaction>
+         </notification>
+
+The `data` notification is an "SSE" / long poll event, which means
+that the call blocks and waits for notifications to be received.
+
+This means that a programmer needs to create a separate session apart
+from the original RPC: One which waits for a notification, and one which
+creates the transaction using an operation.
+
+RPCs that create transactions are: ``config-pull``, ``controller-commit``, ``connection-change`` and ``device-template-apply`` (of type RPC).
 
 Services
 ========
+You can initate a python (PyAPI) service by editing a service and then using the ``controller-commit`` RPC with the ``action`` field set. You can also apply a service.
 
+`Work-in-progress`
+
+Device RPCs
+===========
+You can send an RPC to devices via the controller using the ``device-template-apply`` RPC.
+
+Create template
+---------------
+First you create a template.
+
+An example is the following, which is the same example as the rpc template created in the CLI as described in the :ref:`CLI tutorial <controller_cli>`::
+
+   curl -X POST -H "Content-Type: application/yang-data+json"
+        https://localhost/restconf/data/clixon-controller:devices
+        -d '{
+               "clixon-controller:rpc-template": [
+                  {
+                     "name": "stats",
+                     "variables": {
+                        "variable": [
+                           {
+                              "name": "MODULES"
+                           }
+                        ]
+                     },
+                     "config": {
+                        "clixon-lib:stats": {
+                           "modules": "${MODULES}"
+                        }
+                     }
+                  }
+               ]
+            }'
+   HTTP/1.1 201"
+
+You can create the template by other means, such as CLI or NETCONF.
+
+Send RPC
+--------
+The next step is to apply the template on devices resulting in a number of RPCs sent from the controller to devices.
+
+Example::
+
+   curl -X POST -H "Content-Type: application/yang-data+json"
+        https://localhost/restconf/operations/clixon-controller:device-template-apply
+        -d '{
+               "clixon-controller:input": {
+                  "type": "RPC",
+                  "device": "openconfig*",
+                  "template": "stats",
+                  "variables": [
+                     {
+                        "variable": {
+                           "name": "MODULES",
+                           "value": "true"
+                        }
+                     }
+                  ]
+               }
+            }'
+   HTTP/1.1 200
+   {
+      "clixon-controller:output":{
+         "tid":"5"
+      }
+   }
+
+Where a transaction id is returned.
+
+Read result
+-----------
+A transaction has been created and the client needs to wait for results via a notification (see Section `notifications`_) or poll for completion of the transaction.
+
+::
+
+   curl -H "Accept: application/yang-data+json" -X GET
+        https://localhost/restconf/data/clixon-controller:transactions/transaction=5
+   HTTP/1.1 200
+   {
+     "clixon-controller:transaction": [
+       {
+         "tid": "6",
+         "username": "clicon",
+         "result": "SUCCESS",
+         "devices": {
+           "devdata": [
+             {
+               "name": "openconfig1",
+                 "data": {
+                   "global": {
+                     "xmlnr": "1570",
+                    "yangnr": "166357"
+                 ...
+
+Note the ``devdata`` field which returns the reply from the RPC.  That is, the reply for the ``stats`` RPC to ``openconfig1`` is::
+
+   "data": {
+     "global": {
+       "xmlnr": "1570",
+       "yangnr": "166357"
+
+The ``devdata`` field may contain replies from multiple devices.

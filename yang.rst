@@ -46,7 +46,7 @@ where:
 - ``common/extensions``: Local extension YANGs can be placed here, see `local YANGs`_
 - ``main``. Main controller YANGs for the top-level. These YANGs are loaded to the top-level data domain at start. Service YANGs are also placed here (``ssh-users.yang``)
 - ``modules``. Python modules for pyapi
-- ``mounts``. YANGs dynamically retreived from devices using RFC 6022 ``get-schema`` are placed in subdirs defining isolated domains
+- ``mounts``. YANGs dynamically retrieved from devices using RFC 6022 ``get-schema`` are placed in subdirs defining isolated domains
 - ``mounts/default``. Default YANG domain
 - ``mounts/openconfig``. Example extra isolated device domain
 

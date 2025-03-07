@@ -7,10 +7,9 @@
 Python API
 **********
 
-This section documents the Clixon Python API. 
+This section documents the Clixon Python API.
 The Python API is a stand-alone client which uses the internal Netconf protocol to the Clixon backend.
 The primary application is the clixon-server and its network services.
-
 
 Overview
 ========
@@ -123,10 +122,9 @@ It is also possible to use the Python REPL to interact with the API::
   >>> root = cx.get_root()
   >>> root.<TAB>
 
-Above we retreived the running configuration and can tab-complete the
+Above we retrieved the running configuration and can tab-complete the
 object tree.
 
-  
 Startup
 -------
 Pyapi needs to know where the python code for the service model is located.

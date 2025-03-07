@@ -8,7 +8,7 @@ Service development
 *******************
 
 Service modules contains the actual code and logic which is used when
-modifying the configuration three for services. 
+modifying the configuration three for services.
 
 The Python server looks for modules in the directory
 ``/usr/local/clixcon/controller/modules`` unless anything else is
@@ -50,18 +50,18 @@ The script copies Python code and module YANG files
 to the correct directories and take care of permissions etc.
 
 The normal use case is to run the "clixon_controller_packages.sh" without
-the ``-m`` and ``-y`` arguments, the script installs modules and YANG 
+the ``-m`` and ``-y`` arguments, the script installs modules and YANG
 in the default paths which is preferred.
 
 Modules basics
 ==============
-The setup method take three parameters, root, log and kwargs. 
+The setup method take three parameters, root, log and kwargs.
 
 * `Root` is the configuration three.
 * `Log` is used for logging and is a reference to a Python logging object. The log parameter can be used to print log messages. If the server is running in the foreground the log messages can be seen in the terminal, otherwise they will be written to syslog.
 * `kwargs` is a dict of optional arguments. kwargs can contain the argument "instance" which is the name of the current service instance that is being changed by the user.
 
-There is also a variable named "SERVICE" that should have the same name as the 
+There is also a variable named "SERVICE" that should have the same name as the
 service without revision.
 
 .. code:: python
@@ -134,8 +134,8 @@ Service attributes
 ==================
 
 When creating new nodes related to services it is important to append the proper
-attributes to the new node. The Clixon backend will keep track of which nodes 
-belongs to which service using the attribute cl:creator where the value of 
+attributes to the new node. The Clixon backend will keep track of which nodes
+belongs to which service using the attribute cl:creator where the value of
 cl:create is the service name.
 
 Example:
@@ -146,7 +146,7 @@ Example:
 
 
   def setup(root, log, **kwargs):
-      device.config.configuration.system.create("test", cdata="foo", 
+      device.config.configuration.system.create("test", cdata="foo",
       			attributes={"cl:creator": "test-service"})
 
 Python object tree
@@ -169,7 +169,7 @@ the hostname::
   admin@junos# commit
   commit complete
 
-However, in the Clixon CLI this behaviour can be modelled 
+However, in the Clixon CLI this behaviour can be modelled
 by using a service YANG models. For example, altering the
 hostname for a lot of devices could look as follows::
 

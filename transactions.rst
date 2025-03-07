@@ -52,7 +52,7 @@ While a `device connect` operates on individual devices, the `config push` trans
 
 After (9) above it is possible to add an extra step (compiler-option):
 
-10. The new config is retreived from the device and is installed on the controller
+10. The new config is retrieved from the device and is installed on the controller
 
 Use the show transaction command to get details about transactions::
 

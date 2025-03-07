@@ -157,7 +157,7 @@ First, configure, a device group::
 Then, use the device-group in operations::
 
   cli> connection open group mygroup
-  
+
 In the example above, both device example1 and example2 will be opened.
 
 Note that a device-group can be:
