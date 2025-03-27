@@ -32,6 +32,9 @@ The controller extends the clixon configuration file as follows:
 
 ``CONTROLLER_PYAPI_PIDFILE``
 
+``CONTROLLER_SSH_IDENTITYFILE``
+   SSH Identityfile if not default
+
 Example
 =======
 The following configuration file examplifies the configure options described above::

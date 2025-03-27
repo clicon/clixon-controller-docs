@@ -51,7 +51,7 @@ command:
 
    $ sudo ssh-keygen -C "controller key" -t rsa -b 4096 -f /root/.ssh/id_rsa -N ""
 
-To get your public key which we will use later, run the following
+To get your public key which will be used later, run the following
 command:
 
 .. code-block:: bash
@@ -61,6 +61,9 @@ command:
 .. note::
    The controller uses root keys. Work is ongoing to use non-root keys.
 
+SSH certificates
+----------------
+As an alternative to using public keys, you can use SSH certificates.
 
 Docker setup
 ============

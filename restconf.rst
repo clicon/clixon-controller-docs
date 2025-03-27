@@ -38,7 +38,10 @@ A typical RESTCONF configuration may look as follows, where a TLS on port 443 on
       </socket>
    </restconf>
 
-Alternatively, you may use `basic auth`
+Alternatively, you may use `basic auth`, but then you need to add
+support for authentication using the ``ca_auth`` plugin callback.
+
+For testing purposes, ``none`` can be used as auth-type.
 
 You should modify the configuration above to suit you needs,
 thereafter install it in the Clixon datastore using one of the methods
@@ -445,7 +448,6 @@ The corresponding operation is::
 
    {
      "clixon-controller:input": {
-       "device": "*",
        "push": "COMMIT",
        "actions": "FORCE",
        "source": "ds:candidate"
