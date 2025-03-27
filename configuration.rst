@@ -29,8 +29,10 @@ The controller extends the clixon configuration file as follows:
    Path to Python code for PyAPI
 
 ``CONTROLLER_PYAPI_MODULE_FILTER``
+   Comma separated list of services modules that should be ignored and not loaded.
 
 ``CONTROLLER_PYAPI_PIDFILE``
+   Path to the pidfile for the controller. Typically ``/usr/local/var/run/controller/clixon_server.pid``
 
 ``CONTROLLER_SSH_IDENTITYFILE``
    SSH Identityfile if not default
