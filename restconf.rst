@@ -6,43 +6,69 @@
 ********
 RESTCONF
 ********
-
 This section describes how to use RESTCONF with the Clixon controller.
 
 Please also consult the RESTCONF section in the `Clixon user manual <https://clixon-docs.readthedocs.io>`_.
 
 Configuration
 =============
-Clixon provides many different configurations for RESTCONF. The controller only supports the following:
+Clixon provides two separate compile-time setups for RESTCONF:
 
-1. Native TLS and http in the RESTCONF daemon. No reverse proxy is needed.
-2. HTTP/1.1 and HTTP/2
-3. Basic and TLS/SSL client cert authentication
-4. Datastore configuration, not in configuration file
+* `FCGI` / FastCGI: This solution uses a web reverse proxy such as NGINX. The reverse proxy configures all HTTP configuration. This is easier to get started.
+* `Native`: which combines a HTTP and Restconf server including openssl and nghttp2. This is more advanced.
+
+This tutorial focusses on the `FCGI` solution. The native mode is described in Section `native setup`_.
+
+NGINX
+-----
+Install NGINX. Edit the location as for example as the following minimal config::
+
+   location / {
+      fastcgi_pass unix:/www-data/fastcgi_restconf.sock;
+      include fastcgi_params;
+   }
+
+On many NGINX installations this can be made in ``/etc/nginx/sites-available/default``.
+
+Restart NGINX::
+
+   sudo systemctl restart nginx.service
+
+Configure
+---------
+You need to configure clixon for FCGI::
+
+   ./configure --with-restconf=fcgi
+
+NGINX typically creates a `www-data` user. The following must be done prior to running:
+
+* Create a directory for example at ``/www-data`` with the following permissions::
+
+   drwxr-xr-x   2 www-data www-data       4096 apr  1 20:14 www-data
+
+* Add the ``www-data`` user to the ``clicon`` group
+
+Ensure your controller.xml configuration file has the following entries::
+
+   <CLICON_FEATURE>clixon-restconf:allow-auth-none</CLICON_FEATURE>
+   <CLICON_FEATURE>clixon-restconf:fcgi</CLICON_FEATURE>
 
 Example config
 --------------
-A typical RESTCONF configuration may look as follows, where a TLS on port 443 on 192.168.32.1 is configured using client-certs placed in the ``etc/pki/tls`` directory::
+Next step is to setup RESTCONF in the datastore. FCGI configuration may look as follows::
 
    <restconf xmlns="http://clicon.org/restconf">
       <enable>true</enable>
-      <auth-type>client-certificate</auth-type>
-      <server-cert-path>/etc/pki/tls/certs/clixon-server-crt.pem</server-cert-path>
-      <server-key-path>/etc/pki/tls/private/clixon-server-key.pem</server-key-path>
-      <server-ca-cert-path>/etc/pki/tls/CA/clixon-ca-crt.pem</server-ca-cert-path>
-      <socket>
-         <namespace>default</namespace>
-         <address>192.168.32.1</address>
-         <port>443</port>
-         <ssl>true</ssl>
-      </socket>
+      <auth-type>none</auth-type>
+      <fcgi-socket>/www-data/fastcgi_restconf.sock</fcgi-socket>
+      <pretty>false</pretty>
+      <debug>0</debug>
+      <log-destination>syslog</log-destination>
    </restconf>
 
-Alternatively, you may use `basic auth`, but then you need to add
+Auth is set as none. If you want to use `basic auth`, you need to add
 support for authentication using the ``ca_auth`` plugin callback.
-
-For testing purposes, ``none`` can be used as auth-type.
-
+   
 You should modify the configuration above to suit you needs,
 thereafter install it in the Clixon datastore using one of the methods
 described in the next section.
@@ -58,11 +84,8 @@ Enter the CLI and edit the RESTCONF configuration and commit it::
    # clixon_cli
    cli> configure
    cli# set restconf enable true
-   cli# set restconf server-cert-path /var/tmp/./test-restconf.sh/certs/clixon-server-crt.pem
-   cli# set restconf server-key-path /var/tmp/./test-restconf.sh/certs/clixon-server-key.pem
-   cli# set restconf server-ca-cert-path /var/tmp/./test-restconf.sh/certs/clixon-ca-crt.pem
-   cli# set restconf socket default 0.0.0.0 443
-   cli# set restconf socket default 0.0.0.0 443 ssl true
+   cli# set restconf auth-type none
+   cli# set restconf fcgi-socket /www-data/fastcgi_restconf.sock
    cli# commit local
    cli#
 
@@ -78,7 +101,8 @@ Add the restconf config to the datastore, such as ``/usr/local/var/controller/st
       ...
       <restconf xmlns="http://clicon.org/restconf">
          <enable>true</enable>
-         ...
+         <auth-type>none</auth-type>
+         <fcgi-socket>/www-data/fastcgi_restconf.sock</fcgi-socket>
       </restconf>
    </config>
 
@@ -111,7 +135,7 @@ Send a NETCONF edit-config message to modify the restconf configuration, and the
       <commit/>
    </rpc>]]>]]>
 
-The RESTCONF daemon should be restarted with the new configuration.
+The RESTCONF daemon should be restarted automatically with the new configuration.
 
 Verify the configuration
 ------------------------
@@ -363,6 +387,9 @@ Notifications
 =============
 The controller uses notifications to get asynchronous notifications and event streams.
 
+.. note::
+          Notifications are not fully functional in FCGI mode
+
 For example, connection establishment as described in Section
 `connect`_ and commit described in Section `push device config`_ create
 transactions. If you want to wait for such a transaction to complete,
@@ -568,3 +595,45 @@ Note the ``devdata`` field which returns the reply from the RPC.  That is, the r
        "yangnr": "166357"
 
 The ``devdata`` field may contain replies from multiple devices.
+
+Native setup
+============
+Native mode is more complex to setup and provides many different configurations for RESTCONF. The controller supports the following:
+
+1. Native TLS and http in the RESTCONF daemon. No reverse proxy is needed.
+2. HTTP/1.1 and HTTP/2
+3. Basic and TLS/SSL client cert authentication
+4. Datastore configuration, not in configuration file
+
+Configuration
+-------------   
+You need to configure clixon for native::
+
+   ./configure --with-restconf=native
+
+Example config
+--------------
+A typical RESTCONF native configuration may look as follows::
+
+   <restconf xmlns="http://clicon.org/restconf">
+      <enable>true</enable>
+      <auth-type>client-certificate</auth-type>
+      <server-cert-path>/etc/pki/tls/certs/clixon-server-crt.pem</server-cert-path>
+      <server-key-path>/etc/pki/tls/private/clixon-server-key.pem</server-key-path>
+      <server-ca-cert-path>/etc/pki/tls/CA/clixon-ca-crt.pem</server-ca-cert-path>
+      <socket>
+         <namespace>default</namespace>
+         <address>192.168.32.1</address>
+         <port>443</port>
+         <ssl>true</ssl>
+      </socket>
+   </restconf>
+
+In the config where a TLS on port 443 on 192.168.32.1 is configured using client-certs placed in the ``etc/pki/tls`` directory.
+
+Alternatively, you may use `basic auth`, but then you need to add
+support for authentication using the ``ca_auth`` plugin callback.
+
+For testing purposes, ``none`` can be used as auth-type.
+
+
