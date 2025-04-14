@@ -692,3 +692,55 @@ an RPC to a device::
    res = cx.device_rpc("*", "stats", {"MODULES": "true"})
 
    print(res.dumps())
+
+NACM
+====
+Clixon controller supports NACM as described in `RFC 8341 <https://www.rfc-editor.org/rfc/rfc8341.html>`_ 
+and uses the same functionality as Clixon (`see the Clixon documentation for 
+more information <https://clixon-docs.readthedocs.io/en/latest/netconf.html#nacm>`_).
+
+Device rules
+------------
+Rules for NACM can span over mount points and limit access to device configuration 
+as well as controller configuration. As an example, using an OpenConfig device it
+possible to limit the access to the device hostname configuration using rules like this::
+
+   set nacm groups group test-group
+   set nacm groups group test-group user-name test
+   set nacm rule-list test-rules
+   set nacm rule-list test-rules group test-group
+   set nacm rule-list test-rules rule test-rule
+   set nacm rule-list test-rules rule test-rule path /ctrl:devices/ctrl:device/ctrl:config/oc-sys:system/oc-sys:config/oc-sys:hostname
+   set nacm rule-list test-rules rule test-rule access-operations *
+   set nacm rule-list test-rules rule test-rule action deny
+
+With the rule above changing the hostname will result in an access-denied error::
+
+   test@example[/]# set devices device openconfig1 config system config hostname test
+   Apr 14 12:47:13.843827: clicon_rpc_edit_config: 679: Netconf error: Editing configuration: application access-denied access denied
+   CLI command error
+
+Note that in the rules the user "test" was added to the group "test-group" and
+that user "test" was used to run the CLI. 
+
+Also note that the path must contain the correct namespace for the whole path.
+
+NACM and services
+-----------------
+NACM rules can also be used to limit access to services. For example, the following 
+rule will not let the user "test" configure the service ssh-users::
+
+   set nacm groups group test-group
+   set nacm groups group test-group user-name test
+   set nacm rule-list test-rules
+   set nacm rule-list test-rules group test-group
+   set nacm rule-list test-rules rule test-rule
+   set nacm rule-list test-rules rule test-rule path /ctrl:services/ssh-users:ssh-users
+   set nacm rule-list test-rules rule test-rule access-operations *
+   set nacm rule-list test-rules rule test-rule action deny
+
+When trying to do so the user will get an error message like this::
+
+   test@example[/]# set services ssh-users test
+   Apr 14 12:51:32.191560: clicon_rpc_edit_config: 679: Netconf error: Editing configuration: application access-denied access denied   
+   CLI command error
