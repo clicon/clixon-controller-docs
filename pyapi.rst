@@ -36,14 +36,14 @@ modules which manipulates the configuration tree.  When finished, the
 configuration is sent back to the Clixon backend.
 
 In summary:
-1. The user configures a service from the CLI.
-2. The user commits the service.
-3. Pyapi receives a `<services-commit>` notification.
-4. Pyapi executes all service modules that may modify the configuration (device) tree.
-5. For each modification, an `<edit-config>` message is sent to the backend.
-6. When completed, pyapi sends `<transaction-actions-done>` to the backend.
-7. If pyapi encounters an error, it aborts by sending `<transaction-error>` to the backend instead.
-8. The new configuration is pushed to the devices by the backend.
+  1. The user configures a service from the CLI.
+  2. The user commits the service.
+  3. Pyapi receives a `<services-commit>` notification.
+  4. Pyapi executes all service modules that may modify the configuration (device) tree.
+  5. For each modification, an `<edit-config>` message is sent to the backend.
+  6. When completed, pyapi sends `<transaction-actions-done>` to the backend.
+  7. If pyapi encounters an error, it aborts by sending `<transaction-error>` to the backend instead.
+  8. The new configuration is pushed to the devices by the backend.
 
 Installation
 ============
@@ -133,3 +133,24 @@ This can be modified with the '-m' flag::
   python3 ./clixon_server.py -f /usr/local/etc/controller.xml
 
 which makes the server run in the background with minimal logging.
+
+NACM
+====
+The Python API server can be run with NACM enabled in the backend and will use
+either the CLI user or the RESTCONF user for authentication.
+
+Whenever a commit happens the Python API server will fetch the transaction
+details for the commit and get the username of the user that made the commit.
+The API server will then use that username when doing a get-config, edit-config
+etc.
+
+In sequence
+  1. User configures a service from the CLI.
+  2. User commits the service.
+  3. Pyapi receives a `<services-commit>` notification.
+  4. Pyapi fetches the transaction details from the backend.
+  5. Pyapi gets the username of the user that made the commit.
+  6. Pyapi uses the username to do a get-config as the user.
+  7. Pyapi sends the modified configuration back to the backend (edit-config) as the user.
+  8. If pyapi encounters an error, it aborts by sending `<transaction-error>` to the backend instead.
+  9. The new configuration is eventually pushed to the devices by the backend.
