@@ -710,7 +710,7 @@ possible to limit the access to the device hostname configuration using rules li
    set nacm rule-list test-rules
    set nacm rule-list test-rules group test-group
    set nacm rule-list test-rules rule test-rule
-   set nacm rule-list test-rules rule test-rule path /ctrl:devices/ctrl:device/ctrl:config/oc-sys:system/oc-sys:config/oc-sys:hostname
+   set nacm rule-list test-rules rule test-rule path /ctrl:devices/ctrl:device[ctrl:name='*']/ctrl:config/oc-sys:system/oc-sys:config/oc-sys:hostname
    set nacm rule-list test-rules rule test-rule access-operations *
    set nacm rule-list test-rules rule test-rule action deny
 
@@ -721,9 +721,22 @@ With the rule above changing the hostname will result in an access-denied error:
    CLI command error
 
 Note that in the rules the user "test" was added to the group "test-group" and
-that user "test" was used to run the CLI. 
+that user "test" was used to run the CLI. Also note that the path must contain 
+the correct namespace for the whole path.
 
-Also note that the path must contain the correct namespace for the whole path.
+To get the path to use in a rule it is possible to use the command "show detail"::
+
+   test@example> show detail devices device * config system config hostname
+   Symbol:     hostname
+   Module:     openconfig-system
+   File:       /usr/local/share/controller/mounts/default/openconfig-system@2024-09-24.yang
+   Namespace:  http://openconfig.net/yang/system
+   Prefix:     oc-sys
+   XPath:      /ctrl:devices/ctrl:device[ctrl:name='*']/ctrl:config/oc-sys:system/oc-sys:config/oc-sys:hostname
+   APIpath:    /clixon-controller:devices/device=%2A/config/openconfig-system:system/config/hostname
+
+The XPath above is used in the NACM rule and APIpath can be used when accessing configuration
+via RESTCONF.
 
 NACM and services
 -----------------
