@@ -52,6 +52,7 @@ Ensure your controller.xml configuration file has the following entries::
 
    <CLICON_FEATURE>clixon-restconf:allow-auth-none</CLICON_FEATURE>
    <CLICON_FEATURE>clixon-restconf:fcgi</CLICON_FEATURE>
+   <CLICON_RESTCONF_DIR>/usr/local/lib/controller/restconf</CLICON_RESTCONF_DIR>
 
 Example config
 --------------
@@ -382,6 +383,20 @@ This may generate a reply as follows::
    }
 
 Again, this starts an asynchronous transaction which can be monitored with methods described in Section `transactions`_.
+
+PULL device config
+------------------
+
+To synchronize, that is to pull the device config to the controller, use config-pull::
+
+   POST /restconf/operations/clixon-controller:config-pull HTTP/1.1
+   Content-Type: application/yang-data+json
+
+   {
+      "clixon-controller:input": {
+         "device": "openconfig1",
+      }
+   }
 
 Notifications
 =============
