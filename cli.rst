@@ -693,6 +693,32 @@ an RPC to a device::
 
    print(res.dumps())
 
+Show detail
+===========
+
+The command ``show detail`` shows detailed information about configuration. The detailed output includes information about namespace, XPath etc::
+
+   test@example> show detail ?
+     devices               Device configuration
+     nacm                  Parameters for NETCONF access control model.
+     processes             Process configuration
+     restconf              If imported, this container appears in top-level configuration.
+     services              Placeholder for services.
+
+We can then get detailed information about any of the top-level containers listed above or any item in the configuration tree below them. As an example we here show detailed information about the ``hostname`` configuration on a OpenConfig device::
+
+   test@example> show detail devices device openconfig1 config system config hostname
+   Symbol:     hostname
+   Module:     openconfig-system
+   File:       /usr/local/share/controller/mounts/default/openconfig-system@2024-09-24.yang
+   Namespace:  http://openconfig.net/yang/system
+   Prefix:     oc-sys
+   XPath:      /ctrl:devices/ctrl:device[ctrl:name='openconfig1']/ctrl:config/oc-sys:system/oc-sys:config/oc-sys:hostname
+   APIpath:    /clixon-controller:devices/device=openconfig1/config/openconfig-system:system/config/hostname
+
+The XPath and APIpath can be very valuable when configuring NACM or doing RESTCONF calls.  The XPath is the full path to the configuration item in the device config, while the APIpath is the path to use when accessing the configuration via RESTCONF.
+
+
 NACM
 ====
 Clixon controller supports NACM as described in `RFC 8341 <https://www.rfc-editor.org/rfc/rfc8341.html>`_ 
