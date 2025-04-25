@@ -273,3 +273,56 @@ The directory structure is as follows::
        ├── controller.pid
        └── controller.sock
 
+Running without root privileges
+=================================
+
+The controller can be run without root privileges. This is recommended for security reasons.
+There are two different scenarios other than the default:
+  * Install the controller as root and run it as a non-root user.
+  * Install the controller as a non-root user and run it as that user.
+
+In both scenarios the users SSH keys must be installed in the devices to be managed
+by the controller.
+
+Install the controller as root and run it as a non-root user
+------------------------------------------------------------
+
+Scenario: You install the controller as root but start the backend as the user 'user1', 
+'user2' will then start a CLI which connects to the backend.
+
+1. Install the controller as root (see above).
+2. Create a user and group for the controller to run as. This is done in the example above.
+3. Add the user who should run the CLI to the same group as the user who runs the backend.
+4. Generate SSH keys for the user who runs the backend and copy them to the devices to be managed.
+5. Modify the controller configuration file (controller.xml):
+
+- Set ``CLICON_BACKEND_USER`` to the user who runs the backend.
+- Set ``CLICON_SOCK`` to a path which is writable by the user who runs the backend.
+- Set ``CLICON_SOCK_GROUP`` to the group of the user who runs the backend.
+- Set ``CLICON_XMLDB_DIR`` a directory which is writable by the user who runs the backend.
+
+6. Start the backend as the user who runs the backend.
+
+Install the controller as a non-root user and run it as that user
+-----------------------------------------------------------------
+
+Scenario: You install the controller as a non-root user and run it as that user. 
+
+This requires the user to build Clixon controller with the --prefix flag set to a directory
+which is writable by the user. In this example we use a directory in the home directory of the user.
+
+1. Create a directory in the home directory of the user who will run the controller (or in another directory which is writable by the user). Example: ``/home/user1/clixon``.
+
+2. For each of cligen, clixon and clixon-controller do the following::
+
+    ./configure --prefix=/home/user1/clixon
+    make
+    make install
+
+3. For the Python API (clixon-pyapi) do ``python3 setup.py install --prefix=/home/user1/clixon``.
+   This will install the Python API in ``/home/user1/clixon/lib/python3.x/site-packages``.
+
+4. You should be able to run the controller as the user who installed it. 
+   The controller will use the directories in ``/home/user1/clixon``::
+
+    $ /home/user1/clixon/sbin/clixon_backend -f /home/user1/clixon/etc/clixon/controller.xml
