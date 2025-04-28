@@ -315,7 +315,7 @@ which is writable by the user. In this example we use a directory in the home di
 
 2. For each of cligen, clixon and clixon-controller do the following::
 
-    ./configure --prefix=/home/user1/clixon
+    ./configure --prefix=/home/user1/clixon --install-scripts=/home/user1/clixon/bin/
     make
     make install
 
