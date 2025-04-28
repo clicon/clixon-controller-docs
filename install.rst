@@ -300,6 +300,7 @@ Scenario: You install the controller as root but start the backend as the user '
 - Set ``CLICON_SOCK`` to a path which is writable by the user who runs the backend.
 - Set ``CLICON_SOCK_GROUP`` to the group of the user who runs the backend.
 - Set ``CLICON_XMLDB_DIR`` a directory which is writable by the user who runs the backend.
+- Set ``CONTROLLER_ACTION_COMMAND`` and the "-f" flag to the configuration file used here.
 
 6. Start the backend as the user who runs the backend.
 
