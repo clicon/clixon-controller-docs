@@ -540,7 +540,7 @@ The following example first configures a template with the formal parameters ``$
       </devices>
    </config>
    ^D
-   olof@totila[/]# commit
+   olof@totila[/]# commit local
    olof@totila[/]#
 
 The next step is to apply the configuration template: A New ``z`` interface is created on all ``openconfig`` devices::
