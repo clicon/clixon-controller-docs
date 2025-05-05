@@ -278,6 +278,7 @@ Running without root privileges
 
 The controller can be run without root privileges. This is recommended for security reasons.
 There are two different scenarios other than the default:
+
   * Install the controller as root and run it as a non-root user.
   * Install the controller as a non-root user and run it as that user.
 

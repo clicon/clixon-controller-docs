@@ -612,7 +612,7 @@ Note the ``devdata`` field which returns the reply from the RPC.  That is, the r
 The ``devdata`` field may contain replies from multiple devices.
 
 Get device state
-----------------
+================
 You can get state data from device by using an RPC template. At this time it is not possible to get a subset of subset of state data, ie an XPath selection, the whole state data is returned.
 
 Example::
