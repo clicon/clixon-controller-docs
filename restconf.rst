@@ -69,7 +69,7 @@ Next step is to setup RESTCONF in the datastore. FCGI configuration may look as 
 
 Auth is set as none. If you want to use `basic auth`, you need to add
 support for authentication using the ``ca_auth`` plugin callback.
-   
+
 You should modify the configuration above to suit you needs,
 thereafter install it in the Clixon datastore using one of the methods
 described in the next section.
@@ -611,6 +611,39 @@ Note the ``devdata`` field which returns the reply from the RPC.  That is, the r
 
 The ``devdata`` field may contain replies from multiple devices.
 
+Get device state
+----------------
+You can get state data from device by using an RPC template. At this time it is not possible to get a subset of subset of state data, ie an XPath selection, the whole state data is returned.
+
+Example::
+
+   POST /restconf/operations/clixon-controller:device-template-apply HTTP/1.1
+   Content-Type: application/yang-data+json
+
+   {
+     "clixon-controller:input": {
+       "type":"RPC",
+       "device":"openconfig*",
+       "inline": {
+         "config": {
+           "ietf-netconf:get":null
+         }
+       }
+     }
+   }
+
+   HTTP/1.1 200
+   {
+      "clixon-controller:output":{
+         "tid":"6"
+      }
+   }
+
+Polling for result::
+
+   GET /restconf/data/clixon-controller:transactions/transaction=6 HTTP/1.1
+   Accept: application/yang-data+json
+
 Native setup
 ============
 Native mode is more complex to setup and provides many different configurations for RESTCONF. The controller supports the following:
@@ -621,7 +654,7 @@ Native mode is more complex to setup and provides many different configurations 
 4. Datastore configuration, not in configuration file
 
 Configuration
--------------   
+-------------
 You need to configure clixon for native::
 
    ./configure --with-restconf=native
@@ -650,5 +683,3 @@ Alternatively, you may use `basic auth`, but then you need to add
 support for authentication using the ``ca_auth`` plugin callback.
 
 For testing purposes, ``none`` can be used as auth-type.
-
-
