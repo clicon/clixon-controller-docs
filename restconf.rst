@@ -410,7 +410,7 @@ For example, connection establishment as described in Section
 transactions. If you want to wait for such a transaction to complete,
 you can register for that event stream as follows::
 
-   GET /restconf/streams/controller-transaction HTTP/1.1
+   GET /streams/controller-transaction HTTP/1.1
    Accept: text/event-stream
    Cache-Control: no-cache
    Connection: keep-alive
