@@ -613,9 +613,82 @@ The ``devdata`` field may contain replies from multiple devices.
 
 Get device state
 ================
-You can get state data from device by using an RPC template. At this time it is not possible to get a subset of subset of state data, ie an XPath selection, the whole state data is returned.
 
-Example::
+You can get state data from device by using an RPC template as a workaround for not supplying it with a top-level `GET`.
+
+Device state using XML
+----------------------
+Example, get the ssh state of all openconfig devices::
+
+   POST /restconf/operations/clixon-controller:device-template-apply HTTP/1.1
+   Content-Type: application/yang-data+xm
+
+   <input xmlns="urn:example:clixon-controller"><type>RPC</type>
+      <device>openconfig*</device>
+      <inline>
+         <config>
+            <get xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+               <filter type="xpath" select="/oc-sys:system/oc-sys:ssh-server"
+                       xmlns:oc-sys="http://openconfig.net/yang/system" />
+            </get>
+         </config>
+      </inline>
+   </input>
+
+   HTTP/1.1 200
+   {
+      "clixon-controller:output":{
+         "tid":"6"
+      }
+   }
+
+where the `filter` statement selects the ``system/ssh-server`` state.
+
+Polling for result::
+
+   GET /restconf/data/clixon-controller:transactions/transaction=6 HTTP/1.1
+   Accept: application/yang-data+json
+
+A result could be::
+
+   HTTP/2 200
+   content-type: application/yang-data+json
+
+   {
+     "clixon-controller:transaction": [
+      {
+        "tid": "8",
+        "username": "anonymous",
+        "result": "SUCCESS",
+        "devices": {
+          "devdata": [
+           {
+            "name": "openconfig1",
+            "data": {
+              "data": {
+                "system": {
+                  "ssh-server": {
+                    "state": {
+                      "enable": "true",
+                      "protocol-version": "V2"
+                    }
+                  }
+                }
+               }
+             }
+           },
+           ...
+
+where the result of the first matchong device (``openconfig1``) is shown.
+
+Device state using JSON
+-----------------------
+At this time it is not possible to get a subset of subset of state data for JSON, ie an XPath selection, the whole state data is returned.
+
+.. note::
+          You cannot get individual elements via JSON, just ALL device state
+
+Example, get all state of all "openconfig*" devices::
 
    POST /restconf/operations/clixon-controller:device-template-apply HTTP/1.1
    Content-Type: application/yang-data+json
@@ -643,6 +716,8 @@ Polling for result::
 
    GET /restconf/data/clixon-controller:transactions/transaction=6 HTTP/1.1
    Accept: application/yang-data+json
+
+where the result would be the complete state of all matching devices.
 
 Native setup
 ============

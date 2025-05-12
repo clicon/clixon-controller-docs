@@ -457,12 +457,20 @@ A variant is the following that compares with the actual remote config::
 
    cli> show devices <name> diff
 
+or::
+
+   cli> pull <name> diff
+
 This is acheived by making a "transient" pull that does not replace the local device config.
 
 Further, the following command checks whether devices are is out-of-sync::
 
    cli> show devices <name> check
    Failed: device example2 is out-of-sync
+
+or::
+
+   cli> pull <name> check
 
 Out-of-sync means that a change in the remote device config has been made, such as a manual edit, since the last "pull".
 You can resolve an out-of-sync state with the "pull" command.
@@ -718,16 +726,15 @@ We can then get detailed information about any of the top-level containers liste
 
 The XPath and APIpath can be very valuable when configuring NACM or doing RESTCONF calls.  The XPath is the full path to the configuration item in the device config, while the APIpath is the path to use when accessing the configuration via RESTCONF.
 
-
 NACM
 ====
-Clixon controller supports NACM as described in `RFC 8341 <https://www.rfc-editor.org/rfc/rfc8341.html>`_ 
-and uses the same functionality as Clixon (`see the Clixon documentation for 
+Clixon controller supports NACM as described in `RFC 8341 <https://www.rfc-editor.org/rfc/rfc8341.html>`_
+and uses the same functionality as Clixon (`see the Clixon documentation for
 more information <https://clixon-docs.readthedocs.io/en/latest/netconf.html#nacm>`_).
 
 Device rules
 ------------
-Rules for NACM can span over mount points and limit access to device configuration 
+Rules for NACM can span over mount points and limit access to device configuration
 as well as controller configuration. As an example, using an OpenConfig device it
 possible to limit the access to the device hostname configuration using rules like this::
 
@@ -747,7 +754,7 @@ With the rule above changing the hostname will result in an access-denied error:
    CLI command error
 
 Note that in the rules the user "test" was added to the group "test-group" and
-that user "test" was used to run the CLI. Also note that the path must contain 
+that user "test" was used to run the CLI. Also note that the path must contain
 the correct namespace for the whole path.
 
 To get the path to use in a rule it is possible to use the command "show detail"::
@@ -766,7 +773,7 @@ via RESTCONF.
 
 NACM and services
 -----------------
-NACM rules can also be used to limit access to services. For example, the following 
+NACM rules can also be used to limit access to services. For example, the following
 rule will not let the user "test" configure the service ssh-users::
 
    set nacm groups group test-group
@@ -781,5 +788,5 @@ rule will not let the user "test" configure the service ssh-users::
 When trying to do so the user will get an error message like this::
 
    test@example[/]# set services ssh-users test
-   Apr 14 12:51:32.191560: clicon_rpc_edit_config: 679: Netconf error: Editing configuration: application access-denied access denied   
+   Apr 14 12:51:32.191560: clicon_rpc_edit_config: 679: Netconf error: Editing configuration: application access-denied access denied
    CLI command error
