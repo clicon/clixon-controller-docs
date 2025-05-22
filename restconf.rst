@@ -469,6 +469,38 @@ In the following example, edit the ``bar`` instance of the ``testA`` service in 
 
 This changes the service config in the running datastore of the controller. But it does not trigger a service.
 
+Getting service diff
+--------------------
+To get the configuration that are going to be implemented on the devices, you need to send two RPCs
+to the controller. The first one is a ``controller-commit`` and the second one is a ``datastore-diff``
+
+The operation is::
+   POST /restconf/operations/clixon-controller:controller-commit HTTP/1.1
+   Content-Type: application/yang-data+json
+
+   {
+     "clixon-controller:input": {
+       "push": "NONE",
+       "actions": "FORCE",
+       "source": "ds:candidate"
+       "service-instance":"testA[a_name='bar']"
+     }
+   }
+
+and then the diff can be seen by running::
+   POST /restconf/operations/clixon-controller:datastore-diff HTTP/1.1
+   Content-Type: application/yang-data+json
+
+   {
+      "clixon-controller:input": {
+         "device": "*",
+         "config-type1": "RUNNING",
+         "config-type2": "ACTIONS"
+      }
+   }
+
+This should be done before the service code is triggered.
+
 Trigger service code
 --------------------
 To trigger a service, you need to send a ``controller-commit`` RPC to
