@@ -475,6 +475,7 @@ To get the configuration that are going to be implemented on the devices, you ne
 to the controller. The first one is a ``controller-commit`` and the second one is a ``datastore-diff``
 
 The operation is::
+
    POST /restconf/operations/clixon-controller:controller-commit HTTP/1.1
    Content-Type: application/yang-data+json
 
@@ -488,6 +489,7 @@ The operation is::
    }
 
 and then the diff can be seen by running::
+
    POST /restconf/operations/clixon-controller:datastore-diff HTTP/1.1
    Content-Type: application/yang-data+json
 
