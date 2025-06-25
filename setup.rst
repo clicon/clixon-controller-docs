@@ -33,6 +33,35 @@ The following should be installed on the host:
 * Python API
 * Clixon controller
 
+System requirements
+===================
+The amount of resources you need depends on the number of devices you want to
+manage, the size of the YANG models and the amount of configuration data.
+
+Handling devices with a large number of different YANG models and large
+configuration data will require more resources than handling a small number
+of devices with small YANG models and little configuration data.
+
+General recommendations for a controller host running backend, Python API
+and one CLI are:
+
+* CPU: Four cores are recommended, but two cores may be enough for a small setup.
+* Memory: For a small setup 8GB is recommended. A large setup with 100 devices
+  and large YANG models might require up to 64GB of memory.
+* Disk: The controller does not require much disk space and will consume less
+  than a total of 1GB.
+
+Real world example with 100 Juniper MX and PTX devices with large YANG models
+and a large configuration (>5000 lines per device):
+
+* 4 Intel Xeon CPU cores @ 3.0GHz
+* 64 GB RAM
+* 80 GB SSD disk
+
+If RESTCONF is used it will consume roughly the same amount of resources as
+the backend.
+
+
 SSH key generation
 ==================
 Generate a root SSH key pair if you do not already have one.  The public key will be added to the
