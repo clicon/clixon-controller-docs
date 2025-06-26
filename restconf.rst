@@ -577,7 +577,7 @@ You can create the template by other means, such as CLI or NETCONF.
 
 Send RPC
 --------
-The next step is to apply the template on devices resulting in a number of RPCs sent from the controller to devices.
+The next step is to apply the template on devices resulting in a number of RPCs sent from the controller to devices. As an alternative, you can also use `Send using XML`_.
 
 Example::
 
@@ -645,9 +645,48 @@ Note the ``devdata`` field which returns the reply from the RPC.  That is, the r
 
 The ``devdata`` field may contain replies from multiple devices.
 
+Inline
+------
+A simpler alternative is to send the template inline.
+
+Example of ping which is also an RPC without input or output::
+
+   POST /restconf/operations/clixon-controller:device-template-apply HTTP/1.1
+   Content-Type: application/yang-data+json
+
+   {
+     "clixon-controller:input": {
+       "type": "RPC",
+       "device": "openconfig*",
+       "inline": {
+         "config": {
+           "clixon-lib:ping": null
+         }
+       }
+     }
+   }
+
+Send using XML
+--------------
+Instead of using JSON in the rpc-template body, you can also use XML::
+
+   POST /restconf/operations/clixon-controller:device-template-apply HTTP/1.1
+   Content-Type: application/yang-data+xml
+
+   {
+     "clixon-controller:input": {
+       "type": "RPC",
+       "device": "openconfig*",
+       "inline": {
+         "config": {
+           "clixon-lib:ping": null
+         }
+       }
+     }
+   }
+
 Get device state
 ================
-
 You can get state data from device by using an RPC template as a workaround for not supplying it with a top-level `GET`.
 
 Device state using XML
@@ -655,9 +694,10 @@ Device state using XML
 Example, get the ssh state of all openconfig devices::
 
    POST /restconf/operations/clixon-controller:device-template-apply HTTP/1.1
-   Content-Type: application/yang-data+xm
+   Content-Type: application/yang-data+xml
 
-   <input xmlns="urn:example:clixon-controller"><type>RPC</type>
+   <input xmlns="urn:example:clixon-controller">
+      <type>RPC</type>
       <device>openconfig*</device>
       <inline>
          <config>
