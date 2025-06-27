@@ -673,17 +673,15 @@ Instead of using JSON in the rpc-template body, you can also use XML::
    POST /restconf/operations/clixon-controller:device-template-apply HTTP/1.1
    Content-Type: application/yang-data+xml
 
-   {
-     "clixon-controller:input": {
-       "type": "RPC",
-       "device": "openconfig*",
-       "inline": {
-         "config": {
-           "clixon-lib:ping": null
-         }
-       }
-     }
-   }
+   <input xmlns="http://clicon.org/controller">
+      <type>RPC</type>
+      <device>openconfig*</device>
+      <inline>
+         <config>
+            <ping xmlns="http://clicon.org/lib"/>
+         </config>
+      </inline>
+   </input>
 
 Get device state
 ================
