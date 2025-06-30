@@ -542,61 +542,23 @@ Where a transaction id is returned::
 
 Device RPCs
 ===========
-You can send an RPC to devices via the controller using the ``device-template-apply`` RPC.
-
-Create template
----------------
-First you create a template.
-
-An example is the following, which is the same example as the rpc template created in the CLI as described in the :ref:`CLI tutorial <controller_cli>`::
-
-   POST /restconf/data/clixon-controller:devices HTTP/1.1
-   Content-Type: application/yang-data+json
-
-   {
-     "clixon-controller:rpc-template": [
-       {
-         "name": "stats",
-         "variables": {
-           "variable": [
-             {
-               "name": "MODULES"
-             }
-           ]
-         },
-         "config": {
-           "clixon-lib:stats": {
-             "modules": "${MODULES}"
-           }
-         }
-       }
-     ]
-   }
-
-You can create the template by other means, such as CLI or NETCONF.
+You can send an RPC to devices via the controller using the ``device-rpc`` RPC.
 
 Send RPC
 --------
-The next step is to apply the template on devices resulting in a number of RPCs sent from the controller to devices. As an alternative, you can also use `Send using XML`_.
+Example of sending the RPC using JSON::
 
-Example::
-
-   POST /restconf/operations/clixon-controller:device-template-apply HTTP/1.1
+   POST /restconf/operations/clixon-controller:device-rpc HTTP/1.1
    Content-Type: application/yang-data+json
 
    {
      "clixon-controller:input": {
-       "type": "RPC",
        "device": "openconfig*",
-       "template": "stats",
-       "variables": [
-         {
-           "variable": {
-             "name": "MODULES",
-             "value": "true"
-           }
+       "config": {
+         "clixon-lib:stats": {
+           "modules": "true"
          }
-       ]
+       }
      }
    }
 
@@ -645,66 +607,40 @@ Note the ``devdata`` field which returns the reply from the RPC.  That is, the r
 
 The ``devdata`` field may contain replies from multiple devices.
 
-Inline
-------
-A simpler alternative is to send the template inline.
-
-Example of ping which is also an RPC without input or output::
-
-   POST /restconf/operations/clixon-controller:device-template-apply HTTP/1.1
-   Content-Type: application/yang-data+json
-
-   {
-     "clixon-controller:input": {
-       "type": "RPC",
-       "device": "openconfig*",
-       "inline": {
-         "config": {
-           "clixon-lib:ping": null
-         }
-       }
-     }
-   }
 
 Send using XML
 --------------
 Instead of using JSON in the rpc-template body, you can also use XML::
 
-   POST /restconf/operations/clixon-controller:device-template-apply HTTP/1.1
+   POST /restconf/operations/clixon-controller:device-rpc HTTP/1.1
    Content-Type: application/yang-data+xml
 
    <input xmlns="http://clicon.org/controller">
-      <type>RPC</type>
       <device>openconfig*</device>
-      <inline>
-         <config>
-            <ping xmlns="http://clicon.org/lib"/>
-         </config>
-      </inline>
+      <config>
+        <ping xmlns="http://clicon.org/lib"/>
+      </config>
    </input>
 
 Get device state
 ================
-You can get state data from device by using an RPC template as a workaround for not supplying it with a top-level `GET`.
+You can get state data from device by using a device RPC as a workaround for not supplying it with a top-level `GET`.
 
 Device state using XML
 ----------------------
 Example, get the ssh state of all openconfig devices::
 
-   POST /restconf/operations/clixon-controller:device-template-apply HTTP/1.1
+   POST /restconf/operations/clixon-controller:device-rpc HTTP/1.1
    Content-Type: application/yang-data+xml
 
    <input xmlns="urn:example:clixon-controller">
-      <type>RPC</type>
       <device>openconfig*</device>
-      <inline>
-         <config>
-            <get xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
-               <filter type="xpath" select="/oc-sys:system/oc-sys:ssh-server"
-                       xmlns:oc-sys="http://openconfig.net/yang/system" />
-            </get>
-         </config>
-      </inline>
+      <config>
+         <get xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+            <filter type="xpath" select="/oc-sys:system/oc-sys:ssh-server"
+                    xmlns:oc-sys="http://openconfig.net/yang/system" />
+         </get>
+      </config>
    </input>
 
    HTTP/1.1 200
@@ -762,17 +698,14 @@ At this time it is not possible to get a subset of subset of state data for JSON
 
 Example, get all state of all "openconfig*" devices::
 
-   POST /restconf/operations/clixon-controller:device-template-apply HTTP/1.1
+   POST /restconf/operations/clixon-controller:device-rpc HTTP/1.1
    Content-Type: application/yang-data+json
 
    {
      "clixon-controller:input": {
-       "type":"RPC",
        "device":"openconfig*",
-       "inline": {
-         "config": {
-           "ietf-netconf:get":null
-         }
+       "config": {
+         "ietf-netconf:get":null
        }
      }
    }
