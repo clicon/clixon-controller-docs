@@ -699,7 +699,8 @@ an RPC to a device::
    # the RPC name, and a dictionary with the input parameters
    res = cx.device_rpc("*", "stats", {"MODULES": "true"})
 
-   print(res.dumps())
+   for device in res:
+       print(res.dumps())
 
 Show detail
 ===========
