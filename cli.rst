@@ -700,7 +700,7 @@ an RPC to a device::
    res = cx.device_rpc("*", "stats", {"MODULES": "true"})
 
    for device in res:
-       print(res.dumps())
+       print(device.dumps())
 
 Show detail
 ===========
