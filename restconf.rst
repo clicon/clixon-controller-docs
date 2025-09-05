@@ -540,6 +540,35 @@ Where a transaction id is returned::
      }
    }
 
+Delete services
+---------------
+
+To remove a service using RESTCONF you have to do the same as in
+"Trigger service code" but instead of sending an actions:FORCE we
+have to send an actions:DELETE to remove the device configuration
+created by the service and then remove the service definition in
+a separate step.
+
+The operation to remove the device configuration created by a service::
+
+   POST /restconf/operations/clixon-controller:controller-commit HTTP/1.1
+   Content-Type: application/yang-data+json
+
+   {
+     "clixon-controller:input": {
+       "push": "COMMIT",
+       "actions": "DELETE",
+       "source": "ds:candidate"
+       "service-instance":"testA[a_name='bar']"
+     }
+   }
+
+And then remove the service definition itself::
+
+   DELETE /restconf/data/myyang:testA=a_name='bar' HTTP/1.1
+
+
+
 Device RPCs
 ===========
 You can send an RPC to devices via the controller using the ``device-template-apply`` RPC.
