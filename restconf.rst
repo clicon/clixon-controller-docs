@@ -12,48 +12,9 @@ Please also consult the RESTCONF section in the `Clixon user manual <https://cli
 
 Clixon provides two separate compile-time setups for RESTCONF:
 
-* `Native`: which combines a HTTP and Restconf server including openssl and nghttp2.
 * `FCGI` / FastCGI: This solution uses a web reverse proxy such as NGINX. The reverse proxy configures all HTTP configuration.
+* `Native`: which combines a HTTP and Restconf server including openssl and nghttp2.
 
-Native setup
-============
-Native mode is more complex to setup and provides many different configurations for RESTCONF. The controller supports the following:
-
-1. Native TLS and http in the RESTCONF daemon. No reverse proxy is needed.
-2. HTTP/1.1 and HTTP/2
-3. Basic and TLS/SSL client cert authentication
-4. Datastore configuration, not in configuration file
-
-Configuration
--------------
-You need to configure clixon for native::
-
-   ./configure --with-restconf=native
-
-Example config
---------------
-A typical RESTCONF native configuration may look as follows::
-
-   <restconf xmlns="http://clicon.org/restconf">
-      <enable>true</enable>
-      <auth-type>client-certificate</auth-type>
-      <server-cert-path>/etc/pki/tls/certs/clixon-server-crt.pem</server-cert-path>
-      <server-key-path>/etc/pki/tls/private/clixon-server-key.pem</server-key-path>
-      <server-ca-cert-path>/etc/pki/tls/CA/clixon-ca-crt.pem</server-ca-cert-path>
-      <socket>
-         <namespace>default</namespace>
-         <address>192.168.32.1</address>
-         <port>443</port>
-         <ssl>true</ssl>
-      </socket>
-   </restconf>
-
-In the config where a TLS on port 443 on 192.168.32.1 is configured using client-certs placed in the ``etc/pki/tls`` directory.
-
-Alternatively, you may use `basic auth`, but then you need to add
-support for authentication using the ``ca_auth`` plugin callback.
-
-For testing purposes, ``none`` can be used as auth-type.
 
 Fcgi setup
 ==========
@@ -212,6 +173,46 @@ A reply with a successful start is::
       }
    }
 
+Native setup
+============
+Native mode is more complex to setup and provides many different configurations for RESTCONF. The controller supports the following:
+
+1. Native TLS and http in the RESTCONF daemon. No reverse proxy is needed.
+2. HTTP/1.1 and HTTP/2
+3. Basic and TLS/SSL client cert authentication
+4. Datastore configuration, not in configuration file
+
+Configuration
+-------------
+You need to configure clixon for native::
+
+   ./configure --with-restconf=native
+
+Example config
+--------------
+A typical RESTCONF native configuration may look as follows::
+
+   <restconf xmlns="http://clicon.org/restconf">
+      <enable>true</enable>
+      <auth-type>client-certificate</auth-type>
+      <server-cert-path>/etc/pki/tls/certs/clixon-server-crt.pem</server-cert-path>
+      <server-key-path>/etc/pki/tls/private/clixon-server-key.pem</server-key-path>
+      <server-ca-cert-path>/etc/pki/tls/CA/clixon-ca-crt.pem</server-ca-cert-path>
+      <socket>
+         <namespace>default</namespace>
+         <address>192.168.32.1</address>
+         <port>443</port>
+         <ssl>true</ssl>
+      </socket>
+   </restconf>
+
+In the config where a TLS on port 443 on 192.168.32.1 is configured using client-certs placed in the ``etc/pki/tls`` directory.
+
+Alternatively, you may use `basic auth`, but then you need to add
+support for authentication using the ``ca_auth`` plugin callback.
+
+For testing purposes, ``none`` can be used as auth-type.
+   
 Setup
 =====
 You setup the connection to one or several devices by editing the device connection data
