@@ -178,10 +178,12 @@ Connection state
 Examine device connection state using the show command::
 
    cli> show connections
-   Name                    State      Time                   Logmsg
+   Name                    F State      Time                   Logmsg
    =======================================================================================
-   example1                OPEN       2023-04-14T07:02:07
-   example2                CLOSED     2023-04-14T07:08:06    Remote socket endpoint closed
+   example1                1 OPEN       2023-04-14T07:02:07
+   example2                1 CLOSED     2023-04-14T07:08:06    Remote socket endpoint closed
+
+where the `F` flag indicates which NETCONF framing is used for the device, ``0`` means NETCONF 1.0 end-of-message, and ``1`` means NETCONF 1.1 chunked encoding.
 
 Device state
 ------------
@@ -236,6 +238,14 @@ Use the ``show devices capability`` command to show which capabilities the devic
     ...
 
 The capabilities are announced as part of the initial NETCONF handshake, see `RFC 6241 <https://www.rfc-editor.org/rfc/rfc6241.html#section-8>`_ for base NETCONF capabilities.
+
+Netconf framing
+---------------
+
+A device can be forced to NETCONF 1.0 end-of-message framing by explicitly setting the framing type before connecting::
+
+   cli# set devices device openconfig1 netconf-framing 1.0
+   cli# commit local
 
 Syncing from devices
 ====================
