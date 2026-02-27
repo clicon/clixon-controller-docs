@@ -217,12 +217,19 @@ Device YANG
 You can list which YANGs the device has using the ``show devices yang`` command::
 
   olof@alarik> show devices example1 yang
-  example1:
-  clixon-lib@2023-11-01
-  clixon-restconf@2022-08-01
+  clixon-lib                               2023-11-01  http://clicon.org/lib
+  clixon-restconf                          2022-08-01  http://clicon.org/restconf
   ...
 
 These YANGs are mounted specifically for this device.
+
+To retrieve the full content of a specific schema, use the `yang schema`command::
+
+  olof@alarik> show devices example1 yang schema clixon-lib
+  module clixon-lib {
+      namespace "http://clicon.org/lib";
+      ...
+  }
 
 Capability
 ----------
@@ -241,7 +248,6 @@ The capabilities are announced as part of the initial NETCONF handshake, see `RF
 
 Netconf framing
 ---------------
-
 A device can be forced to NETCONF 1.0 end-of-message framing by explicitly setting the framing type before connecting::
 
    cli# set devices device openconfig1 netconf-framing 1.0
@@ -712,19 +718,19 @@ an RPC to a device::
    for device in res:
        print(device.dumps())
 
-Show detail
-===========
+Show info
+=========
 
-The command ``show detail`` shows detailed information about configuration. The detailed output includes information about namespace, XPath etc::
+The command ``show info`` shows detailed information about configuration. The output includes information about namespace, XPath etc::
 
-   test@example> show detail ?
+   test@example> show info ?
      devices               Device configuration
      nacm                  Parameters for NETCONF access control model.
      processes             Process configuration
      restconf              If imported, this container appears in top-level configuration.
      services              Placeholder for services.
 
-We can then get detailed information about any of the top-level containers listed above or any item in the configuration tree below them. As an example we here show detailed information about the ``hostname`` configuration on a OpenConfig device::
+You can then get detailed information about any of the top-level containers listed above or any item in the configuration tree below them. As an example, show detailed information about the ``hostname`` configuration on a OpenConfig device::
 
    test@example> show detail devices device openconfig1 config system config hostname
    Symbol:     hostname
