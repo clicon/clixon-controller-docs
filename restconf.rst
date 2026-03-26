@@ -212,7 +212,7 @@ Alternatively, you may use `basic auth`, but then you need to add
 support for authentication using the ``ca_auth`` plugin callback.
 
 For testing purposes, ``none`` can be used as auth-type.
-   
+
 Setup
 =====
 You setup the connection to one or several devices by editing the device connection data
@@ -612,7 +612,7 @@ And then remove the service definition itself::
 
 Device RPCs
 ===========
-You can send an RPC to devices via the controller using the ``device-rpc`` RPC.
+You can send an RPC to devices via the controller using the ``device-rpc`` RPC, and get the result with ``device-rpc-result``.
 
 Send RPC
 --------
@@ -641,10 +641,9 @@ Where a transaction id is returned::
       }
    }
 
-Read result
------------
+Check transaction state
+-----------------------
 A transaction has been created and the client needs to wait for results via a notification (see Section `notifications`_) or poll for completion of the transaction::
-
 
    GET /restconf/data/clixon-controller:transactions/transaction=5 HTTP/1.1
    Accept: application/yang-data+json
@@ -658,6 +657,29 @@ The reply could be::
          "tid": "6",
          "username": "clicon",
          "result": "SUCCESS",
+         ...
+
+Read result
+-----------
+
+If the transaction has completed successfuly, you can read the results via the ``rpc-device-result`` RPC::
+
+   POST /restconf/operations/clixon-controller:device-rpc-result HTTP/1.1
+   Content-Type: application/yang-data+json
+   Accept: application/yang-data+json
+
+   {
+     "clixon-controller:input": {
+       "tid":"11",
+     }
+   }
+
+Example reply::
+
+   HTTP/1.1 200
+   {
+      "clixon-controller:output": {
+         "tid": "11",
          "devices": {
            "devdata": [
              {
@@ -722,12 +744,12 @@ Example, get the ssh state of all openconfig devices::
 
 where the `filter` statement selects the ``system/ssh-server`` state.
 
-Polling for result::
+Polling for successful result::
 
    GET /restconf/data/clixon-controller:transactions/transaction=6 HTTP/1.1
    Accept: application/yang-data+json
 
-A result could be::
+A reply could be::
 
    HTTP/2 200
    content-type: application/yang-data+json
@@ -738,7 +760,27 @@ A result could be::
         "tid": "8",
         "username": "anonymous",
         "result": "SUCCESS",
-        "devices": {
+        ...
+
+Get the result::
+
+   POST /restconf/operations/clixon-controller:device-rpc-result HTTP/1.1
+   Content-Type: application/yang-data+json
+   Accept: application/yang-data+json
+
+   {
+     "clixon-controller:input": {
+       "tid":"8",
+     }
+   }
+
+The state result reply::
+
+   HTTP/1.1 200
+   {
+      "clixon-controller:output": {
+         "tid": "8",
+         "devices": {
           "devdata": [
            {
             "name": "openconfig1",

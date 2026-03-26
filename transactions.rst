@@ -57,15 +57,9 @@ After (9) above it is possible to add an extra step (compiler-option):
 Use the show transaction command to get details about transactions::
 
    cli> show transaction
-     <transaction>
-        <tid>2</tid>
-        <state>DONE</state>
-        <result>FAILED</result>
-        <description>pull</description>
-        <origin>example1</origin>
-        <reason>validation failed</reason>
-        <timestamp>2023-03-27T18:41:59.031690Z</timestamp>
-     </transaction>
+       TID Description                              State      Result          Time[s] Reason
+   ------- ---------------------------------------- ---------- ---------- ------------ ------------------------------
+      2    Controller connect OPEN                  DONE       SUCCESS           0.694 -
 
 Out-of-sync
 -----------
