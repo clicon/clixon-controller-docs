@@ -4,7 +4,7 @@
    :depth: 3
 
 *******
-DEVICES
+Devices
 *******
 This section describes how to connect specific devices to the controller.
 

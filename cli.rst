@@ -223,9 +223,14 @@ You can list which YANGs the device has using the ``show devices yang`` command:
 
 These YANGs are mounted specifically for this device.
 
-To retrieve the full content of a specific schema, use the `yang schema` command::
+To retrieve the full content of a specific schema, use the ``schema`` command::
 
-  olof@alarik> show devices example1 yang schema clixon-lib
+  olof@alarik> show devices example1 schema
+  clixon-lib                               2023-11-01  http://clicon.org/lib
+  clixon-restconf                          2022-08-01  http://clicon.org/restconf
+  ...
+
+  olof@alarik> show devices example1 schema clixon-lib
   module clixon-lib {
       namespace "http://clicon.org/lib";
       ...

@@ -152,6 +152,7 @@ The clixon-controller YANG has the following structure::
          +--controller-commit
          +--connection-change
          +--get-device-config
+         +--get-device-schema
          +--transaction-error
          +--transaction-actions-done
          +--datastore-diff

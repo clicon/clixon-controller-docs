@@ -835,4 +835,3 @@ Polling for result::
    Accept: application/yang-data+json
 
 where the result would be the complete state of all matching devices.
-
