@@ -184,18 +184,19 @@ The following table illustrates a matrix of operations on the y-axis and device 
    +----------------------------+---------------------------------+---------------------------------+----------------------------+---------------------------------+
    | Show devices diff          | Skip device.                    | Skip device.                    | Display diff.              | Skip device.                    |
    |                            |                                 |                                 |                            |                                 |
-   |                            | CLI should display warning.     | CLI should display warning.     |                            | CLI should display error.       |
-   |                            | Transactions success and        | Transactions success and        |                            | Transactions should fail and    |
+   |                            | CLI should display warning.     | CLI should display warning.     |                            | CLI should display warning.     |
+   |                            | Transactions success and        | Transactions success and        |                            | Transactions success and        |
    |                            | display skipped devices.        | display skipped devices.        |                            | display skipped devices.        |
    +----------------------------+---------------------------------+---------------------------------+----------------------------+---------------------------------+
    | Apply/commit               | Cancel apply/commit.            | Cancel apply/commit.            | Do apply/commit.           | Cancel apply/commit.            |
    | Only for devices with      |                                 |                                 |                            |                                 |
    | local changes              | CLI should display error.       | CLI should display error.       | CLI should remain silent.  | CLI should display error.       |
-   |                            |                                 |                                 |                            |                                 |
+   |                            | No edits:Skip  warning skipped  |                                 |                            |                                 |
    +----------------------------+---------------------------------+---------------------------------+----------------------------+---------------------------------+
    | Apply diff/commit diff     | Skip device.                    | Skip device.                    | Display diff.              | Skip device.                    |
    |                            |                                 |                                 |                            |                                 |
    |                            | CLI should display warning.     | CLI should display warning.     |                            | CLI should display warning.     |
    |                            | Transactions success and        | Transactions success and        |                            | Transactions success and.       |
    |                            | display skipped devices.        | display skipped devices.        |                            | display skipped devies.         |
+   |                            | No edits: Skip altogether       |                                 |                            |                                 |
    +----------------------------+---------------------------------+---------------------------------+----------------------------+---------------------------------+
