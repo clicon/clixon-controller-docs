@@ -158,45 +158,92 @@ The code above assumes that an RPC template called ``stats`` has been configured
 Detailed state table
 ====================
 
-The following table illustrates a matrix of operations on the y-axis and device config/states on the y-axis and the expected behavior in each case. 
+The following table illustrates a matrix of operations on the y-axis and device states on the x-axis with the expected behavior in each case.
 
-::
+Device states:
 
-   +----------------------------+---------------------------------+---------------------------------+----------------------------+---------------------------------+
-   | Operation                  | Status enabled, state closed    | Status enabled but              | Status enabled, state open | Status disabled, state closed   |
-   |                            |                                 | unreachable, state closed       |                            |                                 |
-   +============================+=================================+=================================+============================+=================================+
-   | Connect/reconnect          | Devices should connect.         | Timeout after 30 seconds.       | Connects.                  | Skip device.                    |
-   |                            |                                 |                                 |                            |                                 |
-   |                            | CLI remain silent               | CLI should display error.       | CLI remain silent.         | CLI should display warning.     |
-   |                            |                                 | Transactions should fail and    |                            | Transactions success and        |
-   |                            |                                 | display failed device(s).       |                            | display skipped device(s).      |
-   +----------------------------+---------------------------------+---------------------------------+----------------------------+---------------------------------+
-   | Disconnect                 | Skip device.                    | Skip device.                    | Connections close.         | Skip device.                    |
-   |                            |                                 |                                 |                            |                                 |
-   |                            | CLI remain silent.              | CLI remain silent.              | CLI remain silent.         | CLI remain silent.              |
-   +----------------------------+---------------------------------+---------------------------------+----------------------------+---------------------------------+
-   | Pull                       | Skip device.                    | Skip device.                    | Pull.                      | Skip device.                    |
-   |                            |                                 |                                 |                            |                                 |
-   |                            | CLI should display warning.     | CLI should display warning.     | CLI remains silent.        | CLI should display warning.     |
-   |                            | Transactions success and        | Transactions success and        |                            | Transactions success and        |
-   |                            | display skipped devices.        | display skipped devices.        |                            | display skipped devices.        |
-   +----------------------------+---------------------------------+---------------------------------+----------------------------+---------------------------------+
-   | Show devices diff          | Skip device.                    | Skip device.                    | Display diff.              | Skip device.                    |
-   |                            |                                 |                                 |                            |                                 |
-   |                            | CLI should display warning.     | CLI should display warning.     |                            | CLI should display warning.     |
-   |                            | Transactions success and        | Transactions success and        |                            | Transactions success and        |
-   |                            | display skipped devices.        | display skipped devices.        |                            | display skipped devices.        |
-   +----------------------------+---------------------------------+---------------------------------+----------------------------+---------------------------------+
-   | Apply/commit               | Cancel apply/commit.            | Cancel apply/commit.            | Do apply/commit.           | Cancel apply/commit.            |
-   | Only for devices with      |                                 |                                 |                            |                                 |
-   | local changes              | CLI should display error.       | CLI should display error.       | CLI should remain silent.  | CLI should display error.       |
-   |                            | No edits:Skip  warning skipped  |                                 |                            |                                 |
-   +----------------------------+---------------------------------+---------------------------------+----------------------------+---------------------------------+
-   | Apply diff/commit diff     | Skip device.                    | Skip device.                    | Display diff.              | Skip device.                    |
-   |                            |                                 |                                 |                            |                                 |
-   |                            | CLI should display warning.     | CLI should display warning.     |                            | CLI should display warning.     |
-   |                            | Transactions success and        | Transactions success and        |                            | Transactions success and.       |
-   |                            | display skipped devices.        | display skipped devices.        |                            | display skipped devies.         |
-   |                            | No edits: Skip altogether       |                                 |                            |                                 |
-   +----------------------------+---------------------------------+---------------------------------+----------------------------+---------------------------------+
+* **1: DISABLED** - Device is administratively disabled (``enabled false``)
+* **2: CLOSED** - Device is enabled but not connected
+* **3: OPEN** - Device is enabled and connected
+
+.. list-table::
+   :header-rows: 1
+   :widths: 30 23 23 23
+
+   * - Operation
+     - 1: DISABLED
+     - 2: CLOSED
+     - 3: OPEN
+   * - **A: Connection open**
+     - Skip device.
+       CLI silent.
+       Transaction success, device skipped.
+     - Devices should connect.
+       CLI silent.
+       Transaction success, device success.
+     - Skip device.
+       CLI silent.
+       Transaction success, device skipped.
+   * - **B: Connection close**
+     - Skip device.
+       CLI silent.
+       Transaction success, device skipped.
+     - Skip device.
+       CLI silent.
+       Transaction success, device skipped.
+     - Connections close.
+       CLI silent.
+       Transaction success, device success.
+   * - **C: Pull**
+     - Skip device.
+       CLI silent.
+       Transaction success, device skipped.
+     - Skip device.
+       CLI warning.
+       Transaction success, device skipped.
+     - Pull.
+       CLI silent.
+       Transaction success, device success.
+   * - **D: Show devices diff**
+     - Skip device.
+       CLI warning.
+       Transaction success, device skipped.
+     - Skip device.
+       CLI warning.
+       Transaction success, device skipped.
+     - Display diff.
+       CLI displays diff.
+       Transaction success, device success.
+   * - **E: Commit push/diff, no edits**
+       *(Manual + Service commit + apply)*
+     - Skip device.
+       CLI silent.
+       Transaction success, device absent.
+     - Skip device.
+       CLI silent.
+       Transaction success, device absent.
+     - Skip device.
+       CLI silent.
+       Transaction success, device absent.
+   * - **F: Commit push, local edits**
+       *(Manual + Service commit + apply)*
+     - Skip device (push only local commit).
+       CLI warning.
+       Transaction success, device skipped.
+     - Cancel apply/commit.
+       CLI error.
+       Transaction fail, device failed.
+     - Do apply/commit.
+       CLI silent.
+       Transaction success, device success.
+   * - **G: Commit diff, local edits**
+       *(Manual + Service commit + apply)*
+     - Display diff.
+       CLI displays diff.
+       Transaction success, device success.
+     - Skip device.
+       CLI warning.
+       Transaction success, device skipped.
+     - Display diff.
+       CLI displays diff.
+       Transaction success, device success.
