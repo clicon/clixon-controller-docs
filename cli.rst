@@ -117,6 +117,29 @@ Example::
 
 In the example, the `myprofile` device-profile defines a set of common fields, including the locally loaded openconfig YANG. See Section :ref:`YANG <controller_yang>` for more information on loading device YANGs.
 
+Timeouts
+--------
+Two global timers control how long the controller waits for a device before
+giving up and closing the connection:
+
+* ``device-timeout`` is the general timeout (in seconds) applied to all device
+  transactions: push (edit/validate/commit) and generic RPCs. It is also used
+  as the fallback for the connect sequence below if ``connect-timeout`` is not set.
+* ``connect-timeout`` is a separate, typically shorter, timeout (in seconds) that
+  applies only to the initial connect sequence: TCP/SSH connect and hello, schema
+  retrieval, and the initial full configuration sync. This lets an unreachable or
+  unresponsive device fail fast without waiting for the longer ``device-timeout``
+  used once a device is operational.
+
+Example, set a 60s device-timeout and a shorter 5s connect-timeout::
+
+  cli# set devices device-timeout 60
+  cli# set devices connect-timeout 5
+  cli# commit local
+
+If ``connect-timeout`` is not configured, ``device-timeout`` is used for the
+connect sequence as well.
+
 Remote device configuration
 ---------------------------
 The remote device configuration is present under the `config` mount-point::

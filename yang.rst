@@ -100,6 +100,7 @@ The clixon-controller YANG has the following structure::
      |   +--rw properties
      +--rw devices
      |   +--rw device-timeout         uint32
+     |   +--rw connect-timeout        uint32
      |   +--rw device-group* [name]
      |   | +--rw name                 string
      |   | +--rw description?         string
