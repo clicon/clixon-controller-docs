@@ -56,9 +56,42 @@ After (9) above it is possible to add an extra step (compiler-option):
 Use the show transaction command to get details about transactions::
 
    cli> show transaction
-       TID Description                              State      Result          Time[s] Reason
-   ------- ---------------------------------------- ---------- ---------- ------------ ------------------------------
-      2    Controller connect OPEN                  DONE       SUCCESS           0.694 -
+       TID Description              State      Result       Devices           Time[s] Reason
+   ------- ------------------------ ---------- ---------- -------------- ------------ ------------------------------
+      2    Controller connect OPEN  DONE       SUCCESS    1 ok                  0.694 -
+
+The `Devices` column is a compact summary of the per-device results for the
+transaction, e.g. ``2 ok``, or ``1 ok, 1 ERROR`` if some devices did not
+succeed. See `Per-device result`_ below for the possible per-device result
+values, and the ``detail`` keyword (``show transaction detail``) for the full
+per-device breakdown, including individual reasons, as XML.
+
+Per-device result
+------------------
+In addition to the overall transaction `result`, each device involved in a
+transaction is tracked individually with its own `result` and optional
+`reason`, available via ``show transaction detail`` (or the
+``clixon-controller:transactions`` state data). The possible per-device
+results are:
+
+* **SUCCESS** - the device completed its part of the transaction normally.
+* **SKIPPED** - the device was not part of the transaction, e.g. because it
+  is administratively disabled (``enabled false``) or not connected
+  (``CLOSED``) when an operation that requires an open connection was
+  requested. The `reason` gives more detail, e.g. "disabled" or "closed".
+* **FAILED** - the device's part of the transaction failed but was
+  successfully reverted, e.g. validation failed on the device and the
+  candidate datastore was unlocked. The device connection remains usable.
+* **ERROR** - the device's part of the transaction failed in a way that
+  could not be safely reverted or recovered, e.g. a connect/device timeout,
+  a closed connection or a malformed reply mid-transaction. The device
+  connection is set to `CLOSED` and must be reconnected. This includes
+  the `connect-timeout` / `device-timeout` cases described in Section
+  :ref:`CLI <controller_cli>`.
+
+A device is absent from the per-device list (rather than SKIPPED) if the
+transaction has no local edits and no device configuration to consider, see
+the detailed state table below.
 
 Out-of-sync
 -----------

@@ -140,6 +140,12 @@ Example, set a 60s device-timeout and a shorter 5s connect-timeout::
 If ``connect-timeout`` is not configured, ``device-timeout`` is used for the
 connect sequence as well.
 
+If a device does not respond within the applicable timeout, the connect (or
+push/RPC) transaction for that device is marked with per-device result
+``ERROR`` and a reason such as "Timeout waiting for remote peer", see
+:ref:`Transactions <controller_transactions>` for details on transaction and
+per-device results.
+
 Remote device configuration
 ---------------------------
 The remote device configuration is present under the `config` mount-point::
@@ -201,12 +207,35 @@ Connection state
 Examine device connection state using the show command::
 
    cli> show connections
-   Name                    F State      Time                   Logmsg
+   Name                    State      Time                   Logmsg
    =======================================================================================
-   example1                1 OPEN       2023-04-14T07:02:07
-   example2                1 CLOSED     2023-04-14T07:08:06    Remote socket endpoint closed
+   example1                OPEN       2023-04-14T07:02:07
+   example2                CLOSED     2023-04-14T07:08:06    Remote socket endpoint closed
 
-where the `F` flag indicates which NETCONF framing is used for the device, ``0`` means NETCONF 1.0 end-of-message, and ``1`` means NETCONF 1.1 chunked encoding.
+where ``State`` is the device connection state (or ``DISABLED`` if the device is administratively disabled), and ``Time`` is the ``stable-timestamp`` of the device, that is, the last time the device entered a stable state after a connect or close transition (see below).
+
+Detailed connection state, including timestamps, is shown using the ``detail`` keyword::
+
+   cli> show connections example1 detail
+   clixon-controller:devices {
+      device example1 {
+         conn-state OPEN;
+         conn-state-timestamp 2026-09-06T16:44:08.754482Z;
+         sync-timestamp 2026-09-05T02:03:29.220222Z;
+         stable-timestamp 2026-08-22T13:17:18.273508Z;
+         private-candidate-state true;
+         netconf-framing-type 1.0;
+      }
+   }
+
+The fields are as follows:
+
+* ``conn-state`` - Current connection state of the device, e.g. ``CLOSED``, ``CONNECTING``, ``OPEN``.
+* ``conn-state-timestamp`` - Timestamp when the device entered its current ``conn-state``.
+* ``sync-timestamp`` - Timestamp of the last successful synchronization (config pull) from the device.
+* ``stable-timestamp`` - Timestamp of the last time the device entered a *stable* state after a connection transition, that is, after completing the connect state machine (connecting -> schema -> sync -> open) or a close (open -> closed). This reflects when the device was last connected or disconnected, and is not updated by intermediate config push, pull, or generic RPC operations.
+* ``private-candidate-state`` - Whether the device uses a private (per-session) candidate datastore, as negotiated via NETCONF capabilities.
+* ``netconf-framing-type`` - NETCONF message framing negotiated with the device: ``1.0`` for end-of-message framing, or ``1.1`` for chunked framing.
 
 Device state
 ------------
