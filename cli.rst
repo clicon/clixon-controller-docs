@@ -126,8 +126,7 @@ giving up and closing the connection:
   transactions: push (edit/validate/commit) and generic RPCs. It is also used
   as the fallback for the connect sequence below if ``connect-timeout`` is not set.
 * ``connect-timeout`` is a separate, typically shorter, timeout (in seconds) that
-  applies only to the initial connect sequence: TCP/SSH connect and hello, schema
-  retrieval, and the initial full configuration sync. This lets an unreachable or
+  applies only to the initial connect sequence: TCP/SSH connect and hello. This lets an unreachable or
   unresponsive device fail fast without waiting for the longer ``device-timeout``
   used once a device is operational.
 
@@ -145,6 +144,14 @@ push/RPC) transaction for that device is marked with per-device result
 ``ERROR`` and a reason such as "Timeout waiting for remote peer", see
 :ref:`Transactions <controller_transactions>` for details on transaction and
 per-device results.
+
+Proactive dead-connection detection (SSH keepalive)
+----------------------------------------------------
+The timeouts above only bound how long the controller waits for a reply to an
+*active* operation (connect, push, or RPC). They do not, by themselves, detect
+an idle connection whose underlying transport has silently died, for example
+because the device crashed, rebooted, or a firewall/NAT dropped the session
+without sending a TCP FIN/RST.
 
 Remote device configuration
 ---------------------------

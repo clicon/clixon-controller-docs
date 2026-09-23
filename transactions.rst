@@ -199,84 +199,49 @@ Device states:
 * **2: CLOSED** - Device is enabled but not connected
 * **3: OPEN** - Device is enabled and connected
 
+Each cell reads as: *action* / *CLI feedback* / *result code*, where the result code is one of:
+
+* **OK** - Transaction success, device success
+* **SKIP** - Transaction success, device skipped
+* **ABSENT** - Transaction success, device absent
+* **FAIL** - Transaction fail, device failed
+
 .. list-table::
    :header-rows: 1
-   :widths: 30 23 23 23
+   :widths: 24 19 19 19
 
    * - Operation
      - 1: DISABLED
      - 2: CLOSED
      - 3: OPEN
    * - **A: Connection open**
-     - Skip device.
-       CLI silent.
-       Transaction success, device skipped.
-     - Devices should connect.
-       CLI silent.
-       Transaction success, device success.
-     - Skip device.
-       CLI silent.
-       Transaction success, device skipped.
+     - Skip / silent / SKIP
+     - Connect / silent / OK
+     - Skip / silent / SKIP
    * - **B: Connection close**
-     - Skip device.
-       CLI silent.
-       Transaction success, device skipped.
-     - Skip device.
-       CLI silent.
-       Transaction success, device skipped.
-     - Connections close.
-       CLI silent.
-       Transaction success, device success.
+     - Skip / silent / SKIP
+     - Skip / silent / SKIP
+     - Close / silent / OK
    * - **C: Pull**
-     - Skip device.
-       CLI silent.
-       Transaction success, device skipped.
-     - Skip device.
-       CLI warning.
-       Transaction success, device skipped.
-     - Pull.
-       CLI silent.
-       Transaction success, device success.
+     - Skip / silent / SKIP
+     - Skip / warning / SKIP
+     - Pull / silent / OK
    * - **D: Show devices diff**
-     - Skip device.
-       CLI warning.
-       Transaction success, device skipped.
-     - Skip device.
-       CLI warning.
-       Transaction success, device skipped.
-     - Display diff.
-       CLI displays diff.
-       Transaction success, device success.
+     - Skip / warning / SKIP
+     - Skip / warning / SKIP
+     - Show diff / diff shown / OK
    * - **E: Commit push/diff, no edits**
        *(Manual + Service commit + apply)*
-     - Skip device.
-       CLI silent.
-       Transaction success, device absent.
-     - Skip device.
-       CLI silent.
-       Transaction success, device absent.
-     - Skip device.
-       CLI silent.
-       Transaction success, device absent.
+     - Skip / silent / ABSENT
+     - Skip / silent / ABSENT
+     - Skip / silent / ABSENT
    * - **F: Commit push, local edits**
        *(Manual + Service commit + apply)*
-     - Skip device (push only local commit).
-       CLI warning.
-       Transaction success, device skipped.
-     - Cancel apply/commit.
-       CLI error.
-       Transaction fail, device failed.
-     - Do apply/commit.
-       CLI silent.
-       Transaction success, device success.
+     - Skip (push only local commit) / warning / SKIP
+     - Cancel apply/commit / error / FAIL
+     - Apply/commit / silent / OK
    * - **G: Commit diff, local edits**
        *(Manual + Service commit + apply)*
-     - Display diff.
-       CLI displays diff.
-       Transaction success, device success.
-     - Skip device.
-       CLI warning.
-       Transaction success, device skipped.
-     - Display diff.
-       CLI displays diff.
-       Transaction success, device success.
+     - Show diff / diff shown / OK
+     - Cancel apply/commit / error / FAIL
+     - Show diff / diff shown / OK
