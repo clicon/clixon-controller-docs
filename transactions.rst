@@ -239,12 +239,18 @@ Each cell reads as: *action* / *CLI feedback* / *result code*, where the result 
    * - **F: Commit push, local edits**
 
        *(Manual + Service commit + apply)*
-     - Skip (push only local commit) / warning / SKIP
-     - Cancel apply/commit / error / FAIL
+     - Skip (push only local commit) /
+
+       warning / SKIP
+     - Cancel apply/commit /
+
+       error / FAIL
      - Apply/commit / silent / OK
    * - **G: Commit diff, local edits**
 
        *(Manual + Service commit + apply)*
      - Show diff / diff shown / OK
-     - Cancel apply/commit / error / FAIL
+     - Cancel apply/commit /
+
+       error / FAIL
      - Show diff / diff shown / OK
