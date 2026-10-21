@@ -188,6 +188,78 @@ The following NETCONF message shows an example of sending the `'stats`` RPC to a
 
 The code above assumes that an RPC template called ``stats`` has been configured, see the :ref:`CLI section <controller_cli>`. As an alternative a template could be inlined.
 
+Progress
+========
+Long-running transactions report progress while they execute, both in the CLI
+and as NETCONF notifications.
+
+CLI
+---
+When the CLI waits for a transaction (eg ``commit``, ``commit diff``,
+``connection open``, ``pull``, device RPC and state requests) on a terminal,
+a status line is shown after about 100ms and updated in place until the
+transaction completes::
+
+   Transaction 5 ACTIONS (3s): 1 OK, 1 PUSH-COMMIT, 1 PUSH-WAIT
+
+The line shows the transaction id, the transaction state, elapsed seconds and a
+summary of devices. Devices that have reached their goal state (ie left the
+transaction successfully) are counted as ``OK``; the remaining devices are
+grouped by their current connection state. This makes it easy to see how many
+devices are already done versus still being processed. The line is removed when
+the transaction completes. Short transactions show no progress. ``Ctrl-C``
+terminates the transaction.
+
+NETCONF
+-------
+A NETCONF client gets the same information by subscribing to the
+``controller-transaction`` stream::
+
+   <rpc xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" message-id="1">
+      <create-subscription xmlns="urn:ietf:params:xml:ns:netconf:notification:1.0">
+         <stream>controller-transaction</stream>
+      </create-subscription>
+   </rpc>
+
+A ``controller-transaction-progress`` notification is sent on every
+transaction state change and device connection state change::
+
+   <notification xmlns="urn:ietf:params:xml:ns:netconf:notification:1.0">
+      <eventTime>2026-10-12T07:50:00.000000Z</eventTime>
+      <controller-transaction-progress xmlns="http://clicon.org/controller">
+         <tid>5</tid>
+         <state>ACTIONS</state>
+         <device>
+            <name>openconfig1</name>
+            <conn-state>PUSH-COMMIT</conn-state>
+         </device>
+         <device>
+            <name>openconfig2</name>
+            <conn-state>OPEN</conn-state>
+            <done>true</done>
+         </device>
+      </controller-transaction-progress>
+   </notification>
+
+Each listed device shows its current ``conn-state``. A device that has reached
+its goal state and left the transaction successfully additionally carries
+``<done>true</done>``; a client can use this to count finished devices
+regardless of the specific end state (which may be ``OPEN`` or, eg on
+disconnect, ``CLOSED``).
+
+When subscribing, the current state of all ongoing transactions is sent
+immediately. When the transaction completes, a ``controller-transaction``
+notification with the final ``result`` (and ``reason``) is sent on the same
+stream. A client typically subscribes, starts the transaction (eg
+``controller-commit``), and matches notifications on the ``tid`` in the reply.
+
+A client only interested in completed transactions can use an xpath filter::
+
+   <create-subscription xmlns="urn:ietf:params:xml:ns:netconf:notification:1.0">
+      <stream>controller-transaction</stream>
+      <filter type="xpath" select="controller-transaction"/>
+   </create-subscription>
+
 Detailed state table
 ====================
 
