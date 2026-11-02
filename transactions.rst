@@ -287,31 +287,31 @@ Each cell reads as: *action* / *CLI feedback* / *result code*, where the result 
      - 2: CLOSED
      - 3: OPEN
    * - **A: Connection open**
-     - Skip / silent / SKIP
+     - SKIP / silent / SKIP
      - Connect / silent / OK
-     - Skip / silent / SKIP
+     - SKIP / silent / SKIP
    * - **B: Connection close**
-     - Skip / silent / SKIP
-     - Skip / silent / SKIP
+     - SKIP / silent / SKIP
+     - SKIP / silent / SKIP
      - Close / silent / OK
    * - **C: Pull**
-     - Skip / silent / SKIP
-     - Skip / warning / SKIP
+     - SKIP / silent / SKIP
+     - SKIP / warning / SKIP
      - Pull / silent / OK
    * - **D: Show devices diff**
-     - Skip / warning / SKIP
-     - Skip / warning / SKIP
+     - SKIP / silent / SKIP
+     - SKIP / warning / SKIP
      - Show diff / diff shown / OK
    * - **E: Commit push/diff, no edits**
 
        *(Manual + Service commit + apply)*
-     - Skip / silent / ABSENT
-     - Skip / silent / ABSENT
-     - Skip / silent / ABSENT
+     - SKIP / silent / ABSENT
+     - SKIP / silent / ABSENT
+     - SKIP / silent / ABSENT
    * - **F: Commit push, local edits**
 
        *(Manual + Service commit + apply)*
-     - Skip (push only local commit) /
+     - SKIP (push only local commit) /
 
        warning / SKIP
      - Cancel apply/commit /
