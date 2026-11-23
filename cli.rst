@@ -737,7 +737,7 @@ For example, define a ``clixon-lib stats`` RPC template as follows::
       </devices>
    </config>
    ^D
-   olof@totila[/]# commit
+   olof@totila[/]# commit local
    olof@totila[/]#
 
 The template above contains the following components:

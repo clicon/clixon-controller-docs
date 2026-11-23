@@ -213,11 +213,11 @@ terminates the transaction.
 NETCONF
 -------
 A NETCONF client gets the same information by subscribing to the
-``controller-transaction`` stream::
+``controller-transaction-progress`` stream::
 
    <rpc xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" message-id="1">
       <create-subscription xmlns="urn:ietf:params:xml:ns:netconf:notification:1.0">
-         <stream>controller-transaction</stream>
+         <stream>controller-transaction-progress</stream>
       </create-subscription>
    </rpc>
 
@@ -236,29 +236,28 @@ transaction state change and device connection state change::
          <device>
             <name>openconfig2</name>
             <conn-state>OPEN</conn-state>
-            <done>true</done>
+            <result>SUCCESS</result>
          </device>
       </controller-transaction-progress>
    </notification>
 
-Each listed device shows its current ``conn-state``. A device that has reached
-its goal state and left the transaction successfully additionally carries
-``<done>true</done>``; a client can use this to count finished devices
-regardless of the specific end state (which may be ``OPEN`` or, eg on
-disconnect, ``CLOSED``).
+Each listed device shows its current ``conn-state``. A device that has left the
+transaction additionally carries its ``result`` (eg ``SUCCESS``, ``FAILED`` or
+``SKIPPED``); it is absent while the device is still active in the
+transaction. A client can use this to count finished devices regardless of the
+specific end state (which may be ``OPEN`` or, eg on disconnect, ``CLOSED``).
 
 When subscribing, the current state of all ongoing transactions is sent
-immediately. When the transaction completes, a ``controller-transaction``
-notification with the final ``result`` (and ``reason``) is sent on the same
-stream. A client typically subscribes, starts the transaction (eg
-``controller-commit``), and matches notifications on the ``tid`` in the reply.
+immediately.
 
-A client only interested in completed transactions can use an xpath filter::
-
-   <create-subscription xmlns="urn:ietf:params:xml:ns:netconf:notification:1.0">
-      <stream>controller-transaction</stream>
-      <filter type="xpath" select="controller-transaction"/>
-   </create-subscription>
+Progress is only sent on the ``controller-transaction-progress`` stream. When
+the transaction completes, a ``controller-transaction`` notification with the
+final ``result`` (and ``reason``) is sent on the separate
+``controller-transaction`` stream. A client that wants both creates two
+subscriptions, starts the transaction (eg ``controller-commit``), and matches
+notifications on the ``tid`` in the reply. Subscribe to
+``controller-transaction`` before starting the transaction, otherwise the
+completion of a fast transaction may be missed.
 
 Detailed state table
 ====================
